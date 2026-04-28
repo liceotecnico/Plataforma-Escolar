@@ -1849,10 +1849,20 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
               <div class="fg" style="margin-bottom:8px;"><label>Curso</label>
                 <select id="inf-curso-sel" onchange="infCargarAlumnos()" style="width:100%">
                   <option value="">— Seleccionar —</option>
+                  <optgroup label="1° Medio">
                   <option value="1M__1°A">1°A</option><option value="1M__1°B">1°B</option>
-                  <option value="1M__1°C">1°C</option><option value="1M__1°D">1°D</option>
+                  <option value="1M__1°C">1°C</option><option value="1M__1°D">1°D</option></optgroup>
+                  <optgroup label="2° Medio">
                   <option value="2M__2°A">2°A</option><option value="2M__2°B">2°B</option>
-                  <option value="2M__2°C">2°C</option><option value="2M__2°D">2°D</option>
+                  <option value="2M__2°C">2°C</option><option value="2M__2°D">2°D</option></optgroup>
+                  <optgroup label="3° Medio">
+                  <option value="3M__3°A">3°A</option><option value="3M__3°B">3°B</option>
+                  <option value="3M__3°C">3°C</option><option value="3M__3°D">3°D</option>
+                  <option value="3M__3°E">3°E</option><option value="3M__3°F">3°F</option></optgroup>
+                  <optgroup label="4° Medio">
+                  <option value="4M__4°A">4°A</option><option value="4M__4°B">4°B</option>
+                  <option value="4M__4°C">4°C</option><option value="4M__4°D">4°D</option>
+                  <option value="4M__4°E">4°E</option><option value="4M__4°F">4°F</option></optgroup>
                 </select>
               </div>
               <div class="fg" style="margin-bottom:12px;"><label>Alumno</label>
@@ -1873,10 +1883,20 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
               <div class="fg" style="margin-bottom:12px;"><label>Curso</label>
                 <select id="inf-curso-resumen" style="width:100%">
                   <option value="">— Seleccionar —</option>
+                  <optgroup label="1° Medio">
                   <option value="1M__1°A">1°A</option><option value="1M__1°B">1°B</option>
-                  <option value="1M__1°C">1°C</option><option value="1M__1°D">1°D</option>
+                  <option value="1M__1°C">1°C</option><option value="1M__1°D">1°D</option></optgroup>
+                  <optgroup label="2° Medio">
                   <option value="2M__2°A">2°A</option><option value="2M__2°B">2°B</option>
-                  <option value="2M__2°C">2°C</option><option value="2M__2°D">2°D</option>
+                  <option value="2M__2°C">2°C</option><option value="2M__2°D">2°D</option></optgroup>
+                  <optgroup label="3° Medio">
+                  <option value="3M__3°A">3°A</option><option value="3M__3°B">3°B</option>
+                  <option value="3M__3°C">3°C</option><option value="3M__3°D">3°D</option>
+                  <option value="3M__3°E">3°E</option><option value="3M__3°F">3°F</option></optgroup>
+                  <optgroup label="4° Medio">
+                  <option value="4M__4°A">4°A</option><option value="4M__4°B">4°B</option>
+                  <option value="4M__4°C">4°C</option><option value="4M__4°D">4°D</option>
+                  <option value="4M__4°E">4°E</option><option value="4M__4°F">4°F</option></optgroup>
                 </select>
               </div>
               <button class="btn export" onclick="infDescargarCurso()" style="width:100%;font-size:12px">↓ Descargar PDF del curso</button>
@@ -5263,9 +5283,9 @@ async function lcGuardar() {
   try { localStorage.setItem(lcSK(), json); } catch(e) {}
   try {
     await gsSet(lcSK(), json);
-    showToastN('✓ Guardado — ' + lcAsig + ' · ' + lcCurso);
+    showToast('✓ Guardado — ' + lcAsig + ' · ' + lcCurso, 'ok');
   } catch(e) {
-    showToastN('Guardado local (sin conexión)');
+    showToast('Guardado local (sin conexión)', 'warn');
   }
 }
 
@@ -5604,7 +5624,7 @@ function lcImprimirLibro() {
 
   var filename = 'Libro_' + lcAsig.replace(/[^a-zA-Z0-9]/g,'_') + '_' + cursoLabel.replace(/[^a-zA-Z0-9]/g,'_') + '_Sem' + lcSem + '.pdf';
   doc.save(filename);
-  showToastN('✓ PDF descargado — ' + filename);
+  showToast('✓ PDF descargado — ' + filename, 'ok');
 }
 
 // CSS extra para inputs de notas en libro
@@ -5646,7 +5666,7 @@ function toggleTema() {
   var esClaro = document.documentElement.classList.contains('tema-claro');
   var nuevo   = esClaro ? 'oscuro' : 'claro';
   aplicarTema(nuevo, true);
-  showToastN(nuevo === 'claro' ? '☀️ Modo claro activado' : '🌙 Modo oscuro activado');
+  showToast(nuevo === 'claro' ? '☀️ Modo claro activado' : '🌙 Modo oscuro activado', 'ok');
 }
 
 
@@ -5861,7 +5881,7 @@ function configGuardar() {
   saveConfig();
   aplicarConfigUI();
   cerrarModal('modalConfig');
-  showToastN('✓ Configuración guardada');
+  showToast('✓ Configuración guardada', 'ok');
 }
 
 // ── Función para obtener el header de establecimiento en PDFs ──
@@ -6047,7 +6067,7 @@ function cargarUsuariosMasivo() {
   if (duplicados) msg += ' · ' + duplicados + ' ya existían';
   if (res) res.textContent = '✓ ' + msg;
   if (ta && nuevos > 0) ta.value = '';
-  showToastN('✓ ' + msg + ' — asígnales el rol en la lista');
+  showToast('✓ ' + msg + ' — asígnales el rol en la lista', 'ok');
 }
 
 // ── renderUsersTable mejorada con selector de rol inline ──
@@ -6132,7 +6152,7 @@ function userSetRol(uname, rol) {
 
 async function guardarRolesUsuarios() {
   await saveUsers();
-  showToastN('✓ Roles guardados');
+  showToast('✓ Roles guardados', 'ok');
 }
 
 // ── Cambio de contraseña al primer login ──
@@ -6165,7 +6185,7 @@ async function cambioPassConfirmar() {
   u.claveGenerica = false;
   await saveUsers();
   cerrarModal('modalCambioPass');
-  showToastN('✓ Contraseña cambiada correctamente');
+  showToast('✓ Contraseña cambiada correctamente', 'ok');
 }
 
 function cambioPassOmitir() {
@@ -6231,7 +6251,7 @@ function importarDocentes() {
   var msg = nuevos + ' docente' + (nuevos !== 1 ? 's' : '') + ' cargado' + (nuevos !== 1 ? 's' : '');
   if (res) res.textContent = '✓ ' + msg;
   if (ta && nuevos > 0) ta.value = '';
-  showToastN('✓ ' + msg + ' — ahora asígnalos en la tabla de abajo');
+  showToast('✓ ' + msg + ' — ahora asígnalos en la tabla de abajo', 'ok');
 }
 
 function initDocCursosGrid() {
@@ -6285,7 +6305,7 @@ function agregarDocente() {
   document.getElementById('dasig').value   = '';
   document.getElementById('dtipo-sel').value = 'general';
   document.querySelectorAll('#dcursos-grid input[type=checkbox]').forEach(function(c) { c.checked = false; });
-  showToastN('✓ Docente agregado — ' + nombre);
+  showToast('✓ Docente agregado — ' + nombre, 'ok');
 }
 
 function renderDocentesList() {
@@ -6399,7 +6419,7 @@ function docToggleCurso(idx, clave, checked, el) {
 function saveDocentesManual() {
   saveDocentes();
   rebuildDocenteSelect();
-  showToastN('✓ Docentes guardados');
+  showToast('✓ Docentes guardados');
 }
 
 function eliminarDocente(idx) {
@@ -6555,7 +6575,7 @@ async function infGenerarPDF(esParcial) {
 
   var fname = 'Informe_' + alumno.replace(/[^a-zA-Z0-9]/g,'_') + '_' + cursoLabel + (esParcial ? '_Parcial' : '') + '.pdf';
   doc.save(fname);
-  showToastN('✓ PDF descargado');
+  showToast('✓ PDF descargado');
 }
 
 async function infDescargarCurso() {
@@ -6569,7 +6589,7 @@ async function infDescargarCurso() {
 
   if (!alumnos.length) { alert('Este curso no tiene alumnos en Asistencia.'); return; }
 
-  showToastN('Generando PDF del curso...');
+  showToast('Generando PDF del curso...');
 
   // Cargar notas de todos los alumnos
   var todasNotas = {};
@@ -6589,24 +6609,30 @@ async function infDescargarCurso() {
   doc.setTextColor(0,0,0);
 
   // Columnas: N°, Nombre, una por asignatura (promedio), Promedio general
-  var asigHeaders = PLAN_1_2_MEDIO
-    .filter(function(a){ return a.tipo !== 'concepto'; })
-    .map(function(a){ return a.nombre.length > 18 ? a.nombre.slice(0,16) + '…' : a.nombre; });
+  // Para 3° y 4° usar notas del libro de clases por asignatura
+  var asigsCurso = getAsignaturasCurso(clave);
+  var asigHeaders = asigsCurso.map(function(a){ return a.length > 16 ? a.slice(0,14) + '…' : a; });
 
   var head = [['N°', 'Alumno/a'].concat(asigHeaders).concat(['Promedio'])];
 
   var body = alumnos.map(function(a, i) {
-    var notas = todasNotas[a.nombre] || {};
+    var notasPlan = todasNotas[a.nombre] || {};
     var sumaP = 0; var cntP = 0;
-    var notasCols = PLAN_1_2_MEDIO
-      .filter(function(asig){ return asig.tipo !== 'concepto'; })
-      .map(function(asig) {
-        var vals = asig.subs.map(function(s){ return parseFloat(notas[s.id]); }).filter(function(v){ return !isNaN(v); });
-        if (!vals.length) return '—';
-        var p = vals.reduce(function(a,b){return a+b;},0)/vals.length;
-        sumaP += p; cntP++;
-        return p.toFixed(1);
-      });
+
+    var notasCols = asigsCurso.map(function(asig) {
+      // Intentar leer del plan de estudios (1° y 2°) o del libro de clases (3° y 4°)
+      var val = null;
+      if (PLAN_1_2_MEDIO) {
+        var planAsig = PLAN_1_2_MEDIO.find(function(pa){ return pa.nombre === asig; });
+        if (planAsig && planAsig.subs) {
+          var vals = planAsig.subs.map(function(s){ return parseFloat(notasPlan[s.id]); }).filter(function(v){ return !isNaN(v); });
+          if (vals.length) val = (vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1);
+        }
+      }
+      if (val !== null) { sumaP += parseFloat(val); cntP++; return val; }
+      return '—';
+    });
+
     var promG = cntP ? (sumaP/cntP).toFixed(1) : '—';
     return [String(a.numLista||i+1).padStart(2,'0'), a.nombre].concat(notasCols).concat([promG]);
   });
@@ -6632,7 +6658,7 @@ async function infDescargarCurso() {
   });
 
   doc.save('Resumen_' + cursoLabel + '_' + new Date().getFullYear() + '.pdf');
-  showToastN('✓ PDF del curso descargado');
+  showToast('✓ PDF del curso descargado');
 }
 
 // ═══════════════════════════════════════════════════
@@ -6855,9 +6881,9 @@ async function planGuardarNotas() {
   try { localStorage.setItem(planSKActual, json); } catch(e) {}
   try {
     await gsSet(planSKActual, json);
-    showToastN('✓ Notas guardadas — ' + planAlumnoActual);
+    showToast('✓ Notas guardadas — ' + planAlumnoActual);
   } catch(e) {
-    showToastN('Guardado local (sin conexión)');
+    showToast('Guardado local (sin conexión)', 'warn');
   }
 }
 
