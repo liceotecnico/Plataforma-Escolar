@@ -1574,6 +1574,7 @@ html.tema-claro .modal-title { color: var(--tx); }
 html.tema-claro .btn.primary { background: var(--pr); color: #fff; }
 html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border-color: var(--pr); }
 
+
 </style>
 </head>
 <body>
@@ -1724,10 +1725,10 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
         <div class="nav-item active" onclick="showView('libro',this,'Libro de clases')">
           <span class="nav-icon">📖</span>Libro de clases
         </div>
-        <div class="nav-item" onclick="showView('docentes',this,'Gestión de docentes')">
+        <div class="nav-item" id="navDocentes" style="display:none" onclick="showView('docentes',this,'Gestión de docentes')">
           <span class="nav-icon">👤</span>Agregar docente
         </div>
-        <div class="nav-item" onclick="showView('informes',this,'Informes y certificados')">
+        <div class="nav-item" id="navInformes" style="display:none" onclick="showView('informes',this,'Informes y certificados')">
           <span class="nav-icon">📄</span>Informes y certificados
         </div>
       </div>
@@ -2501,7 +2502,7 @@ function switchModulo(m) {
   });
   const tabs = document.querySelectorAll('.mod-tab');
   if (m === 'asistencia') tabs[0].classList.add('active-asist');
-  else if (m === 'notas')     { tabs[1].classList.add('active-notas'); setTimeout(lcInicializar, 100); }
+  else if (m === 'notas')     { tabs[1].classList.add('active-notas'); setTimeout(function(){ lcInicializar(); aplicarNavNotas(); }, 100); }
   else if (m === 'porteria')  { tabs[2].classList.add('active-port'); renderPortContent(); }
   else if (m === 'pie')       { tabs[3].classList.add('active-pie'); initPie(); }
 }
@@ -2605,6 +2606,7 @@ function aplicarSesion(){
   document.getElementById('btnTema').style.display='';
   document.getElementById('btnCambioPass').style.display='';
   aplicarTemaGuardado();
+  aplicarNavNotas();
   setTimeout(verificarClavePrimerLogin, 800);
 
   // Mostrar/ocultar tabs según rol
@@ -2639,7 +2641,7 @@ function aplicarSesion(){
   document.getElementById('dateNavWrap').style.display = modInicio === 'asistencia' ? 'flex' : 'none';
   document.querySelectorAll('.mod-tab').forEach(t => t.classList.remove('active-asist','active-notas','active-port','active-pie'));
   if (p[0] && modInicio === 'asistencia') tabs[0].classList.add('active-asist');
-  else if (p[1] && modInicio === 'notas') { tabs[1].classList.add('active-notas'); setTimeout(lcInicializar, 100); }
+  else if (p[1] && modInicio === 'notas') { tabs[1].classList.add('active-notas'); setTimeout(function(){ lcInicializar(); aplicarNavNotas(); }, 100); }
   else if (p[2] && modInicio === 'porteria') { tabs[2].classList.add('active-port'); setTimeout(renderPortContent, 100); }
   else if (p[3] && modInicio === 'pie') { tabs[3].classList.add('active-pie'); setTimeout(initPie, 100); }
 
@@ -5150,17 +5152,33 @@ function showView(id, el, title) {
 }
 
 function lcInicializar() {
-  const sel = document.getElementById('lc-curso');
+  var sel = document.getElementById('lc-curso');
   if (!sel) return;
   sel.innerHTML = '<option value="">— Seleccionar —</option>';
-  // value = clave "1M__1°A", texto visible = "1°A"
-  NIVELES.forEach(niv => niv.cursos.forEach(c => {
-    const clave = niv.key + '__' + c;
-    const opt   = document.createElement('option');
-    opt.value       = clave;
-    opt.textContent = c; // "1°A", "1°B", "2°A"...
-    sel.appendChild(opt);
-  }));
+
+  // Buscar docente del usuario actual
+  var docente = null;
+  if (sesion && sesion.rol === 'profesor') {
+    docente = DOCENTES.find(function(d) { return d.username === sesion.username; });
+    if (!docente) {
+      var nomSesion = (sesion.nombre || '').toLowerCase().trim();
+      docente = DOCENTES.find(function(d) { return (d.nombre||'').toLowerCase().trim() === nomSesion; });
+    }
+  }
+
+  NIVELES.forEach(function(niv) {
+    niv.cursos.forEach(function(c) {
+      var clave = niv.key + '__' + c;
+      // Si es docente, mostrar solo sus cursos asignados
+      if (docente && docente.tipo !== 'jefe' && docente.cursos && docente.cursos.length > 0) {
+        if (docente.cursos.indexOf(clave) === -1) return; // no es su curso
+      }
+      var opt = document.createElement('option');
+      opt.value       = clave;
+      opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  });
 }
 
 function lcCambiarCurso() {
@@ -5173,7 +5191,26 @@ function lcCambiarCurso() {
 
   if (!lcCurso) { lcRenderContent(); return; }
 
-  var asigs = getAsignaturasCurso(lcCurso);
+  var todasAsigs = getAsignaturasCurso(lcCurso);
+  var asigs = todasAsigs;
+
+  if (sesion && sesion.rol === 'profesor') {
+    // Buscar todos los registros de este docente (puede tener varias asignaturas)
+    var misAsigs = [];
+    DOCENTES.forEach(function(d) {
+      var esYo = (d.username && d.username === sesion.username) ||
+                 (!d.username && (d.nombre||'').toLowerCase().trim() === (sesion.nombre||'').toLowerCase().trim());
+      if (!esYo) return;
+      if (d.tipo === 'jefe') { misAsigs = todasAsigs; return; } // jefe ve todo
+      // Verificar que este docente tenga este curso asignado
+      var tieneCurso = !d.cursos || !d.cursos.length || d.cursos.indexOf(lcCurso) !== -1;
+      if (tieneCurso && d.asig && misAsigs.indexOf(d.asig) === -1) {
+        misAsigs.push(d.asig);
+      }
+    });
+    if (misAsigs.length > 0 && misAsigs !== todasAsigs) asigs = misAsigs;
+  }
+
   asigs.forEach(function(a) {
     var opt = document.createElement('option');
     opt.value = a; opt.textContent = a;
@@ -5613,6 +5650,16 @@ function toggleTema() {
 }
 
 
+
+// Ocultar/mostrar opciones del sidebar de notas según rol
+function aplicarNavNotas() {
+  var esAdmin = sesion && (sesion.rol === 'admin');
+  var navDoc  = document.getElementById('navDocentes');
+  var navInf  = document.getElementById('navInformes');
+  if (navDoc) navDoc.style.display = esAdmin ? 'flex' : 'none';
+  if (navInf) navInf.style.display = esAdmin ? 'flex' : 'none';
+}
+
 // ══════════════════════════════════════════════
 // LIMPIAR NOTAS POR CURSO
 // ══════════════════════════════════════════════
@@ -5933,16 +5980,29 @@ function switchTabUsers(tab) {
 }
 
 // Generar nombre de usuario a partir del nombre completo
+// Formato esperado: "Nombre Apellido1 Apellido2"
+// Usuario resultante: nombre.apellido1.a  (primera letra del segundo apellido)
 function generarUsername(nombre) {
-  var partes = nombre.trim().split(/\s+/);
-  var user   = '';
-  if (partes.length >= 2) {
-    user = partes[0][0].toLowerCase() + partes[partes.length - 1].toLowerCase();
-  } else {
-    user = partes[0].toLowerCase();
+  function limpiar(s) {
+    return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '').toLowerCase();
   }
-  // Quitar acentos y caracteres especiales
-  user = user.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+
+  var partes = nombre.trim().split(/\s+/).filter(function(p){ return p.length > 0; });
+  var user   = '';
+
+  if (partes.length >= 3) {
+    // "Nombre Apellido1 Apellido2" → nombre.apellido1.a
+    var nom  = limpiar(partes[0]);
+    var ap1  = limpiar(partes[1]);
+    var ap2i = limpiar(partes[2])[0] || '';
+    user = nom + '.' + ap1 + '.' + ap2i;
+  } else if (partes.length === 2) {
+    // "Nombre Apellido" → nombre.apellido
+    user = limpiar(partes[0]) + '.' + limpiar(partes[1]);
+  } else {
+    user = limpiar(partes[0]);
+  }
+
   // Verificar duplicados y agregar número si es necesario
   var base  = user;
   var count = 2;
@@ -6049,8 +6109,10 @@ function renderUsersTable() {
       + '<td style="padding:8px;border:0.5px solid var(--bor2);text-align:center">' + claveIcon + '</td>'
       + '<td style="padding:6px 8px;border:0.5px solid var(--bor2);text-align:center;white-space:nowrap">'
       + '<button onclick="abrirFormUsuario(' + JSON.stringify(uname) + ')" style="background:none;border:none;cursor:pointer;color:var(--pr2);font-size:14px;padding:2px 4px" title="Editar">✏️</button>'
+      + '<button data-uname="' + escHtml(uname) + '" onclick="abrirFormUsuario(this.dataset.uname)" style="background:none;border:none;cursor:pointer;color:var(--pr2);font-size:14px;padding:2px 4px" title="Editar">✏️</button>'
 
-      + (uname !== 'admin' ? '<button onclick="eliminarUsuario(' + JSON.stringify(uname) + ')" style="background:none;border:none;cursor:pointer;color:var(--rojo);font-size:14px;padding:2px 4px" title="Eliminar">✕</button>' : '')
+      + (uname !== 'admin' ? '<button data-uname="' + escHtml(uname) + '" onclick="eliminarUsuario(this.dataset.uname)" style="background:none;border:none;cursor:pointer;color:var(--rojo);font-size:14px;padding:2px 4px" title="Eliminar">✕</button>' : '')
+
 
       + '</td></tr>';
   });
@@ -6144,13 +6206,19 @@ function importarDocentes() {
       return d.nombre.toLowerCase() === nombre.toLowerCase();
     });
     if (!existe) {
+      // Buscar el username del usuario con este nombre
+      var uname = '';
+      Object.entries(users).forEach(function(e) {
+        if (e[1].nombre && e[1].nombre.toLowerCase() === nombre.toLowerCase()) uname = e[0];
+      });
       DOCENTES.push({
-        nombre: nombre,
-        rut:    '',
-        asig:   '',
-        tipo:   'general',
-        cursos: [],
-        id:     Date.now().toString(36) + nuevos
+        nombre:   nombre,
+        username: uname,
+        rut:      '',
+        asig:     '',
+        tipo:     'general',
+        cursos:   [],
+        id:       Date.now().toString(36) + nuevos
       });
       nuevos++;
     }
@@ -6192,13 +6260,19 @@ function agregarDocente() {
   if (!nombre) { alert('Ingresa el nombre del docente.'); return; }
   if (!asig)   { alert('Selecciona la asignatura.'); return; }
 
+  // Vincular con el username del usuario
+  var uname = '';
+  Object.entries(users).forEach(function(e) {
+    if (e[1].nombre && e[1].nombre.toLowerCase() === nombre.toLowerCase()) uname = e[0];
+  });
   var doc = {
-    nombre: nombre,
-    rut:    rut,
-    asig:   asig,
-    tipo:   tipo,
-    cursos: cursos,
-    id:     Date.now().toString(36)
+    nombre:   nombre,
+    username: uname,
+    rut:      rut,
+    asig:     asig,
+    tipo:     tipo,
+    cursos:   cursos,
+    id:       Date.now().toString(36)
   };
   DOCENTES.push(doc);
   saveDocentes();
