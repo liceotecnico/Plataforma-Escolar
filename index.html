@@ -6,63 +6,112 @@
 <title>Educación Talcahuano — Plataforma Escolar</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 /* ════════════════════════════════════════════
    VARIABLES Y RESET
 ════════════════════════════════════════════ */
-:root{
-  /* Paleta unificada - fusión azul institucional + verde asistencia */
-  --bg:#0d1117;
-  --bg2:#111827;
-  --sur:#161d2b;
-  --sur2:#1e2640;
-  --sur3:#252e42;
-  --bor:rgba(255,255,255,.07);
+/* ═══════════════════════════════════════════
+   PALETA AZUL INSTITUCIONAL — modo oscuro (por defecto)
+   ═══════════════════════════════════════════ */
+:root {
+  color-scheme: dark;
+
+  /* Fondos */
+  --bg:  #0c1520;
+  --bg2: #0f1e2e;
+  --sur: #162032;
+  --sur2:#1a2d44;
+  --sur3:#1f3452;
+
+  /* Bordes */
+  --bor: rgba(255,255,255,.07);
   --bor2:rgba(255,255,255,.12);
   --bor3:rgba(255,255,255,.18);
 
-  /* Colores institucionales */
-  --pr:#3b82f6;     /* azul */
-  --prl:rgba(59,130,246,.15);
-  --prd:#1d4ed8;
-  --pr2:#60a5fa;
+  /* Azul institucional */
+  --pr:  #3b82f6;
+  --prl: rgba(59,130,246,.18);
+  --prd: #1d4ed8;
+  --pr2: #93c5fd;
 
-  /* Asistencia */
-  --verde:#4ade80;
-  --verdel:rgba(74,222,128,.15);
-  --rojo:#f87171;
-  --rojol:rgba(248,113,113,.15);
-  --amarillo:#fbbf24;
+  /* Semáforos */
+  --verde:    #4ade80;
+  --verdel:   rgba(74,222,128,.15);
+  --rojo:     #f87171;
+  --rojol:    rgba(248,113,113,.15);
+  --amarillo: #fbbf24;
   --amarillol:rgba(251,191,36,.15);
   --azul-claro:#60a5fa;
   --azul-clarol:rgba(96,165,250,.15);
 
-  /* Semáforo notas */
-  --nota-ok:#4ade80;
-  --nota-risk:#fbbf24;
-  --nota-bad:#f87171;
-
   /* Tipografía */
-  --tx:#e8edf5;
-  --tx2:#8a9bc0;
-  --tx3:#4a5a78;
+  --tx:  #dce8f8;
+  --tx2: #7fa4cc;
+  --tx3: #3d607f;
 
   /* UI */
-  --r:10px;
-  --rs:7px;
-  --sh:0 4px 20px rgba(0,0,0,.4);
+  --r:  10px;
+  --rs: 7px;
+  --sh: 0 4px 24px rgba(0,0,0,.5);
   --sh2:0 0 0 1px rgba(255,255,255,.06);
 
   /* Portería */
-  --port:#f97316;
+  --port: #f97316;
   --portl:rgba(249,115,22,.15);
-  --pie:#a78bfa;
+
+  /* PIE */
+  --pie: #a78bfa;
   --piel:rgba(167,139,250,.15);
   --pie2:#c4b5fd;
 
-  /* Módulo activo */
   --modulo: asistencia;
+}
+
+/* ═══════════════════════════════════════════
+   MODO CLARO — se activa con clase .tema-claro en <html>
+   ═══════════════════════════════════════════ */
+html.tema-claro {
+  color-scheme: light;
+
+  --bg:  #f0f6ff;
+  --bg2: #e8f0fb;
+  --sur: #ffffff;
+  --sur2:#f0f6ff;
+  --sur3:#dbeafe;
+
+  --bor: rgba(30,58,95,.1);
+  --bor2:rgba(30,58,95,.18);
+  --bor3:rgba(30,58,95,.28);
+
+  --pr:  #1d4ed8;
+  --prl: rgba(29,78,216,.1);
+  --prd: #1e3a8a;
+  --pr2: #1d4ed8;
+
+  --verde:    #16a34a;
+  --verdel:   rgba(22,163,74,.12);
+  --rojo:     #dc2626;
+  --rojol:    rgba(220,38,38,.1);
+  --amarillo: #d97706;
+  --amarillol:rgba(217,119,6,.1);
+  --azul-claro:#2563eb;
+  --azul-clarol:rgba(37,99,235,.1);
+
+  --tx:  #0f2544;
+  --tx2: #2d5282;
+  --tx3: #6b90b8;
+
+  --sh:  0 2px 12px rgba(30,58,95,.12);
+  --sh2: 0 0 0 1px rgba(30,58,95,.08);
+
+  --port: #c2410c;
+  --portl:rgba(194,65,12,.12);
+
+  --pie: #7c3aed;
+  --piel:rgba(124,58,237,.12);
+  --pie2:#6d28d9;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -582,6 +631,18 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   transition:all .15s;
 }
 .btn-logout:hover{border-color:var(--rojo);color:var(--rojo);}
+/* Modal configuración establecimiento */
+#modalConfig .modal { width: 520px; max-width: 100%; }
+.config-logo-preview {
+  width: 80px; height: 80px; border-radius: 12px;
+  border: 2px dashed var(--bor2); background: var(--sur2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; cursor: pointer; overflow: hidden;
+  flex-shrink: 0; transition: border-color .15s;
+}
+.config-logo-preview:hover { border-color: var(--pr2); }
+.config-logo-preview img { width: 100%; height: 100%; object-fit: contain; }
+
 
 .sync-btn{
   background:none;border:1px solid var(--bor2);
@@ -1315,6 +1376,72 @@ td.td-sit{text-align:center;}
 .btn-respaldo-skip{width:100%;padding:9px;border-radius:9px;border:1px solid var(--bor2);background:none;color:var(--tx3);font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;}
 .btn-respaldo-skip:hover{border-color:var(--tx2);color:var(--tx2);}
 
+
+/* ════ INFORME POR ALUMNO (impresión) ════ */
+@media print {
+  .no-print { display:none !important; }
+  #informe-alumno-print { display:block !important; }
+  body { background:#fff; }
+  @page { size:A4; margin:15mm 18mm; }
+}
+#informe-alumno-print { display:none; }
+.inf-wrap {
+  font-family:'Nunito',sans-serif;color:#0f1e3a;
+  max-width:760px;margin:0 auto;padding:20px;background:#fff;
+}
+.inf-header {
+  display:flex;align-items:flex-start;justify-content:space-between;
+  border-bottom:3px solid #3b82f6;padding-bottom:10px;margin-bottom:14px;
+}
+.inf-logo { font-size:22px;font-weight:800;color:#1d4ed8;line-height:1.1; }
+.inf-dep { font-size:11px;color:#4a5f80;font-weight:500;margin-top:2px; }
+.inf-titulo { font-size:13px;font-weight:800;color:#3b82f6;text-align:right; }
+.inf-alumno-box {
+  background:#eff6ff;border-radius:8px;padding:10px 14px;
+  margin-bottom:14px;display:flex;gap:24px;flex-wrap:wrap;
+}
+.inf-campo { display:flex;flex-direction:column;gap:1px; }
+.inf-campo .lbl { font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#8fa3c0;font-weight:700; }
+.inf-campo .val { font-size:13px;font-weight:700;color:#0f1e3a; }
+.inf-tabla { width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px; }
+.inf-tabla thead th {
+  background:#3b82f6;color:#fff;padding:7px 10px;
+  font-size:10px;font-weight:700;text-align:left;
+  border:1px solid #2563eb;
+}
+.inf-tabla thead th.tc { text-align:center; }
+.inf-tabla tbody tr:nth-child(even) { background:#eff6ff; }
+.inf-tabla tbody tr.tr-sub { background:#f8fafc; }
+.inf-tabla tbody tr.tr-total { background:#dbeafe;font-weight:700; }
+.inf-tabla tbody tr.tr-concepto { background:#fef9ee; }
+.inf-tabla td { padding:6px 10px;border:.5px solid #bfdbfe;font-size:12px; }
+.inf-tabla td.tc { text-align:center; }
+.inf-tabla td.asig-sub { padding-left:22px;color:#4a5f80;font-size:11px; }
+.inf-prom-badge {
+  display:inline-block;padding:2px 10px;border-radius:999px;
+  font-size:11px;font-weight:800;
+}
+.prom-ap { background:#d1fae5;color:#065f46; }
+.prom-ri { background:#fef3c7;color:#92400e; }
+.prom-re { background:#fee2e2;color:#991b1b; }
+.prom-nd { background:#f1f5f9;color:#64748b; }
+.inf-concepto { font-size:11px;font-weight:800;padding:2px 10px;border-radius:999px; }
+.inf-concepto.MB { background:#d1fae5;color:#065f46; }
+.inf-concepto.B  { background:#dbeafe;color:#1e40af; }
+.inf-concepto.S  { background:#fef3c7;color:#92400e; }
+.inf-concepto.I  { background:#fee2e2;color:#991b1b; }
+.inf-firmas {
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;
+  margin-top:24px;padding-top:14px;border-top:1px dashed #bfdbfe;
+}
+.inf-firma-box { display:flex;flex-direction:column;align-items:center;gap:4px; }
+.inf-firma-espacio { height:40px; }
+.inf-firma-linea { width:100%;border-top:1.5px solid #0f1e3a;margin-bottom:4px; }
+.inf-firma-nombre { font-weight:700;font-size:11px;color:#0f1e3a;text-align:center; }
+.inf-firma-cargo { font-size:10px;color:#4a5f80;text-align:center; }
+.inf-footer { text-align:center;margin-top:10px;font-size:9px;color:#8fa3c0;border-top:1px solid #e0ecff;padding-top:6px; }
+.inf-obs-box { background:#fffbeb;border-left:3px solid #f59e0b;padding:8px 12px;font-size:11px;color:#4a5f80;margin-bottom:14px;border-radius:0 6px 6px 0; }
+
 /* ════════════════════════════════════════════
    PDF PRINT STYLES
 ════════════════════════════════════════════ */
@@ -1368,6 +1495,85 @@ td.td-sit{text-align:center;}
 .pdf-fname{font-weight:700;font-size:9pt;color:#0f1e3a;text-align:center}
 .pdf-fcargo{font-size:8pt;color:#4a5f80;font-weight:600;text-align:center}
 .pdf-footer{text-align:center;margin-top:10px;font-size:6.5pt;color:#8fa3c0;border-top:1px solid #bfdbfe;padding-top:6px}
+
+/* Topbar en modo claro — azul marino */
+html.tema-claro .topbar {
+  background: #1e3a5f;
+  border-bottom-color: rgba(255,255,255,.1);
+}
+html.tema-claro .logo-text { color: #ffffff !important; }
+html.tema-claro .logo-sub  { color: #93c5fd !important; }
+html.tema-claro .mod-tab   {
+  color: #93c5fd;
+  border-color: transparent;
+}
+html.tema-claro .mod-tab.active-asist,
+html.tema-claro .mod-tab.active-notas,
+html.tema-claro .mod-tab.active-port,
+html.tema-claro .mod-tab.active-pie {
+  background: rgba(255,255,255,.15);
+  color: #ffffff;
+}
+html.tema-claro #btnTema,
+html.tema-claro #btnConfig,
+html.tema-claro #btnLogout {
+  border-color: rgba(255,255,255,.25);
+  color: #ffffff;
+}
+html.tema-claro #btnTema:hover,
+html.tema-claro #btnConfig:hover,
+html.tema-claro #btnLogout:hover {
+  background: rgba(255,255,255,.15);
+}
+
+/* Sidebar en modo claro */
+html.tema-claro .sidebar,
+html.tema-claro #sidebar-notas,
+html.tema-claro #sidebar-asist,
+html.tema-claro #sidebar-pie {
+  background: var(--sur2);
+  border-right-color: var(--bor2);
+}
+html.tema-claro .nav-item { color: var(--tx2); }
+html.tema-claro .nav-item:hover { background: var(--prl); color: var(--pr2); }
+html.tema-claro .nav-item.active { background: var(--prl); color: var(--pr2); }
+
+/* Cards y paneles */
+html.tema-claro .panel      { background: var(--sur); }
+html.tema-claro .panel-title{ color: var(--tx); }
+
+/* Inputs en modo claro */
+html.tema-claro input,
+html.tema-claro select,
+html.tema-claro textarea {
+  background: var(--sur);
+  border-color: var(--bor2);
+  color: var(--tx);
+}
+html.tema-claro input:focus,
+html.tema-claro select:focus,
+html.tema-claro textarea:focus {
+  border-color: var(--pr);
+}
+
+/* Tabla asistencia en modo claro */
+html.tema-claro .alumno-card {
+  background: var(--sur);
+  border-color: var(--bor2);
+}
+html.tema-claro .alumno-nombre { color: var(--tx); }
+
+/* Modales en modo claro */
+html.tema-claro .modal {
+  background: var(--sur);
+  border-color: var(--bor2);
+}
+html.tema-claro .modal-title { color: var(--tx); }
+
+/* Botones primarios en modo claro */
+html.tema-claro .btn.primary { background: var(--pr); color: #fff; }
+html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border-color: var(--pr); }
+
 </style>
 </head>
 <body>
@@ -1480,6 +1686,9 @@ td.td-sit{text-align:center;}
       <span id="badgeNombre"></span>
       <span id="badgeRol" class="badge-rol"></span>
     </div>
+    <button onclick="toggleTema()" id="btnTema" style="display:none;padding:5px 10px;border-radius:8px;border:1px solid var(--bor2);background:none;color:var(--tx2);font-size:14px;cursor:pointer;margin-right:4px;transition:all .2s;" title="Cambiar modo claro/oscuro">🌙</button>
+    <button onclick="abrirConfig()" id="btnConfig" style="display:none;padding:5px 12px;border-radius:8px;border:1px solid var(--bor2);background:none;color:var(--tx2);font-size:13px;cursor:pointer;margin-right:6px;" title="Configuración del establecimiento">⚙️</button>
+    <button onclick="abrirCambioPassPropio()" id="btnCambioPass" style="display:none;padding:5px 12px;border-radius:8px;border:1px solid var(--bor2);background:none;color:var(--tx2);font-size:12px;cursor:pointer;margin-right:4px;">🔑 Mi clave</button>
     <button class="btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">Salir</button>
     <button class="sync-btn" onclick="syncManual()" title="Sincronizar">⟳</button>
     <div id="saveStatus"></div>
@@ -1512,252 +1721,183 @@ td.td-sit{text-align:center;}
     <nav id="sidebar-notas">
       <div class="sb-section">
         <div class="sb-label">Calificaciones</div>
-        <div class="nav-item active" onclick="showView('notas',this,'Ingresar notas')"><span class="nav-icon">✏️</span>Ingresar notas</div>
-        <div class="nav-item" onclick="showView('docentes',this,'Docentes')"><span class="nav-icon">👤</span>Docentes</div>
-        <div class="nav-item" onclick="showView('alumnos',this,'Alumnos por curso')"><span class="nav-icon">👥</span>Alumnos</div>
-        <div class="nav-item" onclick="showView('concentracion',this,'Concentración')"><span class="nav-icon">📊</span>Concentración</div>
+        <div class="nav-item active" onclick="showView('libro',this,'Libro de clases')">
+          <span class="nav-icon">📖</span>Libro de clases
+        </div>
+        <div class="nav-item" onclick="showView('docentes',this,'Gestión de docentes')">
+          <span class="nav-icon">👤</span>Agregar docente
+        </div>
+        <div class="nav-item" onclick="showView('informes',this,'Informes y certificados')">
+          <span class="nav-icon">📄</span>Informes y certificados
+        </div>
       </div>
-      <div class="sb-section">
-        <div class="sb-label">Reportes</div>
-        <div class="nav-item" onclick="showView('informe',this,'Informe Semestral')"><span class="nav-icon">📄</span>Informe semestral</div>
-        <div class="nav-item" onclick="showView('certificado',this,'Certificado Anual')"><span class="nav-icon">🎓</span>Certificado anual</div>
-      </div>
-      <div class="sb-footer">Período activo<b>1° Semestre 2026</b></div>
     </nav>
 
-    <!-- Contenido notas -->
-    <div class="main-content">
+    <!-- Contenido principal notas -->
+    <div id="main-content-notas" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
 
-      <!-- VIEW: NOTAS -->
-      <div class="view active" id="view-notas">
-        <div class="doc-banner">
-          <div class="doc-chip"><div class="doc-chip-av" id="b-av">MG</div><span class="doc-chip-name" id="b-doc">Prof. María González</span></div>
-          <span class="doc-asig">Docente de: <b id="b-asig">Matemáticas</b></span>
-          <span style="font-size:11px;color:var(--tx3);margin-left:auto;font-weight:500">Curso: <b id="b-curso" style="color:var(--pr2)">1° Medio A</b></span>
-        </div>
-        <div class="filters-bar">
-          <div class="fg"><label>Docente</label>
-            <select id="docente" onchange="onDocChange()">
-              <optgroup label="Asignaturas generales">
-                <option value="MG|Maria Gonzalez|Matematicas|todos">Prof. María González - Matemáticas</option>
-                <option value="JP|Jorge Pino|Lenguaje|todos">Prof. Jorge Pino - Lenguaje</option>
-                <option value="CR|Claudia Rojas|Historia|todos">Prof. Claudia Rojas - Historia</option>
-                <option value="AS|Andres Silva|Ciencias|todos">Prof. Andrés Silva - Ciencias</option>
-                <option value="VL|Valentina Lagos|Ingles|todos">Prof. Valentina Lagos - Inglés</option>
-                <option value="RH|Rodrigo Herrera|Ed. Fisica|todos">Prof. Rodrigo Herrera - Ed. Física</option>
-                <option value="FT|Francisca Torres|Artes|todos">Prof. Francisca Torres - Artes</option>
-                <option value="NM|Natalia Munoz|Tecnologia|todos">Prof. Natalia Muñoz - Tecnología</option>
-              </optgroup>
-              <optgroup label="Carreras Técnico Profesionales">
-                <option value="HT|Docente Hoteleria|Hoteleria|hoteleria">Hotelería - 3° Medio D / 4° Medio D</option>
-                <option value="PV|Docente Parvulo|Ed. Parvularia|parvulo">Ed. Parvularia - 3° Medio C / 4° Medio C</option>
-                <option value="EN|Docente Enfermeria|Enfermeria|enfermeria">Enfermería - 3° Medio E,F / 4° Medio E,F</option>
-                <option value="GA|Docente Gastronomia|Gastronomia|gastronomia">Gastronomía - 3° Medio A,B / 4° Medio A,B</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="fg"><label>Curso</label><select id="curso" onchange="onCursoChange()"></select></div>
-          <div class="fg"><label>Período</label>
-            <select id="periodo"><option>1° Semestre 2026</option><option>2° Semestre 2025</option><option>1° Semestre 2025</option></select>
-          </div>
-          <div class="fg"><label>Filtrar</label>
-            <select id="filtroSit" onchange="renderTabla()">
-              <option value="todos">Todos</option><option value="ap">Aprobados</option><option value="ri">En riesgo</option><option value="re">Reprobados</option>
-            </select>
-          </div>
-        </div>
-        <div class="tipo-bar">
-          <button class="tipo-tab active" onclick="setTipo(this,'sumativa')">Sumativas</button>
-          <button class="tipo-tab" onclick="setTipo(this,'formativa')">Formativas</button>
-          <button class="tipo-tab" onclick="setTipo(this,'ponderada')">Ponderadas</button>
-          <span class="tipo-hint" id="tipo-hint">Notas que afectan el promedio final</span>
-        </div>
-        <div class="actions-bar">
-          <input class="search-in" type="text" id="buscar" placeholder="Buscar alumno..." oninput="renderTabla()">
-          <button class="btn" onclick="addCol()">+ Evaluación</button>
-          <button class="btn danger" onclick="limpiar()">Limpiar</button>
-          <button class="btn export" onclick="exportarCSV()">CSV</button>
-          <button class="btn success" onclick="guardar()">Guardar</button>
-          <div class="toast" id="toast"><span id="tmsg">Guardado</span></div>
-        </div>
-        <div class="tabla-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
-        <div class="stats-bar-notas" id="stats-bar"></div>
-      </div>
+      <!-- Vista Libro de clases -->
+      <div class="view active" id="view-libro">
+        <div style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
 
-      <!-- VIEW: DOCENTES -->
-      <div class="view" id="view-docentes">
-        <div class="panel">
-          <div><div class="panel-title">Docentes</div><div class="panel-desc">Agrega o importa docentes. Quedan disponibles en el selector de notas al instante.</div></div>
-          <div style="display:flex;gap:0;border-bottom:1px solid var(--bor2);width:fit-content">
-            <button id="tab-uno" class="tipo-tab active" onclick="switchDocTab('uno')" style="border-bottom:2px solid var(--pr2);color:var(--pr2)">Agregar uno a uno</button>
-            <button id="tab-masivo" class="tipo-tab" onclick="switchDocTab('masivo')">Importar lista masiva</button>
-          </div>
-          <div class="doc-grid">
+          <!-- Toolbar superior -->
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:var(--sur);border-bottom:1px solid var(--bor);flex-shrink:0;">
             <div>
-              <div id="panel-uno" class="doc-form-card">
-                <h3>+ Nuevo docente</h3>
-                <div class="fg"><label>Nombre completo</label><input type="text" id="dnombre" placeholder="Ej: Carmen Vega Rojas" style="width:100%"></div>
-                <div class="fg"><label>RUT (opcional)</label><input type="text" id="drut" placeholder="Ej: 12.345.678-9" maxlength="12" style="width:100%;font-family:'DM Mono',monospace"></div>
-                <div class="fg"><label>Asignatura</label><input type="text" id="dasig" placeholder="Ej: Matemáticas, Lenguaje..." style="width:100%"></div>
-                <div class="fg"><label>Especialidad</label>
-                  <select id="dtipo-sel" style="width:100%">
-                    <option value="general">Asignatura general — todos los cursos</option>
-                    <option value="hoteleria">Hotelería — 3° y 4° Medio D</option>
-                    <option value="parvulo">Ed. Parvularia — 3° y 4° Medio C</option>
-                    <option value="enfermeria">Enfermería — 3° y 4° Medio E, F</option>
-                    <option value="gastronomia">Gastronomía — 3° y 4° Medio A, B</option>
-                  </select>
-                </div>
-                <button class="btn primary" onclick="agregarDocente()" style="width:100%">Agregar docente</button>
-              </div>
-              <div id="panel-masivo" class="doc-form-card" style="display:none">
-                <h3>↑ Importar lista masiva</h3>
-                <p style="font-size:11.5px;color:var(--tx2);line-height:1.7">Pega la lista: <b>Nombre ; Asignatura ; Tipo (opcional)</b></p>
-                <textarea id="doc-import-ta" placeholder="Carmen Vega Rojas ; Matemáticas&#10;Luis Fuentes Mora ; Hotelería ; hoteleria" style="font-family:'DM Mono',monospace;font-size:11.5px;padding:9px;border:1px solid var(--bor2);border-radius:var(--rs);background:var(--sur2);color:var(--tx);resize:vertical;min-height:140px;width:100%"></textarea>
-                <div style="display:flex;gap:8px">
-                  <button class="btn primary" onclick="importarDocentes()" style="flex:1">Importar</button>
-                  <button class="btn danger" onclick="limpiarTodosDocentes()" style="flex:1">Limpiar todos</button>
-                </div>
-                <div id="doc-import-result" style="font-size:11.5px;color:var(--verde);font-weight:700;min-height:18px"></div>
-              </div>
-            </div>
-            <div>
-              <div class="doc-list-card">
-                <div class="doc-list-hdr"><span>Docentes registrados</span><span class="doc-count" id="doc-count">0</span></div>
-                <div id="doc-list-body"><div class="doc-empty">No hay docentes agregados aún.</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VIEW: ALUMNOS NOTAS -->
-      <div class="view" id="view-alumnos">
-        <div class="panel">
-          <div>
-            <div class="panel-title">Alumnos por curso</div>
-            <div class="panel-desc">Vista de solo lectura — los alumnos se gestionan en el módulo de Asistencia.</div>
-          </div>
-          <!-- Aviso fuente única -->
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.25);border-radius:10px;max-width:680px">
-            <span style="font-size:22px">ℹ️</span>
-            <div style="font-size:12.5px;color:var(--tx2);line-height:1.7">
-              <strong style="color:var(--verde)">Los alumnos se administran desde el módulo de Asistencia.</strong><br>
-              Para agregar, eliminar o trasladar alumnos: ve a <strong>Asistencia</strong> → selecciona el curso → botón <strong>✏️ Editar alumnos</strong>.<br>
-              Los cambios se reflejan aquí y en Portería automáticamente.
-            </div>
-            <button class="btn export" style="flex-shrink:0;font-size:11.5px;padding:7px 14px" onclick="switchModulo('asistencia')">→ Ir a Asistencia</button>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-            <div class="fg"><label>Curso</label>
-              <select id="alu-curso-sel" onchange="renderAluList()">
-                <option>1° Medio A</option><option>1° Medio B</option><option>1° Medio C</option><option>1° Medio D</option>
-                <option>2° Medio A</option><option>2° Medio B</option><option>2° Medio C</option><option>2° Medio D</option>
-                <option>3° Medio A</option><option>3° Medio B</option><option>3° Medio C</option><option>3° Medio D</option><option>3° Medio E</option><option>3° Medio F</option>
-                <option>4° Medio A</option><option>4° Medio B</option><option>4° Medio C</option><option>4° Medio D</option><option>4° Medio E</option><option>4° Medio F</option>
+              <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:3px">Curso</div>
+              <select id="lc-curso" onchange="lcCambiarCurso()" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;min-width:140px;">
+                <option value="">— Seleccionar —</option>
               </select>
             </div>
-            <span class="curso-badge-sel" id="alu-badge">1° Medio A</span>
-          </div>
-          <div class="alumnos-list" style="max-width:520px">
-            <div class="alu-list-hdr">
-              <span id="alu-list-title">Lista del curso</span>
-              <span class="alu-count" id="alu-count">0 alumnos</span>
-              <button class="btn export" style="margin-left:auto;padding:3px 10px;font-size:10.5px" onclick="usarEnNotas()">Usar en notas →</button>
+            <div>
+              <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:3px">Asignatura</div>
+              <select id="lc-asig" onchange="lcCambiarAsig()" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;min-width:240px;">
+                <option value="">— Seleccionar —</option>
+              </select>
             </div>
-            <div id="alu-list-body"><div class="alu-empty">Selecciona un curso para ver su lista.</div></div>
+            <div>
+              <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:3px">Semestre</div>
+              <select id="lc-sem" onchange="lcCargar()" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;">
+                <option value="1">Primer semestre</option>
+                <option value="2">Segundo semestre</option>
+              </select>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <div id="lc-docente-badge" style="font-size:11.5px;color:var(--tx2);font-weight:600;display:none"></div>
+              <button onclick="lcAgregarEval()" id="lc-btn-add" class="btn primary" style="font-size:12px;padding:6px 14px;display:none">+ Evaluación</button>
+              <button onclick="lcGuardar()" id="lc-btn-save" class="btn export" style="font-size:12px;padding:6px 14px;display:none">💾 Guardar</button>
+              <button onclick="lcImprimirLibro()" id="lc-btn-print" class="btn export" style="font-size:12px;padding:6px 14px;display:none">🖨 Imprimir</button>
+            </div>
           </div>
-          <div style="font-size:11px;color:var(--tx3);max-width:520px">
-            💡 Haz clic en <strong>Usar en notas →</strong> para cargar la lista del curso seleccionado en el módulo de ingreso de notas.
+
+          <!-- Tabla libro de clases -->
+          <div style="flex:1;overflow:auto;padding:16px;">
+            <div id="lc-content">
+              <div style="padding:60px;text-align:center;color:var(--tx3);font-size:13px">Selecciona un curso y una asignatura para ver el libro de clases.</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- VIEW: CONCENTRACIÓN -->
-      <div class="view" id="view-concentracion">
-        <div class="panel">
-          <div><div class="panel-title">Concentración de notas</div><div class="panel-desc">Resumen de promedios por asignatura y promedio anual.</div></div>
-          <div class="conc-wrap">
-            <table>
-              <thead><tr>
-                <th style="text-align:left">Nombre del alumno</th>
-                <th>Mat</th><th>Leng</th><th>Hist</th><th>Cs</th><th>Ing</th>
-                <th class="th-pa">Prom. anual</th><th>Situación</th>
-              </tr></thead>
-              <tbody id="conc-tbody"><tr><td colspan="8" style="text-align:center;padding:24px;color:var(--tx3)">Sin datos. Ingrese notas primero.</td></tr></tbody>
-            </table>
+      <!-- Vista Plan de estudios -->
+      <div class="view" id="view-planestudios">
+        <div class="panel" style="padding:0;overflow:hidden">
+          <div class="plan-wrap">
+            <div class="plan-toolbar">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700">Plan 1°-2° Medio</div>
+              <select id="planCursoSel" class="plan-curso-sel" onchange="planCargarCurso()">
+                <option value="">— Seleccionar curso —</option>
+                <option value="1M__1°A">1°A</option><option value="1M__1°B">1°B</option>
+                <option value="1M__1°C">1°C</option><option value="1M__1°D">1°D</option>
+                <option value="2M__2°A">2°A</option><option value="2M__2°B">2°B</option>
+                <option value="2M__2°C">2°C</option><option value="2M__2°D">2°D</option>
+              </select>
+              <select id="planAlumnoSel" class="plan-alumno-sel" onchange="planSeleccionarAlumno()" disabled>
+                <option value="">— Seleccionar alumno —</option>
+              </select>
+              <div style="margin-left:auto;display:flex;gap:8px">
+                <button onclick="planImprimirParcial()" id="planBtnParcial" class="btn export" style="display:none;font-size:11px;padding:6px 12px">🖨 Parcial</button>
+                <button onclick="planImprimirCompleto()" id="planBtnCompleto" class="btn export" style="display:none;font-size:11px;padding:6px 12px">🖨 Informe</button>
+                <button onclick="planGuardarNotas()" id="planBtnGuardar" class="btn primary" style="display:none;font-size:11px;padding:6px 14px">💾 Guardar</button>
+              </div>
+            </div>
+            <div class="plan-content" id="planContent">
+              <div class="plan-empty">Selecciona un curso y luego un alumno para ingresar o ver sus notas.</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- VIEW: INFORME SEMESTRAL -->
-      <div class="view" id="view-informe">
+      <!-- Vista Docentes -->
+      <div class="view" id="view-docentes">
         <div class="panel">
-          <div><div class="panel-title">Informe Semestral PDF</div><div class="panel-desc">Genera el informe oficial de calificaciones. Orientación horizontal.</div></div>
-          <div class="config-card">
-            <h3>Datos del establecimiento</h3>
-            <div class="config-row">
-              <div class="fg"><label>Directora</label><input type="text" id="inf-dir" placeholder="Sra. Carmen Rojas Vega"></div>
-              <div class="fg"><label>Profesor(a) Jefe</label><input type="text" id="inf-pj" placeholder="Prof. María González"></div>
+          <div class="panel-title">👤 Gestión de docentes</div>
+          <div class="panel-desc">Agrega los docentes del establecimiento y luego asígnales rol y cursos.</div>
+
+          <!-- Paso 1: Cargar nombres -->
+          <div style="background:var(--sur2);border:1px solid var(--bor2);border-radius:12px;padding:18px;margin-bottom:16px;max-width:680px;">
+            <div style="font-size:12px;font-weight:800;color:var(--tx);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">① Cargar lista de docentes</div>
+            <div style="font-size:12px;color:var(--tx2);margin-bottom:10px;">Un nombre por línea. Sin formato especial.</div>
+            <textarea id="doc-import-ta"
+              placeholder="María González&#10;Juan Pérez Rojas&#10;Ana Torres Silva&#10;Pedro Soto&#10;..."
+              style="width:100%;min-height:130px;font-family:'Nunito',sans-serif;font-size:13px;padding:10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur);color:var(--tx);outline:none;resize:vertical;line-height:1.8;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+              <button class="btn primary" onclick="importarDocentes()" style="padding:7px 20px">Cargar docentes</button>
+              <button class="btn" onclick="document.getElementById('doc-import-ta').value=''" style="padding:7px 14px;border:1px solid var(--bor2);background:none;color:var(--tx2);">Limpiar</button>
+              <span id="doc-import-result" style="font-size:12px;color:var(--verde);font-weight:600"></span>
             </div>
-            <h3>Datos del curso</h3>
-            <div class="config-row">
-              <div class="fg"><label>Curso</label>
-                <select id="inf-curso">
-                  <option>1° Medio A</option><option>1° Medio B</option><option>1° Medio C</option><option>1° Medio D</option>
-                  <option>2° Medio A</option><option>2° Medio B</option><option>2° Medio C</option><option>2° Medio D</option>
-                  <option>3° Medio A</option><option>3° Medio B</option><option>3° Medio C</option><option>3° Medio D</option><option>3° Medio E</option><option>3° Medio F</option>
-                  <option>4° Medio A</option><option>4° Medio B</option><option>4° Medio C</option><option>4° Medio D</option><option>4° Medio E</option><option>4° Medio F</option>
-                </select>
-              </div>
-              <div class="fg"><label>Asignatura</label>
-                <select id="inf-asig">
-                  <option>Matemáticas</option><option>Lenguaje</option><option>Historia</option><option>Ciencias</option><option>Inglés</option><option>Ed. Física</option><option>Artes</option><option>Tecnología</option>
-                  <option>Hotelería</option><option>Ed. Parvularia</option><option>Enfermería</option><option>Gastronomía</option>
-                </select>
-              </div>
-            </div>
-            <div class="fg fg-full"><label>Período</label><select id="inf-per"><option>1° Semestre 2026</option><option>2° Semestre 2025</option><option>1° Semestre 2025</option></select></div>
-            <div class="fg fg-full"><label>Observaciones (opcional)</label><input type="text" id="inf-obs" placeholder="Ej: Período con evaluaciones de recuperación"></div>
-            <div style="display:flex;gap:8px">
-              <button class="btn pdf-btn" onclick="generarSemestral()" style="flex:1">🖨 Imprimir PDF</button>
-              <button class="btn export" onclick="exportarCSV()" style="flex:1">CSV</button>
-            </div>
-            <div style="font-size:10.5px;color:var(--tx3);font-weight:500">Selecciona "Guardar como PDF" en el diálogo de impresión. Recomendado: Chrome.</div>
           </div>
+
+          <!-- Paso 2: Lista con asignación -->
+          <div style="font-size:12px;font-weight:800;color:var(--tx);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">② Asignar rol y cursos</div>
+          <div id="doc-list-body"></div>
         </div>
       </div>
 
-      <!-- VIEW: CERTIFICADO ANUAL -->
-      <div class="view" id="view-certificado">
+      <!-- Vista Informes y certificados -->
+      <div class="view" id="view-informes">
         <div class="panel">
-          <div><div class="panel-title">Certificado Anual PDF</div><div class="panel-desc">Genera el certificado oficial con situación final del alumno.</div></div>
-          <div class="config-card">
-            <h3>Datos del establecimiento</h3>
-            <div class="config-row">
-              <div class="fg"><label>Directora</label><input type="text" id="cert-dir" placeholder="Sra. Carmen Rojas Vega"></div>
-              <div class="fg"><label>Profesor(a) Jefe</label><input type="text" id="cert-pj" placeholder="Prof. María González"></div>
-            </div>
-            <h3>Datos del curso</h3>
-            <div class="config-row">
-              <div class="fg"><label>Curso</label>
-                <select id="cert-curso">
-                  <option>1° Medio A</option><option>1° Medio B</option><option>1° Medio C</option><option>1° Medio D</option>
-                  <option>2° Medio A</option><option>2° Medio B</option><option>2° Medio C</option><option>2° Medio D</option>
-                  <option>3° Medio A</option><option>3° Medio B</option><option>3° Medio C</option><option>3° Medio D</option><option>3° Medio E</option><option>3° Medio F</option>
-                  <option>4° Medio A</option><option>4° Medio B</option><option>4° Medio C</option><option>4° Medio D</option><option>4° Medio E</option><option>4° Medio F</option>
+          <div class="panel-title">📄 Informes y certificados</div>
+          <div class="panel-desc">Descarga informes de notas por alumno o por curso, y certificados de personalidad.</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:800px;">
+
+            <!-- Informe por alumno -->
+            <div style="background:var(--sur2);border:1px solid var(--bor2);border-radius:12px;padding:18px;">
+              <div style="font-size:14px;font-weight:800;color:var(--tx);margin-bottom:4px;">📋 Informe de notas por alumno</div>
+              <div style="font-size:12px;color:var(--tx2);margin-bottom:12px;">Todas las asignaturas del Plan de Estudios con promedio general.</div>
+              <div class="fg" style="margin-bottom:8px;"><label>Curso</label>
+                <select id="inf-curso-sel" onchange="infCargarAlumnos()" style="width:100%">
+                  <option value="">— Seleccionar —</option>
+                  <option value="1M__1°A">1°A</option><option value="1M__1°B">1°B</option>
+                  <option value="1M__1°C">1°C</option><option value="1M__1°D">1°D</option>
+                  <option value="2M__2°A">2°A</option><option value="2M__2°B">2°B</option>
+                  <option value="2M__2°C">2°C</option><option value="2M__2°D">2°D</option>
                 </select>
               </div>
-              <div class="fg"><label>Año escolar</label><select id="cert-anio"><option>2026</option><option>2025</option><option>2024</option></select></div>
+              <div class="fg" style="margin-bottom:12px;"><label>Alumno</label>
+                <select id="inf-alumno-sel" style="width:100%" disabled>
+                  <option value="">— Seleccionar —</option>
+                </select>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn export" onclick="infDescargarParcial()" style="flex:1;font-size:12px">↓ Parcial</button>
+                <button class="btn export" onclick="infDescargarCompleto()" style="flex:1;font-size:12px">↓ Completo</button>
+              </div>
             </div>
-            <div class="fg fg-full"><label>Observaciones (opcional)</label><input type="text" id="cert-obs" placeholder="Ej: Promoción con distinción"></div>
-            <button class="btn pdf-btn" onclick="generarAnual()">🖨 Imprimir Certificado PDF</button>
+
+            <!-- Informe por curso -->
+            <div style="background:var(--sur2);border:1px solid var(--bor2);border-radius:12px;padding:18px;">
+              <div style="font-size:14px;font-weight:800;color:var(--tx);margin-bottom:4px;">📊 Informe de notas por curso</div>
+              <div style="font-size:12px;color:var(--tx2);margin-bottom:12px;">Resumen de todos los alumnos del curso con sus promedios.</div>
+              <div class="fg" style="margin-bottom:12px;"><label>Curso</label>
+                <select id="inf-curso-resumen" style="width:100%">
+                  <option value="">— Seleccionar —</option>
+                  <option value="1M__1°A">1°A</option><option value="1M__1°B">1°B</option>
+                  <option value="1M__1°C">1°C</option><option value="1M__1°D">1°D</option>
+                  <option value="2M__2°A">2°A</option><option value="2M__2°B">2°B</option>
+                  <option value="2M__2°C">2°C</option><option value="2M__2°D">2°D</option>
+                </select>
+              </div>
+              <button class="btn export" onclick="infDescargarCurso()" style="width:100%;font-size:12px">↓ Descargar PDF del curso</button>
+            </div>
+
+            <!-- Informe de personalidad -->
+            <div style="background:var(--sur2);border:1px solid var(--bor2);border-radius:12px;padding:18px;opacity:.6;position:relative;">
+              <div style="font-size:14px;font-weight:800;color:var(--tx);margin-bottom:4px;">🧾 Informe de personalidad</div>
+              <div style="font-size:12px;color:var(--tx2);margin-bottom:12px;">Observaciones de conducta, actitud y hábitos del alumno.</div>
+              <div style="background:var(--sur);border:1px dashed var(--bor2);border-radius:8px;padding:20px;text-align:center;color:var(--tx3);font-size:12px;">
+                🚧 Próximamente disponible
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
 
     </div><!-- /main-content notas -->
   </div><!-- /panel-notas -->
+
+
 
   <!-- ─── MÓDULO PORTERÍA ─── -->
   <div id="panel-porteria" class="module-panel" style="flex-direction:column;">
@@ -1882,13 +2022,50 @@ td.td-sit{text-align:center;}
 
 <!-- Gestión usuarios -->
 <div class="modal-overlay" id="modalUsers" onclick="if(event.target===this)cerrarModal('modalUsers')">
-  <div class="modal">
-    <div class="modal-title">Gestión de usuarios</div>
-    <div class="modal-sub">Administra los accesos y cursos asignados a cada profesor.</div>
-    <div id="usersTableWrap"></div>
+  <div class="modal" style="width:780px;max-width:100%">
+    <div class="modal-title">👥 Gestión de usuarios</div>
+    <div class="modal-sub">Carga los nombres y luego asígnales rol y acceso. Clave inicial: <strong>1234</strong></div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--bor2);margin-bottom:14px;">
+      <button id="tabUsersLista" onclick="switchTabUsers('lista')"
+        style="padding:7px 18px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--pr);color:var(--pr);">
+        Lista de usuarios
+      </button>
+      <button id="tabUsersCarga" onclick="switchTabUsers('carga')"
+        style="padding:7px 18px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);">
+        Carga masiva
+      </button>
+    </div>
+
+    <!-- Tab: Lista -->
+    <div id="panelUsersLista">
+      <div id="usersTableWrap"></div>
+    </div>
+
+    <!-- Tab: Carga masiva -->
+    <div id="panelUsersCarga" style="display:none">
+      <div style="font-size:12.5px;color:var(--tx2);margin-bottom:10px;line-height:1.7;">
+        Pega un nombre por línea. Se crearán con usuario automático y clave <strong>1234</strong>.<br>
+        Luego en la lista asígnales el rol correspondiente.
+      </div>
+      <textarea id="usersMasivoTA" placeholder="María González&#10;Juan Pérez Rojas&#10;Ana Torres Silva&#10;Pedro Soto&#10;..."
+        style="width:100%;min-height:140px;font-family:'Nunito',sans-serif;font-size:13px;padding:10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;resize:vertical;line-height:1.8;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn primary" onclick="cargarUsuariosMasivo()" style="padding:7px 20px">Cargar usuarios</button>
+        <button class="btn" onclick="document.getElementById('usersMasivoTA').value=''" style="padding:7px 14px;border:1px solid var(--bor2);background:none;color:var(--tx2);">Limpiar</button>
+        <span id="usersMasivoResult" style="font-size:12px;color:var(--verde);font-weight:600"></span>
+      </div>
+      <div style="margin-top:14px;padding:12px 14px;background:var(--prl);border-radius:8px;border:1px solid var(--bor2);font-size:12px;color:var(--tx2);line-height:1.7;">
+        💡 El nombre de usuario se genera automáticamente: <strong>María González → mgonzalez</strong><br>
+        Si hay duplicados se agrega un número: <strong>mgonzalez2</strong><br>
+        La clave inicial es <strong>1234</strong>. Cada usuario puede cambiarla después de ingresar.
+      </div>
+    </div>
+
     <div class="modal-footer">
       <button class="btn-cancel" onclick="cerrarModal('modalUsers')">Cerrar</button>
-      <button class="btn-primary" onclick="abrirFormUsuario(null)">+ Nuevo usuario</button>
+      <button class="btn-primary" onclick="abrirFormUsuario(null)">+ Agregar uno</button>
     </div>
   </div>
 </div>
@@ -1992,6 +2169,13 @@ td.td-sit{text-align:center;}
   </div>
 </div>
 
+
+<!-- ════ INFORME ALUMNO IMPRIMIBLE ════ -->
+<div id="informe-alumno-print">
+  <div class="inf-wrap" id="inf-contenido">
+    <!-- Se llena dinámicamente por JS -->
+  </div>
+</div>
 <!-- Modal firma apoderado -->
 <div class="modal-overlay" id="modalFirma" onclick="if(event.target===this)cerrarModal('modalFirma')">
   <div class="modal" id="modalFirmaInner">
@@ -2126,6 +2310,145 @@ td.td-sit{text-align:center;}
   </div>
 </div>
 
+
+<!-- Informe por alumno para impresión -->
+<div id="informe-alumno-wrap">
+  <div class="inf-page" id="informe-alumno-page">
+    <!-- Se genera dinámicamente por JS -->
+  </div>
+</div>
+
+
+<!-- Modal configuración establecimiento -->
+<div class="modal-overlay" id="modalConfig" onclick="if(event.target===this)cerrarModal('modalConfig')">
+  <div class="modal" style="width:520px;max-width:100%">
+    <div class="modal-title">⚙️ Configuración</div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--bor2);margin-bottom:14px;">
+      <button id="tabConfigEstab" onclick="switchTabConfig('estab')"
+        style="padding:7px 16px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--pr);color:var(--pr);">
+        🏫 Establecimiento
+      </button>
+      <button id="tabConfigNotas" onclick="switchTabConfig('notas')"
+        style="padding:7px 16px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);">
+        🗑️ Limpiar notas
+      </button>
+    </div>
+
+    <!-- Panel: Establecimiento -->
+    <div id="panelConfigEstab">
+      <div class="modal-sub" style="margin-bottom:12px;">Esta información aparecerá en todos los documentos descargados.</div>
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;">
+        <div>
+          <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:6px">Logo</div>
+          <div class="config-logo-preview" id="configLogoPreview" onclick="document.getElementById('configLogoInput').click()">🏫</div>
+          <input type="file" id="configLogoInput" accept="image/*" style="display:none" onchange="configCargarLogo(this)">
+          <div style="font-size:10px;color:var(--tx3);margin-top:4px;text-align:center">Clic para subir</div>
+          <button onclick="configQuitarLogo()" style="font-size:10px;color:var(--rojo);background:none;border:none;cursor:pointer;width:100%;margin-top:2px">Quitar</button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:5px">Nombre del establecimiento</div>
+            <input type="text" id="configNombre" placeholder="Ej: Liceo Técnico Talcahuano"
+              oninput="configActualizarPreview()"
+              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;">
+          </div>
+          <div>
+            <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:5px">Glosa / subtítulo</div>
+            <input type="text" id="configGlosa" placeholder="Ej: Talcahuano · Región del Biobío"
+              oninput="configActualizarPreview()"
+              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;">
+          </div>
+          <div>
+            <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:5px">RBD (opcional)</div>
+            <input type="text" id="configRbd" placeholder="Ej: 12345-6"
+              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;">
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--sur2);border:1px solid var(--bor2);border-radius:10px;padding:12px 16px;margin-bottom:14px;">
+        <div style="font-size:10px;color:var(--tx3);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Vista previa</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div id="configPreviewLogo" style="width:44px;height:44px;border-radius:8px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;overflow:hidden;">🏫</div>
+          <div>
+            <div id="configPreviewNombre" style="font-size:14px;font-weight:800;color:#1d4ed8;">Nombre del establecimiento</div>
+            <div id="configPreviewGlosa" style="font-size:11px;color:#555;">Glosa del establecimiento</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="cerrarModal('modalConfig')">Cancelar</button>
+        <button class="btn-pie" onclick="configGuardar()">Guardar configuración</button>
+      </div>
+    </div>
+
+    <!-- Panel: Limpiar notas -->
+    <div id="panelConfigNotas" style="display:none">
+      <div style="font-size:12.5px;color:var(--tx2);margin-bottom:14px;line-height:1.7;">
+        Elimina notas de un curso. Puedes borrar una asignatura específica o todo el curso.<br>
+        <span style="color:var(--rojo);font-size:12px;">⚠️ Esta acción no se puede deshacer.</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="fg">
+          <label>Curso</label>
+          <select id="configLimpiarCurso" onchange="configLimpiarCargarAsigs()"
+            style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;outline:none;">
+            <option value="">— Seleccionar —</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Asignatura</label>
+          <select id="configLimpiarAsig"
+            style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;outline:none;">
+            <option value="todas">Todas las asignaturas</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>¿Qué limpiar?</label>
+          <select id="configLimpiarTipo"
+            style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;outline:none;">
+            <option value="ambas">Libro de clases + Plan de estudios</option>
+            <option value="libro">Solo Libro de clases (N1, N2, N3)</option>
+            <option value="plan">Solo Plan de estudios</option>
+          </select>
+        </div>
+        <div class="fg" style="display:flex;align-items:flex-end;">
+          <button onclick="configLimpiarNotas()" class="btn danger" style="width:100%;padding:8px 18px;">🗑️ Limpiar</button>
+        </div>
+      </div>
+      <div id="configLimpiarResult" style="font-size:12px;min-height:18px;font-weight:600;"></div>
+      <div class="modal-footer" style="margin-top:14px;">
+        <button class="btn-cancel" onclick="cerrarModal('modalConfig')">Cerrar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Modal cambio de contraseña -->
+<div class="modal-overlay" id="modalCambioPass">
+  <div class="modal" style="width:400px;max-width:100%;text-align:center;">
+    <div style="font-size:2rem;margin-bottom:8px;">🔐</div>
+    <div class="modal-title">Cambiar contraseña</div>
+    <div class="modal-sub" id="cambioPassSub">Es tu primer ingreso. Puedes cambiar tu contraseña ahora.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0;">
+      <input type="password" id="cambioPassNueva" placeholder="Nueva contraseña (mín. 4 caracteres)"
+        style="width:100%;padding:9px 14px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;"
+        onkeydown="if(event.key==='Enter')cambioPassConfirmar()">
+      <input type="password" id="cambioPassConfirm" placeholder="Repetir contraseña"
+        style="width:100%;padding:9px 14px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;"
+        onkeydown="if(event.key==='Enter')cambioPassConfirmar()">
+      <div id="cambioPassError" style="font-size:12px;color:var(--rojo);min-height:16px;"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn-cancel" onclick="cambioPassOmitir()">Ahora no</button>
+      <button class="btn-primary" onclick="cambioPassConfirmar()">Cambiar contraseña</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal retiro -->
 
 <div class="modal-overlay" id="modalRetiro" onclick="if(event.target===this)cerrarModal('modalRetiro')">
@@ -2178,7 +2501,7 @@ function switchModulo(m) {
   });
   const tabs = document.querySelectorAll('.mod-tab');
   if (m === 'asistencia') tabs[0].classList.add('active-asist');
-  else if (m === 'notas')     tabs[1].classList.add('active-notas');
+  else if (m === 'notas')     { tabs[1].classList.add('active-notas'); setTimeout(lcInicializar, 100); }
   else if (m === 'porteria')  { tabs[2].classList.add('active-port'); renderPortContent(); }
   else if (m === 'pie')       { tabs[3].classList.add('active-pie'); initPie(); }
 }
@@ -2203,11 +2526,17 @@ const fmtDia=iso=>fromISO(iso).toLocaleDateString('es-CL',{day:'2-digit',month:'
 const mesNombre=iso=>fromISO(iso).toLocaleDateString('es-CL',{month:'long',year:'numeric'});
 
 // ═══════════════════════════════════════════════════
-// SUPABASE — Backend real
+// SUPABASE — API REST directa (sin SDK)
 // ═══════════════════════════════════════════════════
 const SUPABASE_URL = 'https://lpqsajpfpwbyurvvxdmk.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwcXNhanBmcHdieXVydnZ4ZG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzU4MzEsImV4cCI6MjA5MjQ1MTgzMX0.TA-rNKxCkNsOoCDg0JktG5OcZt-mpfv-k7RACX3tFiQ';
-const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SB_HEADERS = {
+  'apikey':        SUPABASE_KEY,
+  'Authorization': 'Bearer ' + SUPABASE_KEY,
+  'Content-Type':  'application/json',
+  'Prefer':        'return=minimal'
+};
+const SB_TABLE = SUPABASE_URL + '/rest/v1/plataforma_data';
 const SK='asist_v7';
 const SK_USERS='asist_users_v1';
 let state={};
@@ -2272,6 +2601,11 @@ function aplicarSesion(){
   rolEl.className='badge-rol'+(sesion.rol==='admin'?' admin':'');
   document.getElementById('userBadge').style.display='flex';
   document.getElementById('btnLogout').style.display='';
+  document.getElementById('btnConfig').style.display='';
+  document.getElementById('btnTema').style.display='';
+  document.getElementById('btnCambioPass').style.display='';
+  aplicarTemaGuardado();
+  setTimeout(verificarClavePrimerLogin, 800);
 
   // Mostrar/ocultar tabs según rol
   const tabs = document.querySelectorAll('.mod-tab');
@@ -2305,7 +2639,7 @@ function aplicarSesion(){
   document.getElementById('dateNavWrap').style.display = modInicio === 'asistencia' ? 'flex' : 'none';
   document.querySelectorAll('.mod-tab').forEach(t => t.classList.remove('active-asist','active-notas','active-port','active-pie'));
   if (p[0] && modInicio === 'asistencia') tabs[0].classList.add('active-asist');
-  else if (p[1] && modInicio === 'notas') tabs[1].classList.add('active-notas');
+  else if (p[1] && modInicio === 'notas') { tabs[1].classList.add('active-notas'); setTimeout(lcInicializar, 100); }
   else if (p[2] && modInicio === 'porteria') { tabs[2].classList.add('active-port'); setTimeout(renderPortContent, 100); }
   else if (p[3] && modInicio === 'pie') { tabs[3].classList.add('active-pie'); setTimeout(initPie, 100); }
 
@@ -2391,30 +2725,35 @@ async function eliminarUsuario(uname){
 // La interfaz es idéntica — el resto del código no cambia
 async function gsGet(key) {
   try {
-    const { data, error } = await _sb
-      .from('plataforma_data')
-      .select('value')
-      .eq('key', key)
-      .maybeSingle();
-    if (error) throw error;
-    if (!data) return { ok: false, value: null };
-    return { ok: true, value: data.value };
+    const url = SB_TABLE + '?key=eq.' + encodeURIComponent(key) + '&select=value';
+    const res  = await fetch(url, { headers: SB_HEADERS });
+    if (!res.ok) { console.error('gsGet HTTP', res.status, key); return { ok: false, value: null }; }
+    const rows = await res.json();
+    if (!rows || !rows.length) return { ok: false, value: null };
+    return { ok: true, value: rows[0].value };
   } catch(e) {
-    console.error('gsGet error:', e);
-    throw e;
+    console.error('gsGet error [' + key + ']:', e.message || String(e));
+    return { ok: false, value: null };
   }
 }
 
 async function gsSet(key, value) {
   try {
-    const { error } = await _sb
-      .from('plataforma_data')
-      .upsert({ key, value, updated_at: new Date().toISOString() });
-    if (error) throw error;
+    const url = SB_TABLE;
+    const res  = await fetch(url, {
+      method:  'POST',
+      headers: Object.assign({}, SB_HEADERS, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+      body:    JSON.stringify({ key, value, updated_at: new Date().toISOString() })
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      console.error('gsSet HTTP', res.status, key, txt);
+      return { ok: false };
+    }
     return { ok: true };
   } catch(e) {
-    console.error('gsSet error:', e);
-    throw e;
+    console.error('gsSet error [' + key + ']:', e.message || String(e));
+    return { ok: false };
   }
 }
 async function loadState(){
@@ -2453,6 +2792,76 @@ function initCurso(key){
   if(!state[key].alumnos)state[key].alumnos=[];
   if(!state[key].obs)state[key].obs={};
 }
+
+// ═══════════════════════════════════════════════════
+// FUENTE ÚNICA DE ALUMNOS — lee desde state (Asistencia)
+// Estas funciones usan 'state' directamente.
+// 'state' se carga en init() antes de que el usuario
+// pueda interactuar, así que siempre está disponible.
+// ═══════════════════════════════════════════════════
+
+// Clave interna "1M__1°A" → label "1° Medio — 1°A"
+function claveALabel(clave) {
+  const parts = (clave || '').split('__');
+  if (parts.length < 2) return clave;
+  const niv = NIVELES.find(x => x.key === parts[0]);
+  return niv ? niv.label + ' — ' + parts[1] : clave;
+}
+
+// Nombre canónico del alumno
+function nombreCanonicoAlumno(a) {
+  if (a.full && a.full.trim()) return a.full.trim();
+  const partes = [a.apellido, a.nombre].filter(Boolean).map(s => s.trim());
+  return partes.join(' ') || '';
+}
+
+// Lee los alumnos activos de un curso desde state.
+// clave = "1M__1°A" (clave directa de state de Asistencia)
+function getAlumnosParaNotas(clave) {
+  if (!clave || !state) return [];
+  const curso = state[clave];
+  if (!curso || !curso.alumnos || !curso.alumnos.length) return [];
+  return curso.alumnos
+    .filter(a => !(a.retiro   && a.retiro.fecha))
+    .filter(a => !(a.traslado && a.traslado.fecha))
+    .map(a => ({
+      nombre:    nombreCanonicoAlumno(a),
+      rut:       a.rut       || '',
+      numLista:  a.numLista  || 0,
+      iniciales: a.iniciales || ''
+    }));
+}
+
+// Lista plana de TODOS los alumnos activos
+function todosLosAlumnos() {
+  if (!state) return [];
+  const lista = [];
+  Object.keys(state).forEach(clave => {
+    const curso = state[clave];
+    if (!curso || !curso.alumnos) return;
+    curso.alumnos.forEach(a => {
+      if (a.retiro   && a.retiro.fecha)   return;
+      if (a.traslado && a.traslado.fecha) return;
+      lista.push({
+        nombre:   nombreCanonicoAlumno(a),
+        curso:    claveALabel(clave),
+        clave:    clave,
+        rut:      a.rut      || '',
+        numLista: a.numLista || 0
+      });
+    });
+  });
+  return lista.sort((a,b) => a.nombre.localeCompare(b.nombre));
+}
+
+// Datalist HTML para autocompletado
+function buildAlumnosDatalist() {
+  return todosLosAlumnos()
+    .map(a => `<option value="${escHtml(a.nombre)}" data-curso="${escHtml(a.clave)}">`)
+    .join('');
+}
+
+
 function getAlumnos(key){initCurso(key);return state[key].alumnos;}
 function getEstados(key,fecha){
   initCurso(key);const n=state[key].alumnos.length;
@@ -3085,359 +3494,6 @@ function showToast(msg,type='info'){
 // ─── MÓDULO CALIFICACIONES ─────────────────────────
 // ═══════════════════════════════════════════════════
 const ALUMNOS=[];
-let tipo="sumativa";
-let cols=[{name:"N1",pond:1},{name:"N2",pond:1},{name:"N3",pond:1}];
-let notas={};
-let vis=[];
-
-// ═══════════════════════════════════════════════════
-// FUENTE ÚNICA DE ALUMNOS — state de Asistencia
-// Todos los módulos (Notas, Portería, PIE) leen desde aquí.
-// Los cambios en Asistencia se reflejan automáticamente.
-// ═══════════════════════════════════════════════════
-
-// Label visible "1° Medio A"  →  clave interna "1M__1°A"
-function labelAClave(label) {
-  for (const niv of NIVELES) {
-    for (const c of niv.cursos) {
-      const sufijo = c.replace(/^\d+°/, '');          // "1°A" → "A"
-      if (niv.label + ' ' + sufijo === label) return getCursoKey(niv.key, c);
-      if (niv.label + ' ' + c      === label) return getCursoKey(niv.key, c);
-    }
-  }
-  return null;
-}
-
-// Clave interna "1M__1°A"  →  label visible "1° Medio A"
-function claveALabel(clave) {
-  const [nk, c] = (clave || '').split('__');
-  const niv = NIVELES.find(x => x.key === nk);
-  if (!niv) return clave;
-  return niv.label + ' ' + c.replace(/^\d+°/, '');
-}
-
-// Devuelve el nombre canónico de un alumno tal como aparece en Asistencia
-// Respeta el campo "full" que es el texto original ingresado por el asistente
-function nombreCanonicoAlumno(a) {
-  if (a.full && a.full.trim()) return a.full.trim();
-  const partes = [a.apellido, a.nombre].filter(Boolean).map(s => s.trim());
-  if (partes.length === 2) return partes[0] + ' ' + partes[1];
-  return partes[0] || '';
-}
-
-// Lee la lista de un curso desde state, en el mismo orden que Asistencia.
-// Acepta label ("1° Medio A") o clave ("1M__1°A").
-// Devuelve: [{ nombre, rut, numLista, iniciales, activo }]
-function getAlumnosParaNotas(labelOClave) {
-  const clave = (labelOClave || '').includes('__')
-    ? labelOClave
-    : labelAClave(labelOClave);
-  if (!clave) return [];
-  initCurso(clave);
-  return (state[clave].alumnos || [])
-    .filter(a => !(a.retiro  && a.retiro.fecha))   // excluir retirados
-    .filter(a => !(a.traslado && a.traslado.fecha)) // excluir trasladados
-    .map(a => ({
-      nombre:   nombreCanonicoAlumno(a),
-      rut:      a.rut       || '',
-      numLista: a.numLista  || 0,
-      iniciales: a.iniciales || '',
-      activo:   true
-    }));
-}
-
-// Lista todos los labels de cursos que tienen alumnos en Asistencia
-function cursosConAlumnos() {
-  const lista = [];
-  NIVELES.forEach(niv => niv.cursos.forEach(c => {
-    const key = getCursoKey(niv.key, c);
-    initCurso(key);
-    const activos = (state[key].alumnos || []).filter(
-      a => !(a.retiro && a.retiro.fecha) && !(a.traslado && a.traslado.fecha)
-    );
-    if (activos.length > 0)
-      lista.push(niv.label + ' ' + c.replace(/^\d+°/, ''));
-  }));
-  return lista;
-}
-
-// Lista plana de TODOS los alumnos activos de TODOS los cursos
-// Usada para autocompletado en Portería y PIE
-function todosLosAlumnos() {
-  const lista = [];
-  NIVELES.forEach(niv => niv.cursos.forEach(c => {
-    const key = getCursoKey(niv.key, c);
-    initCurso(key);
-    const label = niv.label + ' ' + c.replace(/^\d+°/, '');
-    (state[key].alumnos || []).forEach(a => {
-      if (a.retiro  && a.retiro.fecha)  return;
-      if (a.traslado && a.traslado.fecha) return;
-      lista.push({
-        nombre:   nombreCanonicoAlumno(a),
-        curso:    label,
-        rut:      a.rut || '',
-        numLista: a.numLista || 0,
-        iniciales: a.iniciales || ''
-      });
-    });
-  }));
-  return lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
-}
-
-
-
-const ESP_LABEL={hoteleria:"Hotelería",parvulo:"Ed. Parvularia",enfermeria:"Enfermería",gastronomia:"Gastronomía"};
-const kN=(a,c)=>a+"||"+c;
-const minN=()=>4.0;
-function getC(v){if(v===""||isNaN(parseFloat(v)))return"";const n=parseFloat(v);return n>=minN()?"ok":n>=3?"riesgo":"mal";}
-function calcP(nom){
-  if(tipo==="ponderada"){let s=0,w=0;cols.forEach(c=>{const v=parseFloat(notas[kN(nom,c.name)]||"");if(!isNaN(v)){s+=v*c.pond;w+=c.pond;}});return w>0?s/w:null;}
-  const vs=cols.map(c=>parseFloat(notas[kN(nom,c.name)]||"")||null).filter(v=>v!==null);
-  return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
-}
-function getSit(p){if(p===null)return"nd";if(p>=minN())return"ap";if(p>=minN()-0.5)return"ri";return"re";}
-function sitLbl(s){return{ap:"Aprobado",ri:"En riesgo",re:"Reprobado",nd:"---"}[s];}
-function pCls(p){return p===null?"pvacio":p>=minN()?"pok":p>=3?"priesgo":"pmal";}
-
-function onDocChange(){notas={};updateBanner();filtrarCursos();cargarAlumnosCurso();renderTabla();}
-function onCursoChange(){
-  notas = {};
-  const cursoLabel = document.getElementById("curso").value;
-  document.getElementById("b-curso").textContent = cursoLabel;
-  cargarAlumnosCurso();
-  renderTabla();
-  // Actualizar vista de alumnos si está abierta
-  if (document.getElementById('view-alumnos').classList.contains('active')) renderAluList();
-}
-function cargarAlumnosCurso(){
-  const curso = document.getElementById("curso").value;
-  const lista = getAlumnosParaNotas(curso);
-  ALUMNOS.length = 0;
-  // Ordenar por numLista igual que en Asistencia
-  lista.sort((a,b) => (a.numLista||999) - (b.numLista||999));
-  lista.forEach(a => ALUMNOS.push({ nombre: a.nombre, rut: a.rut || '' }));
-}
-function filtrarCursos(){
-  const p = document.getElementById("docente").value.split("|");
-  const espec = p[3] || "todos";
-  // Mapear especialidad a cursos válidos
-  const espMap = {
-    todos:      NIVELES.flatMap(niv => niv.cursos.map(c => niv.label + ' ' + c.replace(/^\d+°/, ''))),
-    hoteleria:  ["3° Medio D","4° Medio D"],
-    parvulo:    ["3° Medio C","4° Medio C"],
-    enfermeria: ["3° Medio E","3° Medio F","4° Medio E","4° Medio F"],
-    gastronomia:["3° Medio A","3° Medio B","4° Medio A","4° Medio B"]
-  };
-  const listaEsp = espMap[espec] || espMap.todos;
-  // Mostrar todos los cursos de la especialidad (con o sin alumnos)
-  // El profesor los ve todos; si no tienen alumnos se mostrará vacío
-  const sel = document.getElementById("curso");
-  sel.innerHTML = listaEsp.map(c => "<option>" + c + "</option>").join("");
-  document.getElementById("b-curso").textContent = sel.value;
-}
-function updateBanner(){
-  const p=document.getElementById("docente").value.split("|");const espec=p[3]||"todos";const isTp=espec!=="todos";
-  document.getElementById("b-av").textContent=p[0];document.getElementById("b-doc").textContent=(isTp?"":"Prof. ")+p[1];
-  document.getElementById("b-asig").textContent=(isTp?ESP_LABEL[espec]+" - ":"")+p[2];
-  document.getElementById("top-av")||0;
-  let chip=document.getElementById("espec-chip");
-  if(isTp){if(!chip){chip=document.createElement("span");chip.id="espec-chip";chip.style.cssText="font-size:10.5px;font-weight:700;padding:3px 11px;border-radius:999px;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.25)";document.querySelector(".doc-banner").appendChild(chip);}chip.textContent="Carrera TP: "+p[2];}else{if(chip)chip.remove();}
-}
-function renderTabla(){
-  const buscar=(document.getElementById("buscar").value||"").toLowerCase();const filt=document.getElementById("filtroSit").value;
-  let al=ALUMNOS.filter(a=>a.nombre.toLowerCase().includes(buscar));
-  if(filt!=="todos")al=al.filter(a=>getSit(calcP(a.nombre))===filt);vis=al;
-  let h="<tr><th class='th-n'>#</th><th class='th-nom'>Nombre / RUT</th>";
-  cols.forEach((c,i)=>{h+="<th class='th-nota'><div class='col-hdr'><div class='col-hdr-row'><input class='col-name-in' value='"+c.name+"' onchange='cols["+i+"].name=this.value'><button class='del-col' onclick='delCol("+i+")'>×</button></div>";if(tipo==="ponderada")h+="<input class='col-pond-in' type='number' min='0.1' max='10' step='0.1' value='"+c.pond+"' onchange='cols["+i+"].pond=parseFloat(this.value)||1'>";h+="</div></th>";});
-  h+="<th class='th-prom'>Promedio</th><th class='th-sit'>Situación</th></tr>";
-  document.getElementById("thead").innerHTML=h;
-  let rows="";
-  al.forEach((a,i)=>{const p=calcP(a.nombre);const sit=getSit(p);const pStr=p!==null?p.toFixed(1):"---";rows+="<tr><td class='td-n'>"+(i+1)+"</td><td class='td-nom'><div class='alu-nombre'>"+a.nombre+"</div><div class='alu-rut'>"+(a.rut||"")+"</div></td>";
-  cols.forEach(c=>{const v=notas[kN(a.nombre,c.name)]||"";const cl=getC(v);rows+="<td><div class='nota-wrap'><input class='nota-in"+(cl?" "+cl:"")+"' type='number' min='1' max='7' step='0.1' value='"+v+"' data-a='"+a.nombre+"' data-c='"+c.name+"' oninput='liveUp(this)' onkeydown='navK(event,this)'></div></td>";});
-  rows+="<td class='td-prom "+pCls(p)+"'>"+pStr+"</td><td class='td-sit'>"+(sit==="nd"?"<span class='sit-nd'>---</span>":"<span class='sit sit-"+sit+"'>"+sitLbl(sit)+"</span>")+"</td></tr>";});
-  document.getElementById("tbody").innerHTML=rows;renderStats(al);
-}
-function liveUp(el){
-  let v=el.value;if(v!==""&&parseFloat(v)>7){v="7.0";el.value=v;}if(v!==""&&parseFloat(v)<1){v="1.0";el.value=v;}
-  const a=el.dataset.a,c=el.dataset.c;notas[kN(a,c)]=v;el.className="nota-in"+(v&&!isNaN(parseFloat(v))?" "+getC(v):"");
-  const row=el.closest("tr");const p=calcP(a);const sit=getSit(p);
-  row.querySelector(".td-prom").textContent=p!==null?p.toFixed(1):"---";row.querySelector(".td-prom").className="td-prom "+pCls(p);
-  row.querySelector(".td-sit").innerHTML=sit==="nd"?"<span class='sit-nd'>---</span>":"<span class='sit sit-"+sit+"'>"+sitLbl(sit)+"</span>";
-  renderStats(vis);
-}
-function navK(e,el){if(e.key==="Enter"||e.key==="ArrowDown"){e.preventDefault();mvV(el,1);}if(e.key==="ArrowUp"){e.preventDefault();mvV(el,-1);}}
-function mvV(el,d){const row=el.closest("tr");const next=d===1?row.nextElementSibling:row.previousElementSibling;if(!next)return;const idx=Array.from(row.querySelectorAll(".nota-in")).indexOf(el);const ins=next.querySelectorAll(".nota-in");if(ins[idx])ins[idx].focus();}
-function renderStats(al){
-  const ps=al.map(a=>calcP(a.nombre)).filter(p=>p!==null);if(!ps.length){document.getElementById("stats-bar").innerHTML="";return;}
-  const avg=ps.reduce((a,b)=>a+b,0)/ps.length;const ap=ps.filter(p=>p>=minN()).length;const ri=ps.filter(p=>p>=minN()-0.5&&p<minN()).length;const re=ps.filter(p=>p<minN()-0.5).length;
-  document.getElementById("stats-bar").innerHTML="<span class='stat-pill'>Promedio: <b>"+avg.toFixed(1)+"</b></span><span class='stat-pill'>Aprobados: <b style='color:var(--nota-ok)'>"+ap+"</b></span><span class='stat-pill'>En riesgo: <b style='color:var(--nota-risk)'>"+ri+"</b></span><span class='stat-pill'>Reprobados: <b style='color:var(--nota-bad)'>"+re+"</b></span><span class='stat-pill'>Ingresadas: <b>"+ps.length+"/"+al.length+"</b></span><span class='stat-pill'>Total: <b>"+al.length+"</b></span>";
-}
-function setTipo(btn,t){
-  document.querySelectorAll(".tipo-tab").forEach(b=>b.classList.remove("active"));btn.classList.add("active");tipo=t;
-  const hints={sumativa:"Notas que afectan el promedio final",formativa:"Evaluaciones de proceso - no afectan el promedio",ponderada:"Cada evaluación tiene un peso específico"};
-  document.getElementById("tipo-hint").textContent=hints[t];renderTabla();
-}
-function addCol(){cols.push({name:"N"+(cols.length+1),pond:1});renderTabla();}
-function delCol(i){if(cols.length<=1)return;cols.splice(i,1);renderTabla();}
-function limpiar(){if(!confirm("¿Limpiar todas las notas?"))return;notas={};renderTabla();}
-function guardar(){showToastN("Calificaciones guardadas");}
-function showToastN(msg){document.getElementById("tmsg").textContent=msg;const t=document.getElementById("toast");t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
-function exportarCSV(){
-  const p=document.getElementById("docente").value.split("|");const asig=p[2],curso=document.getElementById("curso").value,per=document.getElementById("periodo").value;
-  let csv='"Educación Talcahuano"\n"Asignatura: '+asig+'"\n"Curso: '+curso+'"\n"Período: '+per+'"\n\n';
-  csv+='"N°","RUT","Nombre",'+cols.map(c=>'"'+c.name+'"').join(",")+',"Promedio","Situación"\n';
-  vis.forEach((a,i)=>{const vals=cols.map(c=>notas[kN(a.nombre,c.name)]||"").join(",");const pr=calcP(a.nombre);csv+=(i+1)+',"'+(a.rut||'')+'","'+a.nombre+'",'+vals+","+(pr!==null?pr.toFixed(1):"")+","+sitLbl(getSit(pr))+"\n";});
-  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const l=document.createElement("a");l.href=url;l.download=("EducTalcahuano_"+asig+"_"+curso+".csv").replace(/\s+/g,"_");l.click();
-  showToastN("CSV exportado");
-}
-function showView(id,el,label){
-  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById("view-"+id).classList.add("active");
-  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));if(el)el.classList.add("active");
-}
-
-// PDF Notas
-function dvRut(rut){let suma=0,mult=2;for(let i=String(rut).length-1;i>=0;i--){suma+=parseInt(String(rut)[i])*mult;mult=mult===7?2:mult+1;}const resto=11-(suma%11);if(resto===11)return"0";if(resto===10)return"K";return String(resto);}
-function rutDisplay(raw){let r=String(raw).replace(/[^0-9kK]/g,"").toUpperCase();if(!r)return"";if(r.length>=7){const soloNums=r.replace(/[^0-9]/g,"");const dv=dvRut(soloNums);let num=soloNums;let formatted="";while(num.length>3){formatted="."+num.slice(-3)+formatted;num=num.slice(0,-3);}formatted=num+formatted;return formatted+"-"+dv;}return r;}
-
-function generarSemestral(){
-  const dir=document.getElementById("inf-dir").value.trim()||"_________________________";
-  const pj=document.getElementById("inf-pj").value.trim()||"_________________________";
-  const curso=document.getElementById("inf-curso").value;const asig=document.getElementById("inf-asig").value;
-  const per=document.getElementById("inf-per").value;const obs=document.getElementById("inf-obs").value.trim();
-  const mn=4.0;const fecha=new Date().toLocaleDateString("es-CL",{day:"2-digit",month:"long",year:"numeric"});
-  const cP=nom=>{const vs=cols.map(c=>parseFloat(notas[kN(nom,c.name)]||"")||null).filter(v=>v!==null);return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;};
-  const proms=ALUMNOS.map(a=>cP(a.nombre)).filter(p=>p!==null);const avg=proms.length?proms.reduce((a,b)=>a+b,0)/proms.length:0;const ap=proms.filter(p=>p>=mn).length;const ri=proms.filter(p=>p>=mn-0.5&&p<mn).length;const re=proms.filter(p=>p<mn-0.5).length;
-  document.getElementById("sem-meta").innerHTML="<div class='pdf-mi'><span class='lbl'>Curso</span><span class='val'>"+curso+"</span></div><div class='pdf-mi'><span class='lbl'>Asignatura</span><span class='val'>"+asig+"</span></div><div class='pdf-mi'><span class='lbl'>Período</span><span class='val'>"+per+"</span></div><div class='pdf-mi'><span class='lbl'>Fecha</span><span class='val'>"+fecha+"</span></div><div class='pdf-mi'><span class='lbl'>Total</span><span class='val'>"+ALUMNOS.length+"</span></div>";
-  document.getElementById("sem-stats").innerHTML="<div class='pdf-sb'><div class='pdf-sl'>Promedio</div><div class='pdf-sv'>"+avg.toFixed(1)+"</div></div><div class='pdf-sb'><div class='pdf-sl'>Aprobados</div><div class='pdf-sv' style='color:#065f46'>"+ap+"</div></div><div class='pdf-sb'><div class='pdf-sl'>En riesgo</div><div class='pdf-sv' style='color:#92400e'>"+ri+"</div></div><div class='pdf-sb'><div class='pdf-sl'>Reprobados</div><div class='pdf-sv' style='color:#991b1b'>"+re+"</div></div><div class='pdf-sb'><div class='pdf-sl'>Total</div><div class='pdf-sv'>"+ALUMNOS.length+"</div></div>";
-  let th="<th class='tl cn'>#</th><th class='tl cr'>RUT</th><th class='tl cnom'>Nombre del alumno</th>";cols.forEach(c=>{th+="<th class='cnota'>"+c.name+"</th>";});th+="<th class='cprom'>Prom.</th>";
-  document.getElementById("sem-thead").innerHTML=th;
-  let rows="";ALUMNOS.forEach((a,i)=>{const p=cP(a.nombre);const pCl=p===null?"":p>=mn?"pok":p>=3?"pri":"pma";rows+="<tr><td style='text-align:center'>"+(i+1)+"</td><td class='trut'>"+(a.rut||"")+"</td><td class='tl'>"+a.nombre+"</td>";cols.forEach(c=>{rows+="<td>"+(notas[kN(a.nombre,c.name)]||"---")+"</td>";});rows+="<td class='"+pCl+"'>"+(p!==null?p.toFixed(1):"---")+"</td></tr>";});
-  document.getElementById("sem-tbody").innerHTML=rows;document.getElementById("sem-obs").innerHTML=obs?"<div class='pdf-obs'>Observaciones: "+obs+"</div>":"";
-  document.getElementById("sem-pj").textContent=pj;document.getElementById("sem-dir").textContent=dir;
-  document.getElementById("sem-footer").textContent="Educación Talcahuano - "+curso+" - "+asig+" - "+per+" - Emitido el "+fecha;
-  printPDF("semestral");
-}
-function generarAnual(){
-  const dir=document.getElementById("cert-dir").value.trim()||"_________________________";const pj=document.getElementById("cert-pj").value.trim()||"_________________________";
-  const curso=document.getElementById("cert-curso").value;const anio=document.getElementById("cert-anio").value;const obs=document.getElementById("cert-obs").value.trim();
-  const mn=4.0;const fecha=new Date().toLocaleDateString("es-CL",{day:"2-digit",month:"long",year:"numeric"});
-  const cP1=nom=>{const vs=cols.filter((_c,i)=>i%2===0).map(c=>parseFloat(notas[kN(nom,c.name)]||"")||null).filter(v=>v!==null);return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;};
-  const cP2=nom=>{const vs=cols.filter((_c,i)=>i%2!==0).map(c=>parseFloat(notas[kN(nom,c.name)]||"")||null).filter(v=>v!==null);return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;};
-  const cPA=nom=>{const vs=cols.map(c=>parseFloat(notas[kN(nom,c.name)]||"")||null).filter(v=>v!==null);return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;};
-  const proms=ALUMNOS.map(a=>cPA(a.nombre)).filter(p=>p!==null);const avg=proms.length?proms.reduce((a,b)=>a+b,0)/proms.length:0;const ap=proms.filter(p=>p>=mn).length;const re=proms.filter(p=>p<mn).length;
-  document.getElementById("anu-meta").innerHTML="<div class='pdf-mi'><span class='lbl'>Curso</span><span class='val'>"+curso+"</span></div><div class='pdf-mi'><span class='lbl'>Año</span><span class='val'>"+anio+"</span></div><div class='pdf-mi'><span class='lbl'>Total</span><span class='val'>"+ALUMNOS.length+"</span></div><div class='pdf-mi'><span class='lbl'>Fecha</span><span class='val'>"+fecha+"</span></div>";
-  document.getElementById("anu-stats").innerHTML="<div class='pdf-sb'><div class='pdf-sl'>Promedio anual</div><div class='pdf-sv'>"+avg.toFixed(1)+"</div></div><div class='pdf-sb'><div class='pdf-sl'>Aprobados</div><div class='pdf-sv' style='color:#065f46'>"+ap+"</div></div><div class='pdf-sb'><div class='pdf-sl'>Reprobados</div><div class='pdf-sv' style='color:#991b1b'>"+re+"</div></div><div class='pdf-sb'><div class='pdf-sl'>Total</div><div class='pdf-sv'>"+ALUMNOS.length+"</div></div>";
-  document.getElementById("anu-thead").innerHTML="<th class='tl cn'>#</th><th class='tl cr'>RUT</th><th class='tl cnom'>Nombre</th><th class='cnota'>Prom. 1S</th><th class='cnota'>Prom. 2S</th><th class='cprom'>Prom. Anual</th><th class='csit'>Situación</th>";
-  let rows="";ALUMNOS.forEach((a,i)=>{const p1=cP1(a.nombre);const p2=cP2(a.nombre);const pa=cPA(a.nombre);const pCl=pa===null?"":pa>=mn?"pok":"pma";const sit=pa===null?"---":pa>=mn?"<span class='sap' style='font-size:7.5pt;font-weight:800'>APROBADO</span>":"<span class='sre' style='font-size:7.5pt;font-weight:800'>REPROBADO</span>";rows+="<tr><td style='text-align:center'>"+(i+1)+"</td><td class='trut'>"+(a.rut||"")+"</td><td class='tl'>"+a.nombre+"</td><td>"+(p1!==null?p1.toFixed(1):"---")+"</td><td>"+(p2!==null?p2.toFixed(1):"---")+"</td><td class='"+pCl+"' style='font-weight:800'>"+(pa!==null?pa.toFixed(1):"---")+"</td><td>"+sit+"</td></tr>";});
-  document.getElementById("anu-tbody").innerHTML=rows;document.getElementById("anu-obs").innerHTML=obs?"<div class='pdf-obs'>Observaciones: "+obs+"</div>":"";
-  document.getElementById("anu-pj").textContent=pj;document.getElementById("anu-dir").textContent=dir;
-  document.getElementById("anu-footer").textContent="Educación Talcahuano - "+curso+" - Año "+anio+" - Emitido el "+fecha;
-  printPDF("anual");
-}
-function printPDF(tipo){
-  const sem=document.getElementById("pdf-semestral");const anu=document.getElementById("pdf-anual");
-  sem.style.display=tipo==="semestral"?"block":"none";anu.style.display=tipo==="anual"?"block":"none";
-  setTimeout(()=>{window.print();setTimeout(()=>{sem.style.display="none";anu.style.display="none";},1000);},200);
-}
-
-// Docentes (calificaciones)
-const DOCENTES_GENERALES=[{initials:"MG",nombre:"Maria Gonzalez",asig:"Matematicas",tipo:"general"},{initials:"JP",nombre:"Jorge Pino",asig:"Lenguaje",tipo:"general"},{initials:"CR",nombre:"Claudia Rojas",asig:"Historia",tipo:"general"},{initials:"AS",nombre:"Andres Silva",asig:"Ciencias",tipo:"general"},{initials:"VL",nombre:"Valentina Lagos",asig:"Ingles",tipo:"general"},{initials:"RH",nombre:"Rodrigo Herrera",asig:"Ed. Fisica",tipo:"general"},{initials:"FT",nombre:"Francisca Torres",asig:"Artes",tipo:"general"},{initials:"NM",nombre:"Natalia Munoz",asig:"Tecnologia",tipo:"general"}];
-const DOCENTES_TP=[{initials:"HT",nombre:"Docente Hoteleria",asig:"Hoteleria",tipo:"hoteleria"},{initials:"PV",nombre:"Docente Parvulo",asig:"Ed. Parvularia",tipo:"parvulo"},{initials:"EN",nombre:"Docente Enfermeria",asig:"Enfermeria",tipo:"enfermeria"},{initials:"GA",nombre:"Docente Gastronomia",asig:"Gastronomia",tipo:"gastronomia"}];
-const DOCENTES=[...DOCENTES_GENERALES,...DOCENTES_TP];
-function getInitials(nombre){const parts=nombre.trim().split(" ").filter(p=>p.length>0);if(parts.length>=2)return(parts[0][0]+parts[1][0]).toUpperCase();return nombre.substring(0,2).toUpperCase();}
-function switchDocTab(tab){
-  const uno=document.getElementById("panel-uno");const masivo=document.getElementById("panel-masivo");const tUno=document.getElementById("tab-uno");const tMas=document.getElementById("tab-masivo");
-  if(tab==="uno"){uno.style.display="flex";masivo.style.display="none";tUno.classList.add("active");tUno.style.cssText="border-bottom:2px solid var(--pr2);color:var(--pr2)";tMas.classList.remove("active");tMas.style.cssText="";}
-  else{uno.style.display="none";masivo.style.display="flex";tMas.classList.add("active");tMas.style.cssText="border-bottom:2px solid var(--pr2);color:var(--pr2)";tUno.classList.remove("active");tUno.style.cssText="";}
-}
-function importarDocentes(){
-  const texto=document.getElementById("doc-import-ta").value.trim();if(!texto){alert("Pega la lista primero.");return;}
-  const TIPOS_VALIDOS=["general","hoteleria","parvulo","enfermeria","gastronomia"];
-  const lineas=texto.split("\n").map(l=>l.trim()).filter(l=>l.length>0);const nuevos=[];
-  lineas.forEach((linea,idx)=>{const partes=linea.split(/;|\t/).map(p=>p.trim());const nombre=partes[0]||"";const asig=partes[1]||"";let tipo=(partes[2]||"general").toLowerCase().trim();if(!nombre||!asig)return;if(!TIPOS_VALIDOS.includes(tipo))tipo="general";nuevos.push({initials:getInitials(nombre),nombre,asig,tipo});});
-  if(!nuevos.length){alert("No se encontraron docentes válidos.");return;}
-  nuevos.forEach(d=>DOCENTES.push(d));document.getElementById("doc-import-ta").value="";
-  const res=document.getElementById("doc-import-result");res.textContent=nuevos.length+" docente(s) importados.";setTimeout(()=>{res.textContent="";},4000);
-  renderDocentesList();rebuildDocenteSelect();showToastN(nuevos.length+" docente(s) importados");
-}
-function limpiarTodosDocentes(){if(!confirm("¿Eliminar TODOS los docentes?"))return;DOCENTES.length=0;renderDocentesList();rebuildDocenteSelect();showToastN("Lista vaciada");}
-function agregarDocente(){
-  const nombre=document.getElementById("dnombre").value.trim();const rutRaw=document.getElementById("drut").value.trim();const asig=document.getElementById("dasig").value.trim();const tipo=document.getElementById("dtipo-sel").value;
-  if(!nombre){alert("Ingresa el nombre.");return;}if(!asig){alert("Ingresa la asignatura.");return;}
-  const initials=getInitials(nombre);const rutFmt=rutRaw?rutDisplay(rutRaw.replace(/[^0-9]/g,"")):"";
-  DOCENTES.push({initials,nombre,rut:rutFmt,asig,tipo});document.getElementById("dnombre").value="";document.getElementById("drut").value="";document.getElementById("dasig").value="";document.getElementById("dtipo-sel").value="general";
-  renderDocentesList();rebuildDocenteSelect();showToastN("Docente agregado");
-}
-function eliminarDocente(idx){if(!confirm("¿Eliminar este docente?"))return;DOCENTES.splice(idx,1);renderDocentesList();rebuildDocenteSelect();showToastN("Docente eliminado");}
-function renderDocentesList(){
-  const body=document.getElementById("doc-list-body");document.getElementById("doc-count").textContent=DOCENTES.length;
-  if(!DOCENTES.length){body.innerHTML="<div class='doc-empty'>No hay docentes registrados.</div>";return;}
-  let html="";DOCENTES.forEach((d,i)=>{const isTP=d.tipo!=="general";html+="<div class='doc-row'><div class='doc-row-av"+(isTP?" tp":"")+"'>"+d.initials+"</div><div class='doc-row-info'><div class='doc-row-nombre'>"+d.nombre+"</div><div class='doc-row-asig'>"+d.asig+(isTP?" — "+d.tipo:"")+"</div></div><span class='doc-row-badge "+(isTP?"badge-tp":"badge-gen")+"'>"+(isTP?"TP":"General")+"</span><button class='doc-row-del' onclick='eliminarDocente("+i+")'>×</button></div>";});
-  body.innerHTML=html;
-}
-function rebuildDocenteSelect(){
-  const sel=document.getElementById("docente");const currentVal=sel.value;const gen=DOCENTES.filter(d=>d.tipo==="general");const tp=DOCENTES.filter(d=>d.tipo!=="general");
-  let html="";if(gen.length){html+="<optgroup label='Asignaturas generales'>";gen.forEach(d=>{html+="<option value='"+d.initials+"|"+d.nombre+"|"+d.asig+"|todos'>Prof. "+d.nombre+" - "+d.asig+"</option>";});html+="</optgroup>";}
-  if(tp.length){html+="<optgroup label='Carreras Técnico Profesionales'>";const labels={hoteleria:"3 y 4 Medio D",parvulo:"3 y 4 Medio C",enfermeria:"3 y 4 Medio E,F",gastronomia:"3 y 4 Medio A,B"};tp.forEach(d=>{html+="<option value='"+d.initials+"|"+d.nombre+"|"+d.asig+"|"+d.tipo+"'>"+d.asig+" - "+(labels[d.tipo]||"")+"</option>";});html+="</optgroup>";}
-  sel.innerHTML=html;if(currentVal){for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===currentVal){sel.selectedIndex=i;break;}}}
-  updateBanner();filtrarCursos();
-}
-
-// Alumnos por curso (notas)
-function getCursoSel(){ return document.getElementById("alu-curso-sel").value; }
-function renderAluList(){
-  const curso = getCursoSel();
-  document.getElementById("alu-badge").textContent = curso;
-  document.getElementById("alu-list-title").textContent = "Lista: " + curso;
-  const lista = getAlumnosParaNotas(curso)
-    .sort((a,b) => (a.numLista||999) - (b.numLista||999));
-  document.getElementById("alu-count").textContent = lista.length + " alumno" + (lista.length !== 1 ? "s" : "");
-  const body = document.getElementById("alu-list-body");
-  if (!lista.length) {
-    body.innerHTML = '<div class="alu-empty" style="font-size:12px;line-height:1.7">Sin alumnos en Asistencia para este curso.<br><span style="color:var(--tx3)">Agrégalos en <strong style="color:var(--verde)">Asistencia</strong> → selecciona el curso → ✏️ Editar alumnos.</span></div>';
-    return;
-  }
-  let html = "";
-  lista.forEach((a, i) => {
-    const num = a.numLista || (i + 1);
-    html += "<div class='alu-row'>"
-      + "<span class='alu-row-num'>" + String(num).padStart(2,'0') + "</span>"
-      + "<span class='alu-row-nombre'>" + escHtml(a.nombre) + "</span>"
-      + "<span class='alu-row-rut'>" + (a.rut || "Sin RUT") + "</span>"
-      + "</div>";
-  });
-  body.innerHTML = html;
-}
-// Importar / agregar / eliminar ya NO se hace desde Calificaciones
-// — se hace desde Asistencia, que es la fuente única
-function importarAlumnos(){
-  alert('Los alumnos se gestionan desde el módulo de Asistencia.\nUsa el botón "✏️ Editar alumnos" en ese módulo.');
-}
-function agregarUno(){
-  alert('Los alumnos se gestionan desde el módulo de Asistencia.\nUsa el botón "✏️ Editar alumnos" en ese módulo.');
-}
-function eliminarAlu(){
-  alert('Para eliminar alumnos ve al módulo de Asistencia → selecciona el curso → "✏️ Editar alumnos".');
-}
-function limpiarCurso(){
-  alert('Para limpiar un curso ve al módulo de Asistencia → selecciona el curso → "✏️ Editar alumnos".');
-}
-function usarEnNotas(){
-  const curso = getCursoSel();
-  const lista = getAlumnosParaNotas(curso);
-  if (!lista.length) {
-    alert("Este curso no tiene alumnos en Asistencia.\nAgrégalos desde el módulo de Asistencia.");
-    return;
-  }
-  ALUMNOS.length = 0;
-  lista.forEach(a => ALUMNOS.push({ nombre: a.nombre, rut: a.rut || '' }));
-  notas = {};
-  renderTabla();
-  const navNotas = document.querySelector(".nav-item");
-  showView("notas", navNotas, "Ingresar notas");
-  showToastN(lista.length + " alumnos cargados desde Asistencia — " + curso);
-}
-
 // ═══════════════════════════════════════════════════
 // ─── MÓDULO PORTERÍA ───────────────────────────────
 // ═══════════════════════════════════════════════════
@@ -3744,8 +3800,11 @@ function renderPortHoy(contenido) {
   const tieneFechasAnteriores = fechasConAtrasos.length > 0;
 
   // Cursos para el formulario
+  // Cursos: value = clave "1M__1°A", texto visible = "1°A"
   const todosLosCursos = [];
-  NIVELES.forEach(niv => niv.cursos.forEach(c => todosLosCursos.push(niv.label + ' ' + c.replace(/^\d+°/, ''))));
+  NIVELES.forEach(niv => niv.cursos.forEach(c => {
+    todosLosCursos.push({ clave: niv.key + '__' + c, label: c });
+  }));
 
   let html = `
     <!-- Nav de fecha -->
@@ -3784,7 +3843,7 @@ function renderPortHoy(contenido) {
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;white-space:nowrap">Seleccionar curso</div>
         <select id="portCursoSelect" onchange="portActualizarListaAlumnos()">
           <option value="">— Elige un curso —</option>
-          ${todosLosCursos.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('')}
+          ${todosLosCursos.map(c => `<option value="${escHtml(c.clave)}">${escHtml(c.label)}</option>`).join('')}
         </select>
       </div>
 
@@ -3906,9 +3965,11 @@ function portAutocompletarCurso(nombre) {
   if (!alumno) return;
   const sel = document.getElementById('portCursoSelect');
   if (!sel) return;
+  // alumno.clave es "1M__1°A"
   for (let i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].value === alumno.curso) {
+    if (sel.options[i].value === alumno.clave) {
       sel.selectedIndex = i;
+      portActualizarListaAlumnos();
       break;
     }
   }
@@ -3923,8 +3984,9 @@ function pieAutocompletarCurso(nombre) {
   if (!alumno) return;
   const sel = document.getElementById('pieNuevoCurso');
   if (!sel) return;
+  // alumno.clave es "1M__1°A" — coincidir con el value del select
   for (let i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].value === alumno.curso) {
+    if (sel.options[i].value === alumno.clave) {
       sel.selectedIndex = i;
       break;
     }
@@ -4600,12 +4662,13 @@ function abrirModalPieAlumno(alumnoId) {
   // Selector de cursos: todos los cursos (con o sin alumnos cargados)
   const selCurso = document.getElementById('pieNuevoCurso');
   if (selCurso) {
-    const cursos = [];
-    NIVELES.forEach(niv => niv.cursos.forEach(c =>
-      cursos.push(niv.label + ' ' + c.replace(/^\d+°/, ''))
-    ));
-    selCurso.innerHTML = '<option value="">Seleccionar curso...</option>'
-      + cursos.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('');
+    // value = clave "1M__1°A", texto visible = "1°A"
+    let optsHtml = '<option value="">Seleccionar curso...</option>';
+    NIVELES.forEach(niv => niv.cursos.forEach(c => {
+      const clave = niv.key + '__' + c;
+      optsHtml += `<option value="${escHtml(clave)}">${escHtml(c)}</option>`;
+    }));
+    selCurso.innerHTML = optsHtml;
   }
 
   if (alumnoId) {
@@ -4736,6 +4799,2091 @@ function initPie() {
   pieRenderContenido();
 }
 
+
+
+function planGenerarInforme(esParcial) {
+  if (!planAlumnoActual || !planCursoActual) return;
+
+  const alumno    = planAlumnoActual;
+  const curso     = planCursoActual;
+  const fecha     = new Date().toLocaleDateString('es-CL', {day:'2-digit', month:'long', year:'numeric'});
+  const promGen   = planCalcPromGeneral();
+  const promStr   = promGen !== null ? promGen.toFixed(1) : '—';
+  const sit       = promGen !== null ? (promGen >= 4 ? 'Aprobado/a' : promGen >= 3 ? 'En riesgo' : 'Reprobado/a') : '—';
+
+  let filas = '';
+  PLAN_1_2_MEDIO.forEach(asig => {
+    const prom = planCalcProm(asig);
+
+    // En parcial, saltar asignaturas sin ninguna nota
+    if (esParcial) {
+      const tieneNota = asig.tipo === 'concepto'
+        ? !!planNotas[asig.subs[0].id]
+        : asig.subs.some(s => planNotas[s.id]);
+      if (!tieneNota) return;
+    }
+
+    if (asig.tipo === 'concepto') {
+      const conc = planNotas[asig.subs[0].id] || '—';
+      filas += `<tr class="asig-principal">
+        <td class="td-asig">${escHtml(asig.nombre)}</td>
+        <td class="td-conc" colspan="2">${conc}</td>
+        <td style="text-align:center;font-size:8pt;color:#666">No incide en promedio</td>
+      </tr>`;
+      return;
+    }
+
+    const promDisp = prom !== null ? prom.toFixed(1) : '—';
+
+    if (asig.subs.length === 1) {
+      filas += `<tr class="asig-principal">
+        <td class="td-asig">${escHtml(asig.nombre)}</td>
+        <td class="td-nota" colspan="2">${planNotas[asig.subs[0].id] || '—'}</td>
+        <td class="td-prom">${promDisp}</td>
+      </tr>`;
+    } else {
+      // Asignatura con sub-notas (Ciencias o Artes)
+      filas += `<tr class="asig-principal">
+        <td class="td-asig" style="font-weight:bold">${escHtml(asig.nombre)}</td>
+        <td colspan="2"></td>
+        <td class="td-prom">${promDisp}</td>
+      </tr>`;
+      asig.subs.forEach(sub => {
+        const v = planNotas[sub.id];
+        if (esParcial && !v) return;
+        filas += `<tr class="asig-sub">
+          <td class="td-sub">${escHtml(sub.nombre)}</td>
+          <td class="td-nota" colspan="2">${v || '—'}</td>
+          <td></td>
+        </tr>`;
+      });
+    }
+  });
+
+  const html = `
+    <div class="inf-header">
+      <h1>Educación Talcahuano</h1>
+      <h2>Informe de Notas${esParcial ? ' Parcial' : ''} — ${curso}</h2>
+      <h3>Año escolar ${new Date().getFullYear()}</h3>
+    </div>
+    <div class="inf-datos">
+      <div class="inf-dato"><span class="inf-dato-lbl">Alumno/a:</span> ${escHtml(alumno)}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Curso:</span> ${escHtml(curso)}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Fecha emisión:</span> ${fecha}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Promedio general:</span> ${promStr}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Situación:</span> ${sit}</div>
+      ${esParcial ? '<div class="inf-dato"><span class="inf-parcial-badge">NOTAS PARCIALES</span></div>' : ''}
+    </div>
+    <table class="inf-tabla">
+      <thead>
+        <tr>
+          <th style="width:55%">Asignatura</th>
+          <th style="width:15%;text-align:center">Nota</th>
+          <th style="width:15%;text-align:center">Sub-notas</th>
+          <th style="width:15%;text-align:center">Promedio</th>
+        </tr>
+      </thead>
+      <tbody>${filas}</tbody>
+    </table>
+    <div class="inf-obs" contenteditable="true" id="inf-obs-edit">
+      Observaciones: _______________________________________________
+    </div>
+    <div class="inf-firma">
+      <div class="inf-firma-item">Profesor Jefe</div>
+      <div class="inf-firma-item">Director/a</div>
+      <div class="inf-firma-item">Apoderado/a</div>
+    </div>
+  `;
+
+  document.getElementById('informe-alumno-page').innerHTML = html;
+  document.getElementById('informe-alumno-wrap').style.display = 'block';
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      document.getElementById('informe-alumno-wrap').style.display = 'none';
+    }, 1000);
+  }, 200);
+}
+
+
+
+
+function getCursoSel() { return document.getElementById("alu-curso-sel").value; }
+
+function renderAluList() {
+  const clave = getCursoSel(); // "1M__1°A"
+  const texto = clave ? clave.split('__')[1] || clave : '—';
+  const badge = document.getElementById("alu-badge");
+  const title = document.getElementById("alu-list-title");
+  const count = document.getElementById("alu-count");
+  const body  = document.getElementById("alu-list-body");
+  if (badge) badge.textContent = texto;
+  if (title) title.textContent = "Lista: " + texto;
+
+  const lista = clave ? getAlumnosParaNotas(clave).sort((a,b)=>(a.numLista||999)-(b.numLista||999)) : [];
+  if (count) count.textContent = lista.length + " alumno" + (lista.length !== 1 ? "s" : "");
+  if (!body) return;
+  if (!lista.length) {
+    body.innerHTML = '<div class="alu-empty">Sin alumnos en Asistencia para este curso.</div>';
+    return;
+  }
+  body.innerHTML = lista.map((a, i) => {
+    const num = String(a.numLista || i+1).padStart(2,'0');
+    return "<div class='alu-row'>"
+      + "<span class='alu-row-num'>" + num + "</span>"
+      + "<span class='alu-row-nombre'>" + escHtml(a.nombre) + "</span>"
+      + "<span class='alu-row-rut'>" + (a.rut || "Sin RUT") + "</span>"
+      + "</div>";
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// LIBRO DE CLASES — Módulo de Calificaciones
+// ═══════════════════════════════════════════════════
+
+// Asignaturas disponibles según nivel
+const ASIGNATURAS_1_2M = [
+  'Lengua y Literatura',
+  'Idioma Extranjero: Inglés',
+  'Matemáticas',
+  'Física',
+  'Química',
+  'Biología',
+  'Historia y Ciencias Sociales',
+  'Educación Tecnológica',
+  'Artes Visuales',
+  'Artes Musicales',
+  'Educación Física y Salud',
+  'Religión'
+];
+const ASIGNATURAS_3_4M = [
+  'Lengua y Literatura',
+  'Idioma Extranjero: Inglés',
+  'Matemáticas',
+  'Historia, Geografía y Ciencias Sociales',
+  'Educación Física y Salud',
+  'Religión',
+  'Módulo Técnico Profesional'
+];
+
+// Asignaturas por especialidad TP
+const ASIGNATURAS_TP = {
+  gastronomia: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Higiene para la Elaboración de Alimentos',
+    'Elaboración de Alimentos de Baja Complejidad',
+    'Recepción y Almacenamiento de Insumos',
+    'Planificación de la Producción Gastronómica',
+    'Preparación, Diseño y Montaje de Buffet',
+    'Servicio de Comedores, Bares y Salones',
+    'Electivo: Educación Física',
+    'Electivo: Religión'
+  ],
+  parvularia: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Material Didáctico y de Ambientación',
+    'Expresión Musical para Párvulos',
+    'Relación con la Familia',
+    'Salud en Párvulos',
+    'Recreación y Bienestar en los Párvulos',
+    'Electivo: Religión'
+  ],
+  hoteleria: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Atención al Cliente en Servicios de Hotelería',
+    'Servicio de Habitaciones',
+    'Actividades Recreativas y de Animación',
+    'Servicio de Eventos',
+    'Inglés Técnico para la Industria de la Hospitalidad',
+    'Electivo: Educación Física',
+    'Electivo: Religión'
+  ],
+  enfermeria: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Aplicación de Cuidados Básicos',
+    'Medición y Control de Parámetros Básicos',
+    'Promoción de la Salud y Prevención de la Enfermedad',
+    'Higiene y Bioseguridad del Ambiente',
+    'Sistema de Registros e Información en Salud',
+    'Electivo: Artes Visuales',
+    'Religión'
+  ],
+  gastronomia2: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Cocina Chilena',
+    'Innovación y Cocina Internacional',
+    'Elaboración de Bebidas Alcohólicas y Analcohólicas',
+    'Elaboración de Menús y Carta',
+    'Emprendimiento y Empleabilidad',
+    'Electivo: Historia'
+  ],
+  pasteleria: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Elaboración de Masas y Pastas',
+    'Elaboración de Productos de Repostería',
+    'Elaboración de Productos de Pastelería',
+    'Innovación en la Pastelería y Repostería',
+    'Emprendimiento y Empleabilidad',
+    'Electivo: Educación Física'
+  ],
+  parvularia2: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Actividades Educativas para Párvulos',
+    'Expresión Literaria y Teatral con Párvulos',
+    'Alimentación de los Párvulos',
+    'Higiene y Seguridad de los Párvulos',
+    'Emprendimiento y Empleabilidad',
+    'Electivo: Religión'
+  ],
+  hoteleria2: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Información Turística',
+    'Servicio de Recepción y Reservas',
+    'Servicio de Coctelería y Vinos',
+    'Servicio de Información Bilingüe',
+    'Emprendimiento y Empleabilidad',
+    'Electivo: Religión'
+  ],
+  enfermeria2: [
+    'Lengua y Literatura',
+    'Idioma Extranjero: Inglés',
+    'Matemática',
+    'Educación Ciudadana',
+    'Filosofía',
+    'Ciencias para la Ciudadanía',
+    'Preparación del Entorno Clínico',
+    'Prevención y Control de Infecciones Intrahospitalarias',
+    'Técnicas Básicas de Enfermería y del PNI',
+    'Atención en Servicios de Urgencia y Primeros Auxilios',
+    'Emprendimiento y Empleabilidad',
+    'Electivo: Artes Musicales'
+  ]
+};
+
+// Mapeo de cursos a especialidad TP
+const CURSOS_TP = {
+  '3M__3°A': 'gastronomia',
+  '3M__3°B': 'gastronomia',
+  '3M__3°C': 'parvularia',
+  '3M__3°D': 'hoteleria',
+  '3M__3°E': 'enfermeria',
+  '3M__3°F': 'enfermeria',
+  '4M__4°A': 'gastronomia2',
+  '4M__4°B': 'pasteleria',
+  '4M__4°C': 'parvularia2',
+  '4M__4°D': 'hoteleria2',
+  '4M__4°E': 'enfermeria2',
+  '4M__4°F': 'enfermeria2'
+};
+
+// Obtener asignaturas según el curso
+function getAsignaturasCurso(clave) {
+  var esp = CURSOS_TP[clave];
+  if (esp && ASIGNATURAS_TP[esp]) return ASIGNATURAS_TP[esp];
+  if (clave.startsWith('1M__') || clave.startsWith('2M__')) return ASIGNATURAS_1_2M;
+  return ASIGNATURAS_3_4M;
+}
+
+// Estado libro de clases
+let lcCurso   = '';
+let lcAsig    = '';
+let lcSem     = '1';
+let lcData    = {}; // { evalId: {nombre, descripcion, notas:{alumno:nota}} }
+let lcDocente = null;
+
+function lcSK() {
+  return 'lc_v1_' + lcCurso.replace(/[^a-zA-Z0-9]/g,'_') + '_' + lcAsig.replace(/[^a-zA-Z0-9]/g,'_') + '_sem' + lcSem;
+}
+
+// Poblar selector de cursos según rol
+
+// Cambiar vista dentro del módulo de notas
+function showView(id, el, title) {
+  document.querySelectorAll('#panel-notas .view').forEach(function(v) { v.classList.remove('active'); });
+  var vista = document.getElementById('view-' + id);
+  if (vista) vista.classList.add('active');
+  document.querySelectorAll('#sidebar-notas .nav-item').forEach(function(n) { n.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  if (id === 'libro')    { lcInicializar(); }
+  if (id === 'docentes') { renderDocentesList(); initDocCursosGrid(); }
+  if (id === 'informes') { /* nada por ahora */ }
+}
+
+function lcInicializar() {
+  const sel = document.getElementById('lc-curso');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Seleccionar —</option>';
+  // value = clave "1M__1°A", texto visible = "1°A"
+  NIVELES.forEach(niv => niv.cursos.forEach(c => {
+    const clave = niv.key + '__' + c;
+    const opt   = document.createElement('option');
+    opt.value       = clave;
+    opt.textContent = c; // "1°A", "1°B", "2°A"...
+    sel.appendChild(opt);
+  }));
+}
+
+function lcCambiarCurso() {
+  lcCurso = document.getElementById('lc-curso').value;
+  lcAsig  = '';
+  lcData  = {};
+
+  var selAsig = document.getElementById('lc-asig');
+  selAsig.innerHTML = '<option value="">— Seleccionar asignatura —</option>';
+
+  if (!lcCurso) { lcRenderContent(); return; }
+
+  var asigs = getAsignaturasCurso(lcCurso);
+  asigs.forEach(function(a) {
+    var opt = document.createElement('option');
+    opt.value = a; opt.textContent = a;
+    selAsig.appendChild(opt);
+  });
+  lcRenderContent();
+}
+
+function lcCambiarAsig() {
+  lcAsig = document.getElementById('lc-asig').value;
+  lcData = {};
+  if (!lcAsig) { lcRenderContent(); return; }
+
+  var sk = lcSK();
+  // Cargar desde localStorage primero
+  try {
+    var local = localStorage.getItem(sk);
+    if (local) lcData = JSON.parse(local);
+  } catch(e) {}
+
+  // Si no hay evaluaciones guardadas, crear N1, N2, N3 por defecto
+  if (Object.keys(lcData).length === 0) {
+    lcData['E1'] = { nombre: 'N1', descripcion: '', notas: {} };
+    lcData['E2'] = { nombre: 'N2', descripcion: '', notas: {} };
+    lcData['E3'] = { nombre: 'N3', descripcion: '', notas: {} };
+  }
+
+  lcRenderContent();
+
+  // Actualizar desde Supabase en segundo plano
+  gsGet(sk).then(function(r) {
+    if (r && r.ok && r.value) {
+      var remoto = JSON.parse(r.value);
+      if (Object.keys(remoto).length > 0) {
+        lcData = remoto;
+        try { localStorage.setItem(sk, r.value); } catch(e) {}
+        lcRenderContent();
+      }
+    }
+  }).catch(function(){});
+}
+
+
+function lcCargar() { lcCambiarAsig(); }
+
+
+async function lcGuardar() {
+  if (!lcCurso || !lcAsig) return;
+  const json = JSON.stringify(lcData);
+  try { localStorage.setItem(lcSK(), json); } catch(e) {}
+  try {
+    await gsSet(lcSK(), json);
+    showToastN('✓ Guardado — ' + lcAsig + ' · ' + lcCurso);
+  } catch(e) {
+    showToastN('Guardado local (sin conexión)');
+  }
+}
+
+// ── Evaluaciones ─────────────────────────────────
+function lcAgregarEval() {
+  if (!lcCurso || !lcAsig) return;
+  const num = Object.keys(lcData).length + 1;
+  const id  = 'E' + Date.now().toString(36);
+  lcData[id] = { nombre: 'N' + num, descripcion: '', notas: {} };
+  lcRenderContent();
+  // Focus en el nombre de la nueva evaluación
+  setTimeout(() => {
+    const inp = document.getElementById('eval-nom-' + id);
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function lcEliminarEval(id) {
+  if (!confirm('¿Eliminar esta evaluación y todas sus notas?')) return;
+  delete lcData[id];
+  lcRenderContent();
+}
+
+function lcActualizarEval(id, campo, valor) {
+  if (!lcData[id]) return;
+  lcData[id][campo] = valor;
+}
+
+function lcActualizarNota(evalId, alumno, rowIdx, valor) {
+  if (!lcData[evalId]) return;
+  if (valor === '' || valor === null || valor === undefined) {
+    delete lcData[evalId].notas[alumno];
+  } else {
+    lcData[evalId].notas[alumno] = valor;
+  }
+  // Actualizar promedio por índice de fila
+  var p   = lcCalcPromAlumno(alumno);
+  var pEl = document.getElementById('lc-prom-' + rowIdx);
+  if (!pEl) return;
+  pEl.textContent = p !== null ? p.toFixed(1) : '—';
+  pEl.style.color = p === null ? 'var(--tx3)' : p >= 4 ? 'var(--verde)' : p >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+}
+
+function lcCalcPromAlumno(alumno) {
+  const vals = Object.values(lcData)
+    .map(ev => parseFloat(ev.notas[alumno]))
+    .filter(v => !isNaN(v));
+  if (!vals.length) return null;
+  return vals.reduce((a,b) => a+b, 0) / vals.length;
+}
+
+function lcNotaClass(v) {
+  if (v === '' || v === null || v === undefined) return '';
+  const n = parseFloat(v);
+  if (isNaN(n)) return '';
+  return n >= 4 ? 'ok' : n >= 3 ? 'riesgo' : 'mal';
+}
+
+// ── Render tabla ──────────────────────────────────
+
+// Función llamada desde oninput de cada celda de nota
+function lcNota(input) {
+  var evalId = input.getAttribute('data-eval');
+  var alumno = input.getAttribute('data-alumno');
+  var rowIdx = parseInt(input.getAttribute('data-row'));
+  var valor  = input.value;
+
+  // Limitar entre 1.0 y 7.0
+  if (valor !== '' && valor !== null) {
+    var n = parseFloat(valor);
+    if (!isNaN(n)) {
+      if (n > 7.0) { input.value = '7.0'; valor = '7.0'; }
+      if (n < 1.0) { input.value = '1.0'; valor = '1.0'; }
+    }
+  }
+
+  if (!lcData[evalId]) return;
+  if (valor === '') {
+    delete lcData[evalId].notas[alumno];
+  } else {
+    lcData[evalId].notas[alumno] = valor;
+  }
+
+  // Color del input según nota
+  var n = parseFloat(valor);
+  input.style.color = isNaN(n) ? 'var(--tx)' : n >= 4 ? 'var(--verde)' : n >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+
+  // Actualizar promedio en la columna derecha
+  var p   = lcCalcPromAlumno(alumno);
+  var pEl = document.getElementById('lc-prom-' + rowIdx);
+  if (pEl) {
+    pEl.textContent = p !== null ? p.toFixed(1) : '—';
+    pEl.style.color = p === null ? 'var(--tx3)' : p >= 4 ? 'var(--verde)' : p >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+    pEl.style.fontWeight = '800';
+  }
+}
+
+
+function lcRenderContent() {
+  const contenido = document.getElementById('lc-content');
+  if (!contenido) return;
+
+  if (!lcCurso) {
+    contenido.innerHTML = '<div style="padding:60px;text-align:center;color:var(--tx3);font-size:13px">Selecciona un curso para comenzar.</div>';
+    return;
+  }
+
+  const alumnos = getAlumnosParaNotas(lcCurso)
+    .sort((a, b) => (a.numLista||999) - (b.numLista||999));
+
+  if (!alumnos.length) {
+    contenido.innerHTML = '<div style="padding:40px;text-align:center;color:var(--tx3);font-size:13px">Este curso no tiene alumnos en Asistencia.</div>';
+    return;
+  }
+
+  const curso = lcCurso.split('__')[1] || lcCurso;
+
+  if (!lcAsig) {
+    let prev = '<div style="padding:16px">';
+    prev += '<div style="font-size:12.5px;color:var(--tx2);margin-bottom:14px;font-weight:600">' + curso + ' — ' + alumnos.length + ' alumnos · Selecciona una asignatura para ingresar notas</div>';
+    prev += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    prev += '<thead><tr style="background:var(--sur2)"><th style="padding:8px 12px;border:0.5px solid var(--bor2);width:50px;text-align:center">N°</th><th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left">Alumno/a</th></tr></thead><tbody>';
+    alumnos.forEach(function(a, i) {
+      var num = String(a.numLista||i+1).padStart(2,'0');
+      prev += '<tr><td style="padding:7px 12px;text-align:center;font-family:monospace;font-size:11px;color:var(--tx3)">' + num + '</td>';
+      prev += '<td style="padding:8px 12px;font-weight:600">' + escHtml(a.nombre) + '</td></tr>';
+    });
+    prev += '</tbody></table></div>';
+    contenido.innerHTML = prev;
+    return;
+  }
+
+  // === TABLA DE NOTAS ===
+  var evals    = Object.entries(lcData);
+  var semLabel = lcSem === '1' ? 'Primer Semestre' : 'Segundo Semestre';
+  var proms    = alumnos.map(function(a){ return lcCalcPromAlumno(a.nombre); }).filter(function(p){ return p !== null; });
+  var promC    = proms.length ? (proms.reduce(function(a,b){return a+b;},0)/proms.length).toFixed(1) : '—';
+  var apro     = proms.filter(function(p){return p>=4;}).length;
+  var repr     = proms.filter(function(p){return p<4;}).length;
+
+  var html = '';
+
+  // Header con stats y botones
+  html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">';
+  html += '<div><div style="font-size:17px;font-weight:800;color:var(--tx)">' + escHtml(lcAsig) + '</div>';
+  html += '<div style="font-size:12px;color:var(--tx2)">' + curso + ' · ' + semLabel + ' · ' + alumnos.length + ' alumnos</div></div>';
+  html += '<div style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">';
+  // Stats
+  html += '<div style="text-align:center;background:var(--sur2);border:0.5px solid var(--bor2);border-radius:8px;padding:5px 12px;"><div style="font-size:16px;font-weight:800;color:var(--pr2)">' + promC + '</div><div style="font-size:10px;color:var(--tx3)">Promedio</div></div>';
+  html += '<div style="text-align:center;background:var(--sur2);border:0.5px solid var(--bor2);border-radius:8px;padding:5px 12px;"><div style="font-size:16px;font-weight:800;color:var(--verde)">' + apro + '</div><div style="font-size:10px;color:var(--tx3)">Aprobados</div></div>';
+  html += '<div style="text-align:center;background:var(--sur2);border:0.5px solid var(--bor2);border-radius:8px;padding:5px 12px;"><div style="font-size:16px;font-weight:800;color:var(--rojo)">' + repr + '</div><div style="font-size:10px;color:var(--tx3)">Reprobados</div></div>';
+  // Botones acción
+  html += "<button onclick='lcAgregarEval()' class='btn primary' style='padding:7px 14px;font-size:12px;'>+ Evaluación</button>";
+
+  html += "<button onclick='lcGuardar()' class='btn export' style='padding:7px 14px;font-size:12px;'>Guardar</button>";
+
+  html += "<button onclick='lcImprimirLibro()' class='btn export' style='padding:7px 14px;font-size:12px;'>↓ PDF</button>";
+
+  html += '</div></div>';
+
+  // Tabla
+  html += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:400px;">';
+  html += '<thead><tr style="background:var(--sur2);">';
+  html += '<th style="padding:8px 10px;border:0.5px solid var(--bor2);text-align:center;width:44px;font-size:11px;color:var(--tx3)">N°</th>';
+  html += '<th style="padding:8px 10px;border:0.5px solid var(--bor2);text-align:left;min-width:200px;">Alumno/a</th>';
+
+  evals.forEach(function(entry) {
+    var id = entry[0]; var ev = entry[1];
+    html += '<th style="padding:6px 8px;border:0.5px solid var(--bor2);text-align:center;min-width:110px;vertical-align:bottom;">';
+    html += '<div style="display:flex;flex-direction:column;gap:3px;align-items:center;">';
+    html += '<input id="eval-nom-' + id + '" value="' + escHtml(ev.nombre||'N') + '" placeholder="N1" ';
+    html += 'style="width:54px;text-align:center;font-weight:700;font-size:12.5px;padding:3px 4px;border:1px solid var(--bor2);border-radius:5px;background:var(--sur);color:var(--tx);font-family:\'DM Mono\',monospace;" ';
+    html += 'oninput="lcActualizarEval(\'' + id + '\',\'nombre\',this.value)">';
+    html += '<input id="eval-desc-' + id + '" value="' + escHtml(ev.descripcion||'') + '" placeholder="Descripción" ';
+    html += 'style="width:90px;text-align:center;font-size:10px;padding:2px 4px;border:1px solid var(--bor2);border-radius:5px;background:var(--sur);color:var(--tx2);" ';
+    html += 'oninput="lcActualizarEval(\'' + id + '\',\'descripcion\',this.value)">';
+    html += '<button onclick="lcEliminarEval(\'' + id + '\')" style="font-size:10px;color:var(--rojo);background:none;border:none;cursor:pointer;padding:0;">✕</button>';
+    html += '</div></th>';
+  });
+
+  if (!evals.length) {
+    html += '<th style="padding:8px;border:0.5px solid var(--bor2);text-align:center;color:var(--tx3);font-size:12px;min-width:200px;font-style:italic;">Sin evaluaciones — clic en "+ Evaluación"</th>';
+  }
+
+  html += '<th style="padding:8px 10px;border:0.5px solid var(--bor2);text-align:center;background:var(--sur2);min-width:72px;font-weight:700;">Promedio</th>';
+  html += '</tr></thead><tbody>';
+
+  alumnos.forEach(function(a, i) {
+    var prom = lcCalcPromAlumno(a.nombre);
+    var pc   = prom === null ? 'var(--tx3)' : prom >= 4 ? 'var(--verde)' : prom >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+    var rbg  = i % 2 === 0 ? 'var(--sur)' : 'var(--sur2)';
+    html += '<tr style="background:' + rbg + '">';
+    html += '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;font-family:monospace;font-size:11px;color:var(--tx3);">' + String(a.numLista||i+1).padStart(2,'0') + '</td>';
+    html += '<td style="padding:7px 14px;border:0.5px solid var(--bor2);font-weight:600;color:var(--tx)">' + escHtml(a.nombre) + '</td>';
+
+    evals.forEach(function(entry) {
+
+      var id = entry[0]; var ev = entry[1];
+
+      var v  = (ev.notas && ev.notas[a.nombre]) ? ev.notas[a.nombre] : '';
+
+      var n  = parseFloat(v);
+
+      var vc = isNaN(n) ? 'var(--tx)' : n >= 4 ? 'var(--verde)' : n >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+
+      html += '<td style="padding:4px 6px;border:0.5px solid var(--bor2);text-align:center;">';
+
+      html += '<input type="number" min="1" max="7" step="0.1"';
+
+      html += ' value="' + escHtml(String(v)) + '" placeholder="—"';
+
+      html += ' style="width:60px;text-align:center;font-family:monospace;font-size:13px;font-weight:700;padding:4px 5px;border:1px solid var(--bor2);border-radius:6px;background:transparent;color:' + vc + ';outline:none;"';
+
+      html += ' data-eval="' + id + '" data-row="' + i + '" data-alumno="' + a.nombre.replace(/"/g, '&quot;') + '"';
+
+      html += ' oninput="lcNota(this)"';
+
+      html += '>';
+
+      html += '</td>';
+
+    });
+
+
+    if (!evals.length) {
+      html += '<td style="border:0.5px solid var(--bor2);"></td>';
+    }
+
+    html += '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;background:var(--sur2);">';
+    html += '<span id="lc-prom-' + i + '" style="font-weight:800;font-size:13px;color:' + pc + '">' + (prom !== null ? prom.toFixed(1) : '—') + '</span>';
+    html += '</td></tr>';
+  });
+
+  html += '</tbody></table></div>';
+  contenido.innerHTML = html;
+}
+
+function lcRefreshProm(rowIdx, input) {
+  var alumnoName = input.getAttribute('data-alumno');
+  var prom = lcCalcPromAlumno(alumnoName);
+  var el   = document.getElementById('lc-prom-' + rowIdx);
+  if (!el) return;
+  if (prom === null) { el.textContent = '—'; el.style.color = 'var(--tx3)'; return; }
+  el.textContent  = prom.toFixed(1);
+  el.style.color  = prom >= 4 ? 'var(--verde)' : prom >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+  // Actualizar color del input
+  input.style.color = prom >= 4 ? 'var(--verde)' : prom >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+}
+
+
+
+
+
+function lcImprimirLibro() {
+  if (!lcCurso || !lcAsig) return;
+  if (!window.jspdf) { alert('Librería PDF no cargada. Verifica conexión a internet.'); return; }
+
+  var alumnos  = getAlumnosParaNotas(lcCurso).sort(function(a,b){ return (a.numLista||999)-(b.numLista||999); });
+  var evals    = Object.entries(lcData);
+  var semLabel = lcSem === '1' ? 'Primer Semestre' : 'Segundo Semestre';
+  var fecha    = new Date().toLocaleDateString('es-CL', {day:'2-digit', month:'long', year:'numeric'});
+  var cursoLabel = claveALabel(lcCurso);
+  var docente  = DOCENTES.find(function(d){ return d.asig === lcAsig; });
+  var proms    = alumnos.map(function(a){ return lcCalcPromAlumno(a.nombre); }).filter(function(p){ return p !== null; });
+  var promCurso = proms.length ? (proms.reduce(function(a,b){return a+b;},0)/proms.length).toFixed(1) : '—';
+
+  var doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  var startY = pdfDrawEstabHeader(doc);
+
+  doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(0,0,0);
+  doc.text('Libro de Clases — ' + lcAsig, 14, startY + 4);
+  doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(80,80,80);
+  doc.text('Curso: ' + cursoLabel + '   |   ' + semLabel + '   |   Año ' + new Date().getFullYear() + '   |   Docente: ' + (docente ? docente.nombre : '—') + '   |   Promedio: ' + promCurso + '   |   ' + fecha, 14, startY + 9);
+  doc.setTextColor(0,0,0);
+
+  // Cabecera de tabla
+  var head = [['N°', 'Alumno/a'].concat(evals.map(function(e){ return e[1].nombre + (e[1].descripcion ? '\n' + e[1].descripcion : ''); })).concat(['Promedio'])];
+
+  // Filas
+  var body = alumnos.map(function(a, i) {
+    var num   = String(a.numLista || i+1).padStart(2,'0');
+    var notas = evals.map(function(e){ return e[1].notas[a.nombre] || '—'; });
+    var prom  = lcCalcPromAlumno(a.nombre);
+    return [num, a.nombre].concat(notas).concat([prom !== null ? prom.toFixed(1) : '—']);
+  });
+
+  doc.autoTable({
+    startY: startY + 13,
+    head: head,
+    body: body,
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 2, font: 'helvetica' },
+    headStyles: { fillColor: [41, 55, 99], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+    columnStyles: {
+      0: { halign: 'center', cellWidth: 10 },
+      1: { cellWidth: 60 }
+    },
+    didParseCell: function(data) {
+      // Colorear notas < 4
+      if (data.section === 'body' && data.column.index >= 2 && data.column.index < head[0].length - 1) {
+        var val = parseFloat(data.cell.raw);
+        if (!isNaN(val) && val < 4) {
+          data.cell.styles.textColor = [220, 50, 50];
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+      // Columna promedio
+      if (data.section === 'body' && data.column.index === head[0].length - 1) {
+        var val = parseFloat(data.cell.raw);
+        if (!isNaN(val)) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.textColor = val >= 4 ? [34, 139, 34] : [220, 50, 50];
+        }
+      }
+    },
+    didDrawPage: function(data) {
+      // Footer con página
+      doc.setFontSize(7);
+      doc.text('Página ' + data.pageNumber, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 5);
+    }
+  });
+
+  // Líneas de firma al final
+  var finalY = doc.lastAutoTable.finalY + 15;
+  if (finalY < doc.internal.pageSize.height - 30) {
+    var pageW = doc.internal.pageSize.width;
+    var firmas = ['Docente de asignatura', 'Jefe(a) de UTP', 'Director(a)'];
+    var spacing = (pageW - 28) / firmas.length;
+    firmas.forEach(function(f, i) {
+      var x = 14 + spacing * i + spacing * 0.15;
+      doc.line(x, finalY, x + spacing * 0.7, finalY);
+      doc.setFontSize(8);
+      doc.text(f, x + (spacing * 0.7) / 2, finalY + 5, { align: 'center' });
+    });
+  }
+
+  var filename = 'Libro_' + lcAsig.replace(/[^a-zA-Z0-9]/g,'_') + '_' + cursoLabel.replace(/[^a-zA-Z0-9]/g,'_') + '_Sem' + lcSem + '.pdf';
+  doc.save(filename);
+  showToastN('✓ PDF descargado — ' + filename);
+}
+
+// CSS extra para inputs de notas en libro
+const _lcStyle = document.createElement('style');
+_lcStyle.textContent = `.plan-nota-input.ok{border-color:rgba(74,222,128,.5);background:rgba(74,222,128,.07)}.plan-nota-input.riesgo{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.07)}.plan-nota-input.mal{border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.07)}`;
+document.head.appendChild(_lcStyle);
+
+
+
+
+
+// ══════════════════════════════════════════════
+// TEMA CLARO / OSCURO
+// ══════════════════════════════════════════════
+var SK_TEMA = 'tema_v1';
+
+function aplicarTemaGuardado() {
+  var tema = 'oscuro';
+  try { tema = localStorage.getItem(SK_TEMA) || 'oscuro'; } catch(e) {}
+  aplicarTema(tema, false);
+}
+
+function aplicarTema(tema, guardar) {
+  var html = document.documentElement;
+  var btn  = document.getElementById('btnTema');
+  if (tema === 'claro') {
+    html.classList.add('tema-claro');
+    if (btn) { btn.textContent = '☀️'; btn.title = 'Cambiar a modo oscuro'; }
+  } else {
+    html.classList.remove('tema-claro');
+    if (btn) { btn.textContent = '🌙'; btn.title = 'Cambiar a modo claro'; }
+  }
+  if (guardar) {
+    try { localStorage.setItem(SK_TEMA, tema); } catch(e) {}
+  }
+}
+
+function toggleTema() {
+  var esClaro = document.documentElement.classList.contains('tema-claro');
+  var nuevo   = esClaro ? 'oscuro' : 'claro';
+  aplicarTema(nuevo, true);
+  showToastN(nuevo === 'claro' ? '☀️ Modo claro activado' : '🌙 Modo oscuro activado');
+}
+
+
+// ══════════════════════════════════════════════
+// LIMPIAR NOTAS POR CURSO
+// ══════════════════════════════════════════════
+
+function switchTabConfig(tab) {
+  var estab  = document.getElementById('panelConfigEstab');
+  var notas  = document.getElementById('panelConfigNotas');
+  var btnE   = document.getElementById('tabConfigEstab');
+  var btnN   = document.getElementById('tabConfigNotas');
+  var btnG   = document.getElementById('btnConfigGuardar');
+
+  if (tab === 'estab') {
+    estab.style.display = ''; notas.style.display = 'none';
+    btnE.style.borderBottomColor = 'var(--pr)'; btnE.style.color = 'var(--pr)'; btnE.style.fontWeight = '700';
+    btnN.style.borderBottomColor = 'transparent'; btnN.style.color = 'var(--tx2)'; btnN.style.fontWeight = '600';
+    if (btnG) btnG.style.display = '';
+  } else {
+    estab.style.display = 'none'; notas.style.display = '';
+    btnN.style.borderBottomColor = 'var(--pr)'; btnN.style.color = 'var(--pr)'; btnN.style.fontWeight = '700';
+    btnE.style.borderBottomColor = 'transparent'; btnE.style.color = 'var(--tx2)'; btnE.style.fontWeight = '600';
+    if (btnG) btnG.style.display = 'none';
+    // Poblar el selector de cursos
+    var sel = document.getElementById('configLimpiarCurso');
+    sel.innerHTML = '<option value="">— Seleccionar —</option>';
+    NIVELES.forEach(function(niv) {
+      niv.cursos.forEach(function(c) {
+        var opt = document.createElement('option');
+        opt.value = niv.key + '__' + c;
+        opt.textContent = c + ' (' + niv.label + ')';
+        sel.appendChild(opt);
+      });
+    });
+    document.getElementById('configLimpiarAsig').innerHTML = '<option value="todas">Todas las asignaturas</option>';
+    document.getElementById('configLimpiarResult').textContent = '';
+  }
+}
+
+function configLimpiarCargarAsigs() {
+  var curso = document.getElementById('configLimpiarCurso').value;
+  var sel   = document.getElementById('configLimpiarAsig');
+  sel.innerHTML = '<option value="todas">Todas las asignaturas</option>';
+  if (!curso) return;
+  var asigs = getAsignaturasCurso(curso);
+  asigs.forEach(function(a) {
+    var opt = document.createElement('option');
+    opt.value = a; opt.textContent = a;
+    sel.appendChild(opt);
+  });
+}
+
+async function configLimpiarNotas() {
+  var curso = document.getElementById('configLimpiarCurso').value;
+  var asig  = document.getElementById('configLimpiarAsig').value;
+  var tipo  = document.getElementById('configLimpiarTipo').value;
+  var res   = document.getElementById('configLimpiarResult');
+
+  if (!curso) { res.textContent = 'Selecciona un curso.'; res.style.color = 'var(--rojo)'; return; }
+
+  var cursoLabel = curso.split('__')[1];
+  var asigLabel  = asig === 'todas' ? 'todas las asignaturas' : asig;
+  var tipoLabel  = tipo === 'ambas' ? 'Libro de clases + Plan de estudios' : tipo === 'libro' ? 'Libro de clases' : 'Plan de estudios';
+
+  if (!confirm('¿Eliminar notas de "' + asigLabel + '" del curso ' + cursoLabel + '? Módulos: ' + tipoLabel + '. Esta acción no se puede deshacer.')) return;
+
+  res.textContent = 'Limpiando...'; res.style.color = 'var(--tx2)';
+  var eliminados = 0;
+  var prefCurso  = curso.replace(/[^a-zA-Z0-9]/g, '_');
+
+  try {
+    // Libro de clases
+    if (tipo === 'ambas' || tipo === 'libro') {
+      var asigs = asig === 'todas' ? getAsignaturasCurso(curso) : [asig];
+      for (var i = 0; i < asigs.length; i++) {
+        var prefAsig = asigs[i].replace(/[^a-zA-Z0-9]/g, '_');
+        for (var sem = 1; sem <= 2; sem++) {
+          var sk = 'lc_v1_' + prefCurso + '_' + prefAsig + '_sem' + sem;
+          try { localStorage.removeItem(sk); } catch(e) {}
+          try {
+            await fetch(SB_TABLE + '?key=eq.' + encodeURIComponent(sk), { method: 'DELETE', headers: SB_HEADERS });
+            eliminados++;
+          } catch(e) {}
+        }
+      }
+    }
+    // Plan de estudios (solo si asig = todas, no tiene sentido por asignatura)
+    if ((tipo === 'ambas' || tipo === 'plan') && asig === 'todas') {
+      var alumnos = getAlumnosParaNotas(curso);
+      for (var j = 0; j < alumnos.length; j++) {
+        var prefAlu = alumnos[j].nombre.replace(/[^a-zA-Z0-9]/g, '_');
+        var sk2 = 'plan_v1_' + prefCurso + '_' + prefAlu;
+        try { localStorage.removeItem(sk2); } catch(e) {}
+        try {
+          await fetch(SB_TABLE + '?key=eq.' + encodeURIComponent(sk2), { method: 'DELETE', headers: SB_HEADERS });
+          eliminados++;
+        } catch(e) {}
+      }
+    }
+
+    res.textContent = '✓ Listo — ' + eliminados + ' registro(s) eliminado(s) · ' + cursoLabel + ' / ' + asigLabel;
+    res.style.color = 'var(--verde)';
+    showToast('✓ Notas eliminadas — ' + cursoLabel, 'ok');
+
+  } catch(e) {
+    res.textContent = 'Error: ' + (e.message || String(e));
+    res.style.color = 'var(--rojo)';
+  }
+}
+
+// ══════════════════════════════════════════════
+// CONFIGURACIÓN DEL ESTABLECIMIENTO
+// ══════════════════════════════════════════════
+var CONFIG_ESTAB = {
+  nombre: 'Educación Talcahuano',
+  glosa:  'Plataforma Escolar',
+  rbd:    '',
+  logo:   null   // base64 string
+};
+var SK_CONFIG = 'config_estab_v1';
+
+async function loadConfig() {
+  try {
+    var r = await gsGet(SK_CONFIG);
+    if (r && r.ok && r.value) { CONFIG_ESTAB = JSON.parse(r.value); aplicarConfigUI(); return; }
+  } catch(e) {}
+  try {
+    var local = localStorage.getItem(SK_CONFIG);
+    if (local) { CONFIG_ESTAB = JSON.parse(local); aplicarConfigUI(); }
+  } catch(e) {}
+}
+
+function saveConfig() {
+  var json = JSON.stringify(CONFIG_ESTAB);
+  try { localStorage.setItem(SK_CONFIG, json); } catch(e) {}
+  gsSet(SK_CONFIG, json).catch(function(){});
+}
+
+// Aplicar config al topbar
+function aplicarConfigUI() {
+  var iconEl = document.querySelector('.logo-icon');
+  var textEl = document.querySelector('.logo-text');
+  var subEl  = document.querySelector('.logo-sub');
+  if (CONFIG_ESTAB.logo) {
+    if (iconEl) { iconEl.innerHTML = '<img src="' + CONFIG_ESTAB.logo + '" style="width:32px;height:32px;object-fit:contain;border-radius:6px;">'; }
+  }
+  if (textEl && CONFIG_ESTAB.nombre) textEl.textContent = CONFIG_ESTAB.nombre;
+  if (subEl  && CONFIG_ESTAB.glosa)  subEl.textContent  = CONFIG_ESTAB.glosa;
+}
+
+function abrirConfig() {
+  switchTabConfig('estab');
+  document.getElementById('configNombre').value = CONFIG_ESTAB.nombre || '';
+  document.getElementById('configGlosa').value  = CONFIG_ESTAB.glosa  || '';
+  document.getElementById('configRbd').value    = CONFIG_ESTAB.rbd    || '';
+
+  // Mostrar logo actual
+  var prev = document.getElementById('configLogoPreview');
+  var prev2 = document.getElementById('configPreviewLogo');
+  if (CONFIG_ESTAB.logo) {
+    prev.innerHTML  = '<img src="' + CONFIG_ESTAB.logo + '" style="width:100%;height:100%;object-fit:contain;">';
+    prev2.innerHTML = '<img src="' + CONFIG_ESTAB.logo + '" style="width:100%;height:100%;object-fit:contain;">';
+  } else {
+    prev.innerHTML  = '🏫';
+    prev2.innerHTML = '🏫';
+  }
+  configActualizarPreview();
+  document.getElementById('modalConfig').classList.add('open');
+}
+
+function configCargarLogo(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var b64 = e.target.result;
+    document.getElementById('configLogoPreview').innerHTML  = '<img src="' + b64 + '" style="width:100%;height:100%;object-fit:contain;">';
+    document.getElementById('configPreviewLogo').innerHTML  = '<img src="' + b64 + '" style="width:100%;height:100%;object-fit:contain;">';
+    CONFIG_ESTAB.logo = b64;
+  };
+  reader.readAsDataURL(file);
+}
+
+function configQuitarLogo() {
+  CONFIG_ESTAB.logo = null;
+  document.getElementById('configLogoPreview').innerHTML = '🏫';
+  document.getElementById('configPreviewLogo').innerHTML = '🏫';
+}
+
+function configActualizarPreview() {
+  var n = document.getElementById('configNombre').value || 'Nombre del establecimiento';
+  var g = document.getElementById('configGlosa').value  || 'Glosa del establecimiento';
+  document.getElementById('configPreviewNombre').textContent = n;
+  document.getElementById('configPreviewGlosa').textContent  = g;
+}
+
+function configGuardar() {
+  CONFIG_ESTAB.nombre = document.getElementById('configNombre').value.trim() || 'Educación Talcahuano';
+  CONFIG_ESTAB.glosa  = document.getElementById('configGlosa').value.trim();
+  CONFIG_ESTAB.rbd    = document.getElementById('configRbd').value.trim();
+  saveConfig();
+  aplicarConfigUI();
+  cerrarModal('modalConfig');
+  showToastN('✓ Configuración guardada');
+}
+
+// ── Función para obtener el header de establecimiento en PDFs ──
+// Retorna el HTML del encabezado para documentos de impresión
+function getEstabHeaderHTML() {
+  var nombre = CONFIG_ESTAB.nombre || 'Educación Talcahuano';
+  var glosa  = CONFIG_ESTAB.glosa  || '';
+  var rbd    = CONFIG_ESTAB.rbd    ? 'RBD: ' + CONFIG_ESTAB.rbd : '';
+  var logoHtml = CONFIG_ESTAB.logo
+    ? '<img src="' + CONFIG_ESTAB.logo + '" style="width:44px;height:44px;object-fit:contain;border-radius:6px;">'
+    : '<div style="width:44px;height:44px;background:#e8f0fe;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">🏫</div>';
+  return '<div style="display:flex;align-items:center;gap:12px;padding-bottom:8px;border-bottom:2px solid #1d4ed8;margin-bottom:12px;">'
+    + logoHtml
+    + '<div>'
+    + '<div style="font-size:15px;font-weight:800;color:#1d4ed8;line-height:1.1;">' + escHtml(nombre) + '</div>'
+    + (glosa ? '<div style="font-size:11px;color:#555;margin-top:1px;">' + escHtml(glosa) + '</div>' : '')
+    + (rbd   ? '<div style="font-size:10px;color:#777;margin-top:1px;">' + escHtml(rbd)   + '</div>' : '')
+    + '</div></div>';
+}
+
+// ── Para PDFs con jsPDF: dibujar el header ──
+function pdfDrawEstabHeader(doc) {
+  var pageW   = doc.internal.pageSize.width;
+  var nombre  = CONFIG_ESTAB.nombre || 'Educación Talcahuano';
+  var glosa   = CONFIG_ESTAB.glosa  || '';
+  var rbd     = CONFIG_ESTAB.rbd    ? 'RBD: ' + CONFIG_ESTAB.rbd : '';
+  var startX  = 14;
+  var y       = 12;
+
+  // Logo
+  if (CONFIG_ESTAB.logo) {
+    try {
+      var ext = CONFIG_ESTAB.logo.substring('data:image/'.length, CONFIG_ESTAB.logo.indexOf(';')).toUpperCase();
+      if (ext === 'JPG') ext = 'JPEG';
+      if (['PNG','JPEG','GIF','WEBP'].indexOf(ext) !== -1) {
+        doc.addImage(CONFIG_ESTAB.logo, ext, startX, y - 4, 14, 14);
+        startX = 31;
+      }
+    } catch(e) {}
+  }
+
+  // Texto
+  doc.setFontSize(13); doc.setFont(undefined, 'bold');
+  doc.setTextColor(29, 78, 216);
+  doc.text(nombre, startX, y + 2);
+
+  doc.setFontSize(9); doc.setFont(undefined, 'normal');
+  doc.setTextColor(80, 80, 80);
+  var subY = y + 7;
+  if (glosa) { doc.text(glosa, startX, subY); subY += 4; }
+  if (rbd)   { doc.text(rbd,   startX, subY); }
+
+  doc.setTextColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  doc.setDrawColor(29, 78, 216);
+  doc.line(14, y + 12, pageW - 14, y + 12);
+  doc.setDrawColor(0, 0, 0);
+
+  return y + 16; // retorna la posición Y después del header
+}
+
+// ══════════════════════════════════════════════
+// ESTADO Y PERSISTENCIA DE DOCENTES
+// ══════════════════════════════════════════════
+var DOCENTES = [];
+var SK_DOC   = 'docentes_v1';
+
+async function loadDocentes() {
+  try {
+    var r = await gsGet(SK_DOC);
+    if (r && r.ok && r.value) { DOCENTES = JSON.parse(r.value); return; }
+  } catch(e) {}
+  try {
+    var local = localStorage.getItem(SK_DOC);
+    if (local) { DOCENTES = JSON.parse(local); }
+  } catch(e) {}
+}
+
+function saveDocentes() {
+  var json = JSON.stringify(DOCENTES);
+  try { localStorage.setItem(SK_DOC, json); } catch(e) {}
+  gsSet(SK_DOC, json).catch(function(){});
+}
+
+function rebuildDocenteSelect() {
+  // Actualizar el selector de docentes en el libro de clases si existe
+  var sel = document.getElementById('lc-docente-badge');
+  if (sel) {
+    var docente = DOCENTES.find(function(d){ return d.asig === lcAsig; });
+    sel.textContent = docente ? '👤 ' + docente.nombre : '';
+    sel.style.display = docente ? '' : 'none';
+  }
+}
+
+
+// ══════════════════════════════════════════════
+// GESTIÓN DE USUARIOS — carga masiva y cambio de clave
+// ══════════════════════════════════════════════
+
+function switchTabUsers(tab) {
+  var lista  = document.getElementById('panelUsersLista');
+  var carga  = document.getElementById('panelUsersCarga');
+  var btnL   = document.getElementById('tabUsersLista');
+  var btnC   = document.getElementById('tabUsersCarga');
+  if (tab === 'lista') {
+    lista.style.display  = '';
+    carga.style.display  = 'none';
+    btnL.style.borderBottomColor = 'var(--pr)'; btnL.style.color = 'var(--pr)'; btnL.style.fontWeight = '700';
+    btnC.style.borderBottomColor = 'transparent'; btnC.style.color = 'var(--tx2)'; btnC.style.fontWeight = '600';
+  } else {
+    lista.style.display  = 'none';
+    carga.style.display  = '';
+    btnC.style.borderBottomColor = 'var(--pr)'; btnC.style.color = 'var(--pr)'; btnC.style.fontWeight = '700';
+    btnL.style.borderBottomColor = 'transparent'; btnL.style.color = 'var(--tx2)'; btnL.style.fontWeight = '600';
+  }
+}
+
+// Generar nombre de usuario a partir del nombre completo
+function generarUsername(nombre) {
+  var partes = nombre.trim().split(/\s+/);
+  var user   = '';
+  if (partes.length >= 2) {
+    user = partes[0][0].toLowerCase() + partes[partes.length - 1].toLowerCase();
+  } else {
+    user = partes[0].toLowerCase();
+  }
+  // Quitar acentos y caracteres especiales
+  user = user.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+  // Verificar duplicados y agregar número si es necesario
+  var base  = user;
+  var count = 2;
+  while (users[user]) { user = base + count; count++; }
+  return user;
+}
+
+function cargarUsuariosMasivo() {
+  var ta  = document.getElementById('usersMasivoTA');
+  var res = document.getElementById('usersMasivoResult');
+  var texto = (ta ? ta.value : '').trim();
+  if (!texto) { if (res) res.textContent = 'Escribe los nombres primero.'; return; }
+
+  var lineas = texto.split('\n')
+    .map(function(l){ return l.trim(); })
+    .filter(function(l){ return l.length > 1; });
+
+  var nuevos = 0; var duplicados = 0;
+  lineas.forEach(function(nombre) {
+    // Verificar si ya existe un usuario con ese nombre
+    var yaExiste = Object.values(users).find(function(u){
+      return u.nombre.toLowerCase() === nombre.toLowerCase();
+    });
+    if (yaExiste) { duplicados++; return; }
+
+    var uname = generarUsername(nombre);
+    users[uname] = {
+      nombre: nombre,
+      rol:    'profesor',   // rol por defecto — se cambia después
+      cursos: [],
+      pass:   '1234',       // clave genérica inicial
+      claveGenerica: true   // marca para pedir cambio al primer login
+    };
+    nuevos++;
+  });
+
+  saveUsers();
+  renderUsersTable();
+  switchTabUsers('lista');
+
+  var msg = nuevos + ' usuario' + (nuevos !== 1 ? 's' : '') + ' creado' + (nuevos !== 1 ? 's' : '');
+  if (duplicados) msg += ' · ' + duplicados + ' ya existían';
+  if (res) res.textContent = '✓ ' + msg;
+  if (ta && nuevos > 0) ta.value = '';
+  showToastN('✓ ' + msg + ' — asígnales el rol en la lista');
+}
+
+// ── renderUsersTable mejorada con selector de rol inline ──
+function renderUsersTable() {
+  var wrap = document.getElementById('usersTableWrap');
+  if (!wrap) return;
+
+  var uEntries = Object.entries(users);
+  if (!uEntries.length) {
+    wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:13px">Sin usuarios. Usa la pestaña "Carga masiva" para agregar.</div>';
+    return;
+  }
+
+  var rolOpts = [
+    ['profesor',         'Docente (Calificaciones)'],
+    ['asistente',        'Asistente Educación (Asistencia)'],
+    ['portero',          'Portero / Paradocente (Portería)'],
+    ['psicologo',        'Psicólogo/a (PIE/Dupla)'],
+    ['asistente_social', 'Asistente Social (PIE/Dupla)'],
+    ['admin',            'Administrador (todo)']
+  ];
+
+  var rolColors = {
+    admin:            'background:rgba(59,130,246,.15);color:var(--pr2)',
+    profesor:         'background:rgba(96,165,250,.12);color:var(--azul-claro)',
+    asistente:        'background:rgba(74,222,128,.12);color:var(--verde)',
+    portero:          'background:rgba(249,115,22,.12);color:var(--port)',
+    psicologo:        'background:var(--piel);color:var(--pie2)',
+    asistente_social: 'background:var(--piel);color:var(--pie2)'
+  };
+
+  var html = '<table style="width:100%;border-collapse:collapse;font-size:12.5px;">'
+    + '<thead><tr style="background:var(--sur2)">'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left">Nombre</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left;min-width:90px">Usuario</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left;min-width:200px">Rol</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:center;width:40px">Clave</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);width:70px"></th>'
+    + '</tr></thead><tbody>';
+
+  uEntries.forEach(function(entry) {
+    var uname = entry[0]; var u = entry[1];
+    var claveIcon = u.claveGenerica
+      ? '<span title="Clave genérica — no ha cambiado su contraseña" style="color:var(--amarillo);font-size:14px">⚠️</span>'
+      : '<span title="Contraseña personalizada" style="color:var(--verde);font-size:14px">✓</span>';
+
+    var rolSelect = '<select onchange="userSetRol(' + JSON.stringify(uname) + ',this.value)" '
+
+      + 'style="width:100%;font-size:12px;padding:4px 6px;border:1px solid var(--bor2);border-radius:6px;background:var(--sur);color:var(--tx);">'
+      + rolOpts.map(function(r){
+          return '<option value="' + r[0] + '"' + (u.rol === r[0] ? ' selected' : '') + '>' + r[1] + '</option>';
+        }).join('')
+      + '</select>';
+
+    html += '<tr style="border-bottom:0.5px solid var(--bor)">'
+      + '<td style="padding:8px 12px;border:0.5px solid var(--bor2);font-weight:600;color:var(--tx)">' + escHtml(u.nombre) + '</td>'
+      + '<td style="padding:8px 12px;border:0.5px solid var(--bor2);font-family:monospace;font-size:11.5px;color:var(--tx2)">' + escHtml(uname) + '</td>'
+      + '<td style="padding:5px 8px;border:0.5px solid var(--bor2);">' + rolSelect + '</td>'
+      + '<td style="padding:8px;border:0.5px solid var(--bor2);text-align:center">' + claveIcon + '</td>'
+      + '<td style="padding:6px 8px;border:0.5px solid var(--bor2);text-align:center;white-space:nowrap">'
+      + '<button onclick="abrirFormUsuario(' + JSON.stringify(uname) + ')" style="background:none;border:none;cursor:pointer;color:var(--pr2);font-size:14px;padding:2px 4px" title="Editar">✏️</button>'
+
+      + (uname !== 'admin' ? '<button onclick="eliminarUsuario(' + JSON.stringify(uname) + ')" style="background:none;border:none;cursor:pointer;color:var(--rojo);font-size:14px;padding:2px 4px" title="Eliminar">✕</button>' : '')
+
+      + '</td></tr>';
+  });
+
+  html += '</tbody></table>'
+    + '<div style="margin-top:10px;display:flex;gap:8px;align-items:center;">'
+    + '<button class="btn primary" onclick="guardarRolesUsuarios()" style="padding:6px 16px;font-size:12px">💾 Guardar roles</button>'
+    + '<span style="font-size:11px;color:var(--tx3)">⚠️ = clave genérica (1234) &nbsp;|&nbsp; ✓ = clave personalizada</span>'
+    + '</div>';
+
+  wrap.innerHTML = html;
+}
+
+function userSetRol(uname, rol) {
+  if (users[uname]) users[uname].rol = rol;
+}
+
+async function guardarRolesUsuarios() {
+  await saveUsers();
+  showToastN('✓ Roles guardados');
+}
+
+// ── Cambio de contraseña al primer login ──
+function verificarClavePrimerLogin() {
+  if (!sesion) return;
+  var u = users[sesion.username];
+  if (u && u.claveGenerica) {
+    document.getElementById('cambioPassSub').textContent =
+      'Hola ' + sesion.nombre.split(' ')[0] + ', tu clave actual es "1234". Te recomendamos cambiarla ahora.';
+    document.getElementById('cambioPassNueva').value   = '';
+    document.getElementById('cambioPassConfirm').value = '';
+    document.getElementById('cambioPassError').textContent = '';
+    document.getElementById('modalCambioPass').classList.add('open');
+  }
+}
+
+async function cambioPassConfirmar() {
+  var nueva    = document.getElementById('cambioPassNueva').value;
+  var confirma = document.getElementById('cambioPassConfirm').value;
+  var errEl    = document.getElementById('cambioPassError');
+  errEl.textContent = '';
+
+  if (nueva.length < 4) { errEl.textContent = 'La contraseña debe tener al menos 4 caracteres.'; return; }
+  if (nueva !== confirma) { errEl.textContent = 'Las contraseñas no coinciden.'; return; }
+  if (nueva === '1234')   { errEl.textContent = 'Elige una contraseña diferente a 1234.'; return; }
+
+  var u = users[sesion.username];
+  if (!u) return;
+  u.pass = nueva;
+  u.claveGenerica = false;
+  await saveUsers();
+  cerrarModal('modalCambioPass');
+  showToastN('✓ Contraseña cambiada correctamente');
+}
+
+function cambioPassOmitir() {
+  cerrarModal('modalCambioPass');
+  // Recordar que se omitió en esta sesión para no volver a preguntar
+}
+
+// Agregar opción de cambiar contraseña desde el menú de usuario
+function abrirCambioPassPropio() {
+  var u = users[sesion ? sesion.username : ''];
+  if (!u) return;
+  document.getElementById('cambioPassSub').textContent = 'Cambia tu contraseña de acceso.';
+  document.getElementById('cambioPassNueva').value   = '';
+  document.getElementById('cambioPassConfirm').value = '';
+  document.getElementById('cambioPassError').textContent = '';
+  document.getElementById('modalCambioPass').classList.add('open');
+}
+
+// ══════════════════════════════════════════════
+// GESTIÓN DE DOCENTES — nuevo panel
+// ══════════════════════════════════════════════
+
+
+function importarDocentes() {
+  var ta    = document.getElementById('doc-import-ta');
+  var res   = document.getElementById('doc-import-result');
+  var texto = (ta ? ta.value : '').trim();
+  if (!texto) { if (res) res.textContent = 'Escribe los nombres primero.'; return; }
+
+  var lineas = texto.split('\n')
+    .map(function(l){ return l.trim(); })
+    .filter(function(l){ return l.length > 1; });
+
+  var nuevos = 0;
+  lineas.forEach(function(nombre) {
+    // No duplicar
+    var existe = DOCENTES.find(function(d){
+      return d.nombre.toLowerCase() === nombre.toLowerCase();
+    });
+    if (!existe) {
+      DOCENTES.push({
+        nombre: nombre,
+        rut:    '',
+        asig:   '',
+        tipo:   'general',
+        cursos: [],
+        id:     Date.now().toString(36) + nuevos
+      });
+      nuevos++;
+    }
+  });
+
+  saveDocentes();
+  renderDocentesList();
+  rebuildDocenteSelect();
+
+  var msg = nuevos + ' docente' + (nuevos !== 1 ? 's' : '') + ' cargado' + (nuevos !== 1 ? 's' : '');
+  if (res) res.textContent = '✓ ' + msg;
+  if (ta && nuevos > 0) ta.value = '';
+  showToastN('✓ ' + msg + ' — ahora asígnalos en la tabla de abajo');
+}
+
+function initDocCursosGrid() {
+  var grid = document.getElementById('dcursos-grid');
+  if (!grid) return;
+  var cursosOpts = [];
+  NIVELES.forEach(function(niv) {
+    niv.cursos.forEach(function(c) {
+      cursosOpts.push({ clave: niv.key + '__' + c, label: c });
+    });
+  });
+  grid.innerHTML = cursosOpts.map(function(o) {
+    return '<label style="display:flex;align-items:center;gap:4px;font-size:12px;padding:3px 8px;border:1px solid var(--bor2);border-radius:6px;cursor:pointer;user-select:none;">'
+      + '<input type="checkbox" value="' + o.clave + '" style="accent-color:var(--pr2)"> ' + o.label + '</label>';
+  }).join('');
+}
+
+function agregarDocente() {
+  var nombre = (document.getElementById('dnombre').value || '').trim();
+  var rut    = (document.getElementById('drut').value || '').trim();
+  var asig   = document.getElementById('dasig').value;
+  var tipo   = document.getElementById('dtipo-sel').value;
+  var checks = document.querySelectorAll('#dcursos-grid input[type=checkbox]:checked');
+  var cursos = Array.from(checks).map(function(c) { return c.value; });
+
+  if (!nombre) { alert('Ingresa el nombre del docente.'); return; }
+  if (!asig)   { alert('Selecciona la asignatura.'); return; }
+
+  var doc = {
+    nombre: nombre,
+    rut:    rut,
+    asig:   asig,
+    tipo:   tipo,
+    cursos: cursos,
+    id:     Date.now().toString(36)
+  };
+  DOCENTES.push(doc);
+  saveDocentes();
+  renderDocentesList();
+  rebuildDocenteSelect();
+
+  // Limpiar form
+  document.getElementById('dnombre').value = '';
+  document.getElementById('drut').value    = '';
+  document.getElementById('dasig').value   = '';
+  document.getElementById('dtipo-sel').value = 'general';
+  document.querySelectorAll('#dcursos-grid input[type=checkbox]').forEach(function(c) { c.checked = false; });
+  showToastN('✓ Docente agregado — ' + nombre);
+}
+
+function renderDocentesList() {
+  var body = document.getElementById('doc-list-body');
+  if (!body) return;
+
+  if (!DOCENTES.length) {
+    body.innerHTML = '<div style="padding:24px;text-align:center;color:var(--tx3);font-size:13px;font-style:italic">Carga los nombres en el paso ① y aparecerán aquí para asignarles rol y cursos.</div>';
+    return;
+  }
+
+  // Generar opciones de cursos
+  var cursosOpts = '';
+  NIVELES.forEach(function(niv) {
+    niv.cursos.forEach(function(c) {
+      cursosOpts += '<option value="' + escHtml(niv.key + '__' + c) + '">' + escHtml(c) + '</option>';
+    });
+  });
+
+  // Generar opciones de asignaturas
+  var asigOpts = '<option value="">— Sin asignar —</option>';
+  ASIGNATURAS_1_2M.forEach(function(a) {
+    asigOpts += '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>';
+  });
+  // Asignaturas TP
+  Object.keys(ASIGNATURAS_TP).forEach(function(esp) {
+    var labels = { gastronomia: 'Gastronomía', parvularia: 'Parvularia', hoteleria: 'Hotelería', enfermeria: 'Enfermería', gastronomia2: 'Gastronomía 4°A', pasteleria: 'Pastelería 4°B', parvularia2: 'Parvularia 4°C', hoteleria2: 'Hotelería 4°D', enfermeria2: 'Enfermería 4°' };
+    asigOpts += '<optgroup label="' + (labels[esp] || esp) + '">';
+    ASIGNATURAS_TP[esp].forEach(function(a) {
+      if (ASIGNATURAS_1_2M.indexOf(a) === -1) {
+        asigOpts += '<option value="' + escHtml(a) + '">' + escHtml(a) + '</option>';
+      }
+    });
+    asigOpts += '</optgroup>';
+  });
+  asigOpts += '<option value="Módulo Técnico Profesional">Módulo Técnico Profesional</option>';
+
+  var html = '<div style="font-size:12px;color:var(--tx2);margin-bottom:8px;">'
+    + DOCENTES.length + ' docente' + (DOCENTES.length !== 1 ? 's' : '') + ' — edita su rol, asignatura y cursos directamente en la tabla.'
+    + ' <button onclick="saveDocentesManual()" class="btn primary" style="padding:4px 12px;font-size:11px;margin-left:8px">💾 Guardar cambios</button>'
+    + ' <button onclick="limpiarTodosDocentes()" class="btn danger" style="padding:4px 10px;font-size:11px;margin-left:4px">Limpiar todo</button>'
+    + '</div>';
+
+  html += '<div style="overflow-x:auto;">'
+    + '<table style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:600px;">'
+    + '<thead><tr style="background:var(--sur2)">'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left;min-width:180px">Nombre</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left;min-width:160px">Asignatura</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left;min-width:130px">Rol</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);text-align:left;min-width:200px">Cursos asignados</th>'
+    + '<th style="padding:8px 12px;border:0.5px solid var(--bor2);width:40px"></th>'
+    + '</tr></thead><tbody>';
+
+  DOCENTES.forEach(function(d, i) {
+    var cursosSeleccionados = (d.cursos || []);
+    html += '<tr style="border-bottom:0.5px solid var(--bor)">'
+      // Nombre (no editable, solo mostrar)
+      + '<td style="padding:8px 12px;border:0.5px solid var(--bor2);font-weight:600;color:var(--tx)">' + escHtml(d.nombre) + '</td>'
+      // Asignatura
+      + '<td style="padding:6px 8px;border:0.5px solid var(--bor2);">'
+      + '<select onchange="docSetAsig(' + i + ',this.value)" style="width:100%;font-size:12px;padding:5px 6px;border:1px solid var(--bor2);border-radius:6px;background:var(--sur);color:var(--tx);">'
+      + asigOpts.replace('value="' + escHtml(d.asig || '') + '"', 'value="' + escHtml(d.asig || '') + '" selected')
+      + '</select></td>'
+      // Rol
+      + '<td style="padding:6px 8px;border:0.5px solid var(--bor2);">'
+      + '<select onchange="docSetRol(' + i + ',this.value)" style="width:100%;font-size:12px;padding:5px 6px;border:1px solid var(--bor2);border-radius:6px;background:var(--sur);color:var(--tx);">'
+      + '<option value="general"' + (d.tipo==='general'?' selected':'') + '>Docente</option>'
+      + '<option value="jefe"' + (d.tipo==='jefe'?' selected':'') + '>Profesor/a Jefe</option>'
+      + '</select></td>'
+      // Cursos — checkboxes en una fila
+      + '<td style="padding:6px 10px;border:0.5px solid var(--bor2);">'
+      + '<div style="display:flex;flex-wrap:wrap;gap:4px;">';
+
+    NIVELES.forEach(function(niv) {
+      niv.cursos.forEach(function(c) {
+        var clave = niv.key + '__' + c;
+        var checked = cursosSeleccionados.indexOf(clave) !== -1;
+        html += '<label style="display:flex;align-items:center;gap:2px;font-size:11px;cursor:pointer;white-space:nowrap;padding:2px 5px;border:1px solid var(--bor2);border-radius:4px;background:' + (checked ? 'rgba(96,165,250,.15)' : 'var(--sur2)') + '">'
+          + '<input type="checkbox" value="' + clave + '" ' + (checked ? 'checked' : '') + ' '
+          + 'onchange="docToggleCurso(' + i + ',this.value,this.checked,this)" '
+          + 'style="accent-color:var(--pr2);margin:0"> ' + escHtml(c) + '</label>';
+      });
+    });
+
+    html += '</div></td>'
+      + '<td style="padding:6px 8px;border:0.5px solid var(--bor2);text-align:center;">'
+      + '<button onclick="eliminarDocente(' + i + ')" style="background:none;border:none;color:var(--rojo);cursor:pointer;font-size:15px;line-height:1">✕</button>'
+      + '</td></tr>';
+  });
+
+  html += '</tbody></table></div>';
+  body.innerHTML = html;
+}
+
+function docSetAsig(idx, valor) {
+  if (DOCENTES[idx]) { DOCENTES[idx].asig = valor; }
+}
+function docSetRol(idx, valor) {
+  if (DOCENTES[idx]) { DOCENTES[idx].tipo = valor; }
+}
+function docToggleCurso(idx, clave, checked, el) {
+  if (!DOCENTES[idx]) return;
+  if (!DOCENTES[idx].cursos) DOCENTES[idx].cursos = [];
+  var ci = DOCENTES[idx].cursos.indexOf(clave);
+  if (checked && ci === -1) DOCENTES[idx].cursos.push(clave);
+  if (!checked && ci !== -1) DOCENTES[idx].cursos.splice(ci, 1);
+  if (el && el.parentElement) {
+    el.parentElement.style.background = checked ? 'rgba(96,165,250,.15)' : 'var(--sur2)';
+  }
+}
+function saveDocentesManual() {
+  saveDocentes();
+  rebuildDocenteSelect();
+  showToastN('✓ Docentes guardados');
+}
+
+function eliminarDocente(idx) {
+  if (!confirm('¿Eliminar a "' + DOCENTES[idx].nombre + '"?')) return;
+  DOCENTES.splice(idx, 1);
+  saveDocentes();
+  renderDocentesList();
+}
+
+function limpiarTodosDocentes() {
+  if (!confirm('¿Eliminar todos los docentes?')) return;
+  DOCENTES.length = 0;
+  saveDocentes();
+  renderDocentesList();
+}
+
+// ══════════════════════════════════════════════
+// INFORMES Y CERTIFICADOS
+// ══════════════════════════════════════════════
+
+function infCargarAlumnos() {
+  var clave = document.getElementById('inf-curso-sel').value;
+  var sel   = document.getElementById('inf-alumno-sel');
+  sel.innerHTML = '<option value="">— Seleccionar alumno —</option>';
+  sel.disabled  = !clave;
+  if (!clave) return;
+  var alumnos = getAlumnosParaNotas(clave).sort(function(a,b){ return (a.numLista||999)-(b.numLista||999); });
+  alumnos.forEach(function(a) {
+    var opt = document.createElement('option');
+    opt.value = a.nombre;
+    opt.textContent = (a.numLista ? String(a.numLista).padStart(2,'0') + '. ' : '') + a.nombre;
+    sel.appendChild(opt);
+  });
+}
+
+async function infCargarNotasAlumno(clave, alumno) {
+  // Cargar notas del plan de estudios para este alumno
+  var sk = 'plan_v1_' + clave.replace(/[^a-zA-Z0-9]/g,'_') + '_' + alumno.replace(/[^a-zA-Z0-9]/g,'_');
+  var notas = {};
+  try {
+    var local = localStorage.getItem(sk);
+    if (local) notas = JSON.parse(local);
+  } catch(e) {}
+  try {
+    var r = await gsGet(sk);
+    if (r && r.ok && r.value) notas = JSON.parse(r.value);
+  } catch(e) {}
+  return notas;
+}
+
+function infDescargarParcial()   { infGenerarPDF(true); }
+function infDescargarCompleto()  { infGenerarPDF(false); }
+
+async function infGenerarPDF(esParcial) {
+  var clave  = document.getElementById('inf-curso-sel').value;
+  var alumno = document.getElementById('inf-alumno-sel').value;
+  if (!clave || !alumno) { alert('Selecciona el curso y el alumno.'); return; }
+  if (!window.jspdf) { alert('Librería PDF no cargada.'); return; }
+
+  var notas     = await infCargarNotasAlumno(clave, alumno);
+  var cursoLabel = clave.split('__')[1];
+  var fecha     = new Date().toLocaleDateString('es-CL', {day:'2-digit', month:'long', year:'numeric'});
+
+  // Calcular promedio general
+  var sumaProms = 0; var cntProms = 0;
+  PLAN_1_2_MEDIO.forEach(function(asig) {
+    if (asig.tipo === 'concepto') return;
+    var vals = asig.subs.map(function(s){ return parseFloat(notas[s.id]); }).filter(function(v){ return !isNaN(v); });
+    if (!vals.length) return;
+    var p = vals.reduce(function(a,b){return a+b;},0) / vals.length;
+    sumaProms += p; cntProms++;
+  });
+  var promGen = cntProms ? (sumaProms / cntProms).toFixed(1) : '—';
+  var sit     = cntProms ? (parseFloat(promGen) >= 4 ? 'Aprobado/a' : 'Reprobado/a') : '—';
+
+  var doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  var pageW  = doc.internal.pageSize.width;
+  var startY = pdfDrawEstabHeader(doc);
+
+  doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(0,0,0);
+  doc.text('Informe de Notas' + (esParcial ? ' Parcial' : '') + ' — Año ' + new Date().getFullYear(), pageW/2, startY + 4, { align: 'center' });
+
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text('Alumno/a: ' + alumno, 14, startY + 11);
+  doc.text('Curso: ' + cursoLabel, 14, startY + 17);
+  doc.text('Promedio general: ' + promGen + '   Situación: ' + sit, 14, startY + 23);
+  doc.text('Fecha: ' + fecha, pageW-14, startY + 23, { align: 'right' });
+  doc.setLineWidth(0.3); doc.line(14, startY + 26, pageW-14, startY + 26);
+
+  // Tabla de asignaturas
+  var rows = [];
+  PLAN_1_2_MEDIO.forEach(function(asig) {
+    if (asig.tipo === 'concepto') {
+      var conc = notas[asig.subs[0].id] || '—';
+      if (esParcial && conc === '—') return;
+      rows.push([asig.nombre, conc, '', 'No incide en promedio']);
+      return;
+    }
+    if (asig.subs.length === 1) {
+      var v = notas[asig.subs[0].id] || '—';
+      if (esParcial && v === '—') return;
+      rows.push([asig.nombre, v, '', v]);
+      return;
+    }
+    // Sub-asignaturas (Ciencias o Artes)
+    var vals = asig.subs.map(function(s){ return parseFloat(notas[s.id]); }).filter(function(v){ return !isNaN(v); });
+    var prom = vals.length ? (vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1) : '—';
+    if (esParcial && !vals.length) return;
+    rows.push([{ content: asig.nombre, styles: { fontStyle: 'bold' } }, '', '', prom]);
+    asig.subs.forEach(function(sub) {
+      var sv = notas[sub.id] || '—';
+      if (esParcial && sv === '—') return;
+      rows.push(['  → ' + sub.nombre, sv, '', '']);
+    });
+  });
+
+  doc.autoTable({
+    startY: startY + 29,
+    head: [['Asignatura', 'Nota', '', 'Promedio']],
+    body: rows,
+    theme: 'grid',
+    styles: { fontSize: 9, cellPadding: 2.5 },
+    headStyles: { fillColor: [41, 55, 99], textColor: 255, fontStyle: 'bold' },
+    columnStyles: {
+      0: { cellWidth: 100 },
+      1: { cellWidth: 25, halign: 'center' },
+      2: { cellWidth: 25, halign: 'center' },
+      3: { cellWidth: 30, halign: 'center', fontStyle: 'bold' }
+    },
+    didParseCell: function(data) {
+      if (data.section === 'body') {
+        var val = parseFloat(data.cell.raw);
+        if (!isNaN(val) && val < 4) {
+          data.cell.styles.textColor = [220, 50, 50];
+          data.cell.styles.fontStyle = 'bold';
+        } else if (!isNaN(val) && val >= 4) {
+          data.cell.styles.textColor = [34, 120, 34];
+        }
+      }
+    }
+  });
+
+  // Firmas
+  var finalY = doc.lastAutoTable.finalY + 20;
+  var firmas = ['Profesor/a Jefe', 'Director/a', 'Apoderado/a'];
+  var sw = (pageW - 28) / 3;
+  firmas.forEach(function(f, i) {
+    var x = 14 + sw * i + sw * 0.1;
+    doc.line(x, finalY, x + sw * 0.8, finalY);
+    doc.setFontSize(8);
+    doc.text(f, x + sw * 0.4, finalY + 4, { align: 'center' });
+  });
+
+  var fname = 'Informe_' + alumno.replace(/[^a-zA-Z0-9]/g,'_') + '_' + cursoLabel + (esParcial ? '_Parcial' : '') + '.pdf';
+  doc.save(fname);
+  showToastN('✓ PDF descargado');
+}
+
+async function infDescargarCurso() {
+  var clave = document.getElementById('inf-curso-resumen').value;
+  if (!clave) { alert('Selecciona un curso.'); return; }
+  if (!window.jspdf) { alert('Librería PDF no cargada.'); return; }
+
+  var alumnos    = getAlumnosParaNotas(clave).sort(function(a,b){ return (a.numLista||999)-(b.numLista||999); });
+  var cursoLabel = clave.split('__')[1];
+  var fecha      = new Date().toLocaleDateString('es-CL', {day:'2-digit', month:'long', year:'numeric'});
+
+  if (!alumnos.length) { alert('Este curso no tiene alumnos en Asistencia.'); return; }
+
+  showToastN('Generando PDF del curso...');
+
+  // Cargar notas de todos los alumnos
+  var todasNotas = {};
+  for (var i = 0; i < alumnos.length; i++) {
+    var a = alumnos[i];
+    todasNotas[a.nombre] = await infCargarNotasAlumno(clave, a.nombre);
+  }
+
+  var doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  var pageW = doc.internal.pageSize.width;
+
+  var startY = pdfDrawEstabHeader(doc);
+  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(0,0,0);
+  doc.text('Resumen de Notas — Curso ' + cursoLabel + '   |   Año ' + new Date().getFullYear(), pageW/2, startY + 4, { align: 'center' });
+  doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(80,80,80);
+  doc.text(fecha, pageW/2, startY + 9, { align: 'center' });
+  doc.setTextColor(0,0,0);
+
+  // Columnas: N°, Nombre, una por asignatura (promedio), Promedio general
+  var asigHeaders = PLAN_1_2_MEDIO
+    .filter(function(a){ return a.tipo !== 'concepto'; })
+    .map(function(a){ return a.nombre.length > 18 ? a.nombre.slice(0,16) + '…' : a.nombre; });
+
+  var head = [['N°', 'Alumno/a'].concat(asigHeaders).concat(['Promedio'])];
+
+  var body = alumnos.map(function(a, i) {
+    var notas = todasNotas[a.nombre] || {};
+    var sumaP = 0; var cntP = 0;
+    var notasCols = PLAN_1_2_MEDIO
+      .filter(function(asig){ return asig.tipo !== 'concepto'; })
+      .map(function(asig) {
+        var vals = asig.subs.map(function(s){ return parseFloat(notas[s.id]); }).filter(function(v){ return !isNaN(v); });
+        if (!vals.length) return '—';
+        var p = vals.reduce(function(a,b){return a+b;},0)/vals.length;
+        sumaP += p; cntP++;
+        return p.toFixed(1);
+      });
+    var promG = cntP ? (sumaP/cntP).toFixed(1) : '—';
+    return [String(a.numLista||i+1).padStart(2,'0'), a.nombre].concat(notasCols).concat([promG]);
+  });
+
+  doc.autoTable({
+    startY: startY + 13,
+    head: head,
+    body: body,
+    theme: 'grid',
+    styles: { fontSize: 7, cellPadding: 1.5 },
+    headStyles: { fillColor: [41,55,99], textColor: 255, fontSize: 7 },
+    columnStyles: { 0: { cellWidth: 8, halign: 'center' }, 1: { cellWidth: 50 } },
+    didParseCell: function(data) {
+      if (data.section === 'body' && data.column.index >= 2) {
+        var val = parseFloat(data.cell.raw);
+        if (!isNaN(val)) {
+          data.cell.styles.halign = 'center';
+          if (val < 4) { data.cell.styles.textColor = [220,50,50]; data.cell.styles.fontStyle = 'bold'; }
+          else { data.cell.styles.textColor = [34,120,34]; }
+        }
+      }
+    }
+  });
+
+  doc.save('Resumen_' + cursoLabel + '_' + new Date().getFullYear() + '.pdf');
+  showToastN('✓ PDF del curso descargado');
+}
+
+// ═══════════════════════════════════════════════════
+// PLAN DE ESTUDIOS 1° Y 2° MEDIO
+// ═══════════════════════════════════════════════════
+
+const PLAN_1_2_MEDIO = [
+  {
+    id: 'lenguaje', nombre: 'Lengua y Literatura',
+    tipo: 'normal',
+    subs: [{ id: 'len', nombre: 'Lengua y Literatura' }]
+  },
+  {
+    id: 'ingles', nombre: 'Idioma Extranjero: Inglés',
+    tipo: 'normal',
+    subs: [{ id: 'ing', nombre: 'Inglés' }]
+  },
+  {
+    id: 'matematica', nombre: 'Matemáticas',
+    tipo: 'normal',
+    subs: [{ id: 'mat', nombre: 'Matemáticas' }]
+  },
+  {
+    id: 'ciencias', nombre: 'Ciencias Naturales',
+    tipo: 'promedio',
+    subs: [
+      { id: 'fis', nombre: 'Física' },
+      { id: 'qui', nombre: 'Química' },
+      { id: 'bio', nombre: 'Biología' }
+    ]
+  },
+  {
+    id: 'historia', nombre: 'Historia y Ciencias Sociales',
+    tipo: 'normal',
+    subs: [{ id: 'his', nombre: 'Historia y Cs. Sociales' }]
+  },
+  {
+    id: 'tecnologia', nombre: 'Educación Tecnológica',
+    tipo: 'normal',
+    subs: [{ id: 'tec', nombre: 'Educación Tecnológica' }]
+  },
+  {
+    id: 'artes', nombre: 'Artes Visuales y Artes Musicales',
+    tipo: 'opcion',
+    subs: [
+      { id: 'arv', nombre: 'Artes Visuales' },
+      { id: 'arm', nombre: 'Artes Musicales' }
+    ]
+  },
+  {
+    id: 'edfisica', nombre: 'Educación Física',
+    tipo: 'normal',
+    subs: [{ id: 'edf', nombre: 'Educación Física' }]
+  },
+  {
+    id: 'religion', nombre: 'Religión',
+    tipo: 'concepto',
+    subs: [{ id: 'rel', nombre: 'Religión' }]
+  }
+];
+
+let planCursoActual  = '';
+let planAlumnoActual = '';
+let planNotas        = {};
+let planSKActual     = '';
+
+function planGetSK(curso, alumno) {
+  return 'plan_v1_' + curso.replace(/[^a-zA-Z0-9]/g, '_') + '_' + alumno.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function planCargarCurso() {
+  const clave = document.getElementById('planCursoSel').value; // ya es "1M__1°A"
+  const sel   = document.getElementById('planAlumnoSel');
+  planCursoActual  = clave;
+  planAlumnoActual = '';
+  planNotas        = {};
+  sel.innerHTML    = '<option value="">— Seleccionar alumno —</option>';
+  sel.disabled     = !curso;
+  ['planBtnGuardar','planBtnParcial','planBtnCompleto'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  if (!curso) { planRenderTabla(); return; }
+  const alumnos = getAlumnosParaNotas(curso).sort((a, b) => (a.numLista||999) - (b.numLista||999));
+  alumnos.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a.nombre;
+    opt.textContent = (a.numLista ? String(a.numLista).padStart(2,'0') + '. ' : '') + a.nombre;
+    sel.appendChild(opt);
+  });
+  planRenderTabla();
+}
+
+async function planSeleccionarAlumno() {
+  const alumno = document.getElementById('planAlumnoSel').value;
+  planAlumnoActual = alumno;
+  planNotas        = {};
+  ['planBtnGuardar','planBtnParcial','planBtnCompleto'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = alumno ? '' : 'none';
+  });
+  if (!alumno) { planRenderTabla(); return; }
+  planSKActual = planGetSK(planCursoActual, alumno);
+  try {
+    const r = await gsGet(planSKActual);
+    if (r && r.ok && r.value) planNotas = JSON.parse(r.value);
+  } catch(e) {
+    try {
+      const local = localStorage.getItem(planSKActual);
+      if (local) planNotas = JSON.parse(local);
+    } catch(e2) {}
+  }
+  planRenderTabla();
+}
+
+function planCalcProm(asig) {
+  if (asig.tipo === 'concepto') return null;
+  if (asig.tipo === 'opcion') {
+    for (const sub of asig.subs) {
+      const v = parseFloat(planNotas[sub.id]);
+      if (!isNaN(v)) return v;
+    }
+    return null;
+  }
+  const vals = asig.subs.map(s => parseFloat(planNotas[s.id])).filter(v => !isNaN(v));
+  if (!vals.length) return null;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+function planCalcPromGeneral() {
+  const proms = PLAN_1_2_MEDIO
+    .filter(a => a.tipo !== 'concepto')
+    .map(a => planCalcProm(a))
+    .filter(p => p !== null);
+  if (!proms.length) return null;
+  return proms.reduce((a, b) => a + b, 0) / proms.length;
+}
+
+function planRenderTabla() {
+  const contenido = document.getElementById('planContent');
+  if (!planAlumnoActual) {
+    contenido.innerHTML = '<div class="plan-empty">Selecciona un curso y luego un alumno para ingresar o ver sus notas.</div>';
+    return;
+  }
+  let html = '';
+  PLAN_1_2_MEDIO.forEach(asig => {
+    const prom = planCalcProm(asig);
+    let promHtml = '';
+    if (asig.tipo !== 'concepto') {
+      const color = prom === null ? 'var(--tx3)' : prom >= 4 ? 'var(--verde)' : prom >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+      promHtml = `<span class="plan-asig-prom" style="color:${color}">${prom !== null ? prom.toFixed(1) : '—'}</span>`;
+    }
+    html += `<div class="plan-asig-card">
+      <div class="plan-asig-hdr">
+        <span class="plan-asig-nombre">${escHtml(asig.nombre)}</span>
+        ${promHtml}
+      </div>`;
+    asig.subs.forEach(sub => {
+      const val = planNotas[sub.id] || '';
+      if (asig.tipo === 'concepto') {
+        html += `<div class="plan-sub-row">
+          <span class="plan-sub-nombre">Concepto</span>
+          <select class="plan-concepto-sel" id="plan_${sub.id}" onchange="planActualizarNota('${sub.id}',this.value)">
+            <option value="">— Sin nota —</option>
+            <option value="MB" ${val==='MB'?'selected':''}>MB — Muy Bueno (6,0–7,0)</option>
+            <option value="B"  ${val==='B' ?'selected':''}>B — Bueno (5,0–5,9)</option>
+            <option value="S"  ${val==='S' ?'selected':''}>S — Suficiente (4,0–4,9)</option>
+            <option value="I"  ${val==='I' ?'selected':''}>I — Insuficiente (2,0–3,9)</option>
+          </select>
+        </div>`;
+      } else {
+        const n = parseFloat(val);
+        const cls = val === '' ? '' : n >= 4 ? 'ok' : n >= 3 ? 'riesgo' : 'mal';
+        const label = asig.subs.length > 1 ? escHtml(sub.nombre) : '';
+        html += `<div class="plan-sub-row">
+          <span class="plan-sub-nombre">${label}</span>
+          <input type="number" class="plan-nota-input ${cls}" id="plan_${sub.id}"
+            min="1" max="7" step="0.1" value="${escHtml(String(val))}" placeholder="—"
+            oninput="planActualizarNota('${sub.id}',this.value)">
+        </div>`;
+      }
+    });
+    html += `</div>`;
+  });
+  contenido.innerHTML = html;
+}
+
+function planActualizarNota(subId, valor) {
+  if (valor !== '' && valor !== null) {
+    var n = parseFloat(valor);
+    if (!isNaN(n)) {
+      if (n > 7.0) { valor = '7.0'; var el = document.getElementById('plan_'+subId); if(el) el.value='7.0'; }
+      if (n < 1.0) { valor = '1.0'; var el = document.getElementById('plan_'+subId); if(el) el.value='1.0'; }
+    }
+  }
+  if (valor === '' || valor === null) delete planNotas[subId];
+  else planNotas[subId] = valor;
+  const inp = document.getElementById('plan_' + subId);
+  if (inp && inp.type === 'number') {
+    const n = parseFloat(valor);
+    inp.className = 'plan-nota-input ' + (isNaN(n) ? '' : n >= 4 ? 'ok' : n >= 3 ? 'riesgo' : 'mal');
+  }
+  // Actualizar promedio en header de cada asignatura
+  document.querySelectorAll('#planContent .plan-asig-card').forEach((card, i) => {
+    const a = PLAN_1_2_MEDIO[i];
+    if (!a || a.tipo === 'concepto') return;
+    const p = planCalcProm(a);
+    const span = card.querySelector('.plan-asig-prom');
+    if (span) {
+      const color = p === null ? 'var(--tx3)' : p >= 4 ? 'var(--verde)' : p >= 3 ? 'var(--amarillo)' : 'var(--rojo)';
+      span.style.color = color;
+      span.textContent = p !== null ? p.toFixed(1) : '—';
+    }
+  });
+}
+
+async function planGuardarNotas() {
+  if (!planAlumnoActual || !planCursoActual) return;
+  const json = JSON.stringify(planNotas);
+  try { localStorage.setItem(planSKActual, json); } catch(e) {}
+  try {
+    await gsSet(planSKActual, json);
+    showToastN('✓ Notas guardadas — ' + planAlumnoActual);
+  } catch(e) {
+    showToastN('Guardado local (sin conexión)');
+  }
+}
+
+function planImprimirCompleto() { planGenerarInforme(false); }
+function planImprimirParcial()  { planGenerarInforme(true);  }
+
+function planGenerarInforme(esParcial) {
+  if (!planAlumnoActual || !planCursoActual) return;
+  const alumno  = planAlumnoActual;
+  const curso   = planCursoActual;
+  const fecha   = new Date().toLocaleDateString('es-CL', {day:'2-digit', month:'long', year:'numeric'});
+  const promGen = planCalcPromGeneral();
+  const promStr = promGen !== null ? promGen.toFixed(1) : '—';
+  const sit     = promGen !== null ? (promGen >= 4 ? 'Aprobado/a' : promGen >= 3 ? 'En riesgo' : 'Reprobado/a') : '—';
+
+  let filas = '';
+  PLAN_1_2_MEDIO.forEach(asig => {
+    const tieneNota = asig.tipo === 'concepto'
+      ? !!planNotas[asig.subs[0].id]
+      : asig.subs.some(s => planNotas[s.id]);
+    if (esParcial && !tieneNota) return;
+
+    const prom    = planCalcProm(asig);
+    const promDisp = prom !== null ? prom.toFixed(1) : '—';
+
+    if (asig.tipo === 'concepto') {
+      const conc = planNotas[asig.subs[0].id] || '—';
+      filas += `<tr class="asig-principal">
+        <td class="td-asig">${escHtml(asig.nombre)}</td>
+        <td class="td-conc" style="text-align:center" colspan="2">${conc}</td>
+        <td style="text-align:center;font-size:8pt;color:#666;font-style:italic">No afecta promedio</td>
+      </tr>`;
+    } else if (asig.subs.length === 1) {
+      filas += `<tr class="asig-principal">
+        <td class="td-asig">${escHtml(asig.nombre)}</td>
+        <td class="td-nota" colspan="2">${planNotas[asig.subs[0].id] || '—'}</td>
+        <td class="td-prom">${promDisp}</td>
+      </tr>`;
+    } else {
+      filas += `<tr class="asig-principal">
+        <td class="td-asig" style="font-weight:bold">${escHtml(asig.nombre)}</td>
+        <td colspan="2"></td>
+        <td class="td-prom">${promDisp}</td>
+      </tr>`;
+      asig.subs.forEach(sub => {
+        const v = planNotas[sub.id];
+        if (esParcial && !v) return;
+        filas += `<tr class="asig-sub">
+          <td class="td-sub">${escHtml(sub.nombre)}</td>
+          <td class="td-nota" colspan="2">${v || '—'}</td>
+          <td></td>
+        </tr>`;
+      });
+    }
+  });
+
+  document.getElementById('informe-alumno-page').innerHTML = `
+    <div class="inf-header">
+      <h1>Educación Talcahuano</h1>
+      <h2>Informe de Notas${esParcial ? ' Parcial' : ''} — 1° y 2° Medio</h2>
+      <h3>Año Escolar ${new Date().getFullYear()}</h3>
+    </div>
+    <div class="inf-datos">
+      <div class="inf-dato"><span class="inf-dato-lbl">Alumno/a:</span> ${escHtml(alumno)}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Curso:</span> ${escHtml(curso)}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Fecha:</span> ${fecha}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Promedio general:</span> ${promStr}</div>
+      <div class="inf-dato"><span class="inf-dato-lbl">Situación:</span> ${sit}</div>
+      ${esParcial ? '<div class="inf-dato"><span class="inf-parcial-badge">INFORME PARCIAL</span></div>' : ''}
+    </div>
+    <table class="inf-tabla">
+      <thead>
+        <tr>
+          <th style="width:50%">Asignatura</th>
+          <th style="width:17%;text-align:center">Nota / Concepto</th>
+          <th style="width:17%;text-align:center">Sub-notas</th>
+          <th style="width:16%;text-align:center">Promedio</th>
+        </tr>
+      </thead>
+      <tbody>${filas}</tbody>
+    </table>
+    <div class="inf-obs">Observaciones: _______________________________________________ </div>
+    <div class="inf-firma">
+      <div class="inf-firma-item">Profesor/a Jefe</div>
+      <div class="inf-firma-item">Director/a</div>
+      <div class="inf-firma-item">Apoderado/a</div>
+    </div>
+  `;
+
+  document.getElementById('informe-alumno-wrap').style.display = 'block';
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      document.getElementById('informe-alumno-wrap').style.display = 'none';
+    }, 1500);
+  }, 300);
+}
+
+
+
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
@@ -4750,6 +6898,8 @@ async function init(){
 
   await Promise.all([loadState(), loadUsers(), loadPort()]);
   await loadPie();
+  await loadDocentes();
+  await loadConfig();
 
   NIVELES.forEach(niv=>niv.cursos.forEach(c=>initCurso(getCursoKey(niv.key,c))));
   updateDateDisplay();
