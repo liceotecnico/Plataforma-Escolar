@@ -1575,6 +1575,82 @@ html.tema-claro .btn.primary { background: var(--pr); color: #fff; }
 html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border-color: var(--pr); }
 
 
+
+/* Tab estadísticas */
+
+
+/* Cards estadísticas */
+.stat-card {
+  background: var(--sur2);
+  border: 0.5px solid var(--bor2);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-card-num {
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+}
+.stat-card-label {
+  font-size: 12px;
+  color: var(--tx2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.stat-card-sub {
+  font-size: 11px;
+  color: var(--tx3);
+  margin-top: 2px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.chart-wrap {
+  background: var(--sur2);
+  border: 0.5px solid var(--bor2);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.chart-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tx);
+  margin-bottom: 14px;
+}
+.charts-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 700px) { .charts-2col { grid-template-columns: 1fr; } }
+
+
+/* Tab estadísticas */
+.tab-stats .mod-tab-dot { background: #a78bfa; }
+.active-stats .mod-tab-dot { background: #a78bfa; box-shadow: 0 0 8px #a78bfa; }
+.active-stats { border-bottom: 2px solid #a78bfa !important; color: #c4b5fd !important; }
+
+/* Dashboard stats */
+#panel-stats { display:none; }
+#panel-stats.visible { display:flex; flex-direction:column; overflow-y:auto; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; padding:20px; overflow-y:auto; }
+.stat-card { background:var(--sur); border:0.5px solid var(--bor2); border-radius:12px; padding:18px; }
+.stat-card-title { font-size:12px; font-weight:700; color:var(--tx2); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
+.stat-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.stat-kpi { text-align:center; padding:10px 6px; background:var(--sur2); border-radius:8px; border:0.5px solid var(--bor2); }
+.stat-kpi-val { font-size:22px; font-weight:800; }
+.stat-kpi-lbl { font-size:10px; color:var(--tx3); margin-top:2px; }
+.stats-toolbar { display:flex; align-items:center; gap:12px; padding:14px 20px; background:var(--sur); border-bottom:1px solid var(--bor2); flex-wrap:wrap; }
+
 </style>
 </head>
 <body>
@@ -1669,6 +1745,9 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
     </button>
     <button class="mod-tab tab-pie" onclick="switchModulo('pie')">
       <span class="mod-tab-dot"></span> PIE / Dupla
+    </button>
+    <button class="mod-tab tab-stats" id="tabStats" onclick="switchModulo('stats')" style="display:none">
+      <span class="mod-tab-dot"></span> Estadísticas
     </button>
   </div>
   <!-- Date nav (solo asistencia) -->
@@ -2497,34 +2576,41 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
 let moduloActivo = 'asistencia';
 
 function switchModulo(m) {
-  // Control de acceso: verificar si el rol tiene permiso
+  // Control de acceso
   if (sesion) {
-    const rol = sesion.rol;
-    const permiso = {
+    var permiso = {
       asistencia: ['admin', 'asistente'],
       notas:      ['admin', 'profesor'],
-      porteria:   ['admin', 'portero']
+      porteria:   ['admin', 'portero'],
+      stats:      ['admin']
     };
-    if (permiso[m] && !permiso[m].includes(rol)) {
+    if (permiso[m] && permiso[m].indexOf(sesion.rol) === -1) {
       showToast('⛔ No tienes acceso a ese módulo', 'error');
       return;
     }
   }
+
   moduloActivo = m;
-  document.getElementById('panel-asistencia').classList.toggle('visible', m === 'asistencia');
-  document.getElementById('panel-notas').classList.toggle('visible', m === 'notas');
-  document.getElementById('panel-porteria').classList.toggle('visible', m === 'porteria');
-  document.getElementById('panel-pie').classList.toggle('visible', m === 'pie');
+
+  // Mostrar/ocultar paneles
+  ['asistencia','notas','porteria','pie','stats'].forEach(function(mod) {
+    var el = document.getElementById('panel-' + mod);
+    if (el) el.classList.toggle('visible', mod === m);
+  });
+
   document.getElementById('dateNavWrap').style.display = m === 'asistencia' ? 'flex' : 'none';
 
-  document.querySelectorAll('.mod-tab').forEach(t => {
-    t.classList.remove('active-asist', 'active-notas', 'active-port', 'active-pie');
+  // Actualizar tabs
+  var tabs = document.querySelectorAll('.mod-tab');
+  tabs.forEach(function(t) {
+    t.classList.remove('active-asist','active-notas','active-port','active-pie','active-stats');
   });
-  const tabs = document.querySelectorAll('.mod-tab');
-  if (m === 'asistencia') tabs[0].classList.add('active-asist');
-  else if (m === 'notas')     { tabs[1].classList.add('active-notas'); setTimeout(function(){ lcInicializar(); aplicarNavNotas(); }, 100); }
-  else if (m === 'porteria')  { tabs[2].classList.add('active-port'); renderPortContent(); }
-  else if (m === 'pie')       { tabs[3].classList.add('active-pie'); initPie(); }
+
+  if      (m === 'asistencia') { tabs[0] && tabs[0].classList.add('active-asist'); }
+  else if (m === 'notas')      { tabs[1] && tabs[1].classList.add('active-notas'); setTimeout(function(){ lcInicializar(); aplicarNavNotas(); }, 100); }
+  else if (m === 'porteria')   { tabs[2] && tabs[2].classList.add('active-port'); renderPortContent(); }
+  else if (m === 'pie')        { tabs[3] && tabs[3].classList.add('active-pie'); initPie(); }
+  else if (m === 'stats')      { tabs[4] && tabs[4].classList.add('active-stats'); setTimeout(statsRender, 200); }
 }
 
 // ═══════════════════════════════════════════════════
@@ -2625,6 +2711,7 @@ function aplicarSesion(){
   document.getElementById('btnConfig').style.display='';
   document.getElementById('btnTema').style.display='';
   document.getElementById('btnCambioPass').style.display='';
+  if (sesion.rol === 'admin') document.getElementById('tabStats').style.display = '';
   aplicarTemaGuardado();
   aplicarNavNotas();
   setTimeout(verificarClavePrimerLogin, 800);
@@ -2632,16 +2719,16 @@ function aplicarSesion(){
   // Mostrar/ocultar tabs según rol
   const tabs = document.querySelectorAll('.mod-tab');
   const permisos = {
-    //                  asist  notas  port   pie
-    admin:            [true,  true,  true,  true],
-    profesor:         [false, true,  false, false],
-    asistente:        [true,  false, false, false],
-    portero:          [false, false, true,  false],
-    psicologo:        [false, false, false, true],
-    asistente_social: [false, false, false, true]
+    //                  asist  notas  port   pie   stats
+    admin:            [true,  true,  true,  true,  true],
+    profesor:         [false, true,  false, false, false],
+    asistente:        [true,  false, false, false, false],
+    portero:          [false, false, true,  false, false],
+    psicologo:        [false, false, false, true,  false],
+    asistente_social: [false, false, false, true,  false]
   };
-  const p = permisos[sesion.rol] || [true, true, true, true];
-  tabs.forEach((t, i) => { t.style.display = p[i] ? '' : 'none'; });
+  const p = permisos[sesion.rol] || [true, true, true, true, false];
+  tabs.forEach((t, i) => { t.style.display = (p[i] !== false && p[i] !== undefined) ? '' : 'none'; });
 
   if(sesion.rol==='admin'){
     document.getElementById('btnAdminUsers').style.display='';
@@ -6984,6 +7071,264 @@ function planGenerarInforme(esParcial) {
 
 
 
+
+// ══════════════════════════════════════════════════════
+// DASHBOARD DE ESTADÍSTICAS
+// ══════════════════════════════════════════════════════
+
+function statsInicializarFiltro() {
+  var sel = document.getElementById('statsCursoFiltro');
+  if (!sel || sel.options.length > 1) return;
+  NIVELES.forEach(function(niv) {
+    var og = document.createElement('optgroup');
+    og.label = niv.label;
+    niv.cursos.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = niv.key + '__' + c;
+      opt.textContent = c;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  });
+}
+
+function statsRender() {
+  statsInicializarFiltro();
+  var filtro = document.getElementById('statsCursoFiltro').value;
+  var grid   = document.getElementById('statsGrid');
+  grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--tx3)">Calculando...</div>';
+
+  // Recopilar datos
+  var cursosAnalizar = [];
+  if (filtro === 'todos') {
+    NIVELES.forEach(function(niv) {
+      niv.cursos.forEach(function(c) { cursosAnalizar.push(niv.key + '__' + c); });
+    });
+  } else {
+    cursosAnalizar = [filtro];
+  }
+
+  // Stats por curso
+  var totalAlumnos  = 0;
+  var totalActivos  = 0;
+  var totalRetirados = 0;
+  var notasTodas    = [];
+  var asistTodas    = [];
+  var dataCursos    = [];
+
+  cursosAnalizar.forEach(function(clave) {
+    var curso = state[clave];
+    if (!curso) return;
+    var alumnos = curso.alumnos || [];
+    var activos = alumnos.filter(function(a) { return !(a.retiro && a.retiro.fecha); });
+    var retirados = alumnos.filter(function(a) { return a.retiro && a.retiro.fecha; });
+
+    totalAlumnos  += alumnos.length;
+    totalActivos  += activos.length;
+    totalRetirados += retirados.length;
+
+    // Calcular asistencia de activos
+    var asistCurso = [];
+    activos.forEach(function(a) {
+      var nombre = (a.full || ((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
+      if (!nombre) return;
+      var dias = curso.dias || {};
+      var total = Object.keys(dias).length;
+      if (!total) return;
+      var presentes = Object.values(dias).filter(function(d) {
+        return d[nombre] === 'P' || d[nombre] === 'J';
+      }).length;
+      var pct = Math.round(presentes / total * 100);
+      asistCurso.push(pct);
+      asistTodas.push(pct);
+    });
+
+    // Notas del libro de clases
+    var promsCurso = [];
+    var asigs = getAsignaturasCurso(clave);
+    asigs.forEach(function(asig) {
+      var sk = 'lc_v1_' + clave.replace(/[^a-zA-Z0-9]/g,'_') + '_' + asig.replace(/[^a-zA-Z0-9]/g,'_') + '_sem1';
+      try {
+        var raw = localStorage.getItem(sk);
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        activos.forEach(function(a) {
+          var nombre = (a.full || ((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
+          var vals = Object.values(data).map(function(ev) {
+            return parseFloat(ev.notas && ev.notas[nombre]);
+          }).filter(function(v) { return !isNaN(v); });
+          if (vals.length) {
+            var prom = vals.reduce(function(a,b){return a+b;},0)/vals.length;
+            promsCurso.push(prom);
+            notasTodas.push(prom);
+          }
+        });
+      } catch(e) {}
+    });
+
+    var promCurso = promsCurso.length
+      ? (promsCurso.reduce(function(a,b){return a+b;},0)/promsCurso.length)
+      : null;
+    var asistProm = asistCurso.length
+      ? Math.round(asistCurso.reduce(function(a,b){return a+b;},0)/asistCurso.length)
+      : null;
+
+    dataCursos.push({
+      clave: clave,
+      label: clave.split('__')[1],
+      activos: activos.length,
+      retirados: retirados.length,
+      promNotas: promCurso,
+      promAsist: asistProm,
+      notas: promsCurso,
+      asist: asistCurso
+    });
+  });
+
+  // KPIs globales
+  var aprobados  = notasTodas.filter(function(n){ return n >= 4.0; }).length;
+  var sobre5     = notasTodas.filter(function(n){ return n >= 5.0; }).length;
+  var pctApro    = notasTodas.length ? Math.round(aprobados/notasTodas.length*100) : 0;
+  var pctSobre5  = notasTodas.length ? Math.round(sobre5/notasTodas.length*100) : 0;
+  var pctDeserc  = totalAlumnos ? Math.round(totalRetirados/totalAlumnos*100) : 0;
+  var promAsistG = asistTodas.length ? Math.round(asistTodas.reduce(function(a,b){return a+b;},0)/asistTodas.length) : 0;
+  var bajAsist   = asistTodas.filter(function(a){ return a < 85; }).length;
+
+  var html = '';
+
+  // ── Tarjeta KPIs globales ──
+  html += '<div class="stat-card" style="grid-column:1/-1">';
+  html += '<div class="stat-kpi-grid" style="grid-template-columns:repeat(6,1fr)">';
+  html += kpiHtml(totalActivos, 'Alumnos activos', 'var(--pr2)');
+  html += kpiHtml(totalRetirados + ' (' + pctDeserc + '%)', 'Deserción', 'var(--rojo)');
+  html += kpiHtml(pctApro + '%', 'Aprobación', pctApro >= 70 ? 'var(--verde)' : 'var(--amarillo)');
+  html += kpiHtml(pctSobre5 + '%', 'Sobre 5,0', 'var(--verde)');
+  html += kpiHtml(promAsistG + '%', 'Asistencia promedio', promAsistG >= 85 ? 'var(--verde)' : 'var(--amarillo)');
+  html += kpiHtml(bajAsist, 'Alumnos bajo 85% asist.', 'var(--rojo)');
+  html += '</div>';
+
+  // Barra de comparación de asistencia
+  if (notasTodas.length) {
+    var rangos = [
+      { label: 'Bajo 4,0', count: notasTodas.filter(function(n){return n<4;}).length, color: '#f87171' },
+      { label: '4,0 – 5,0', count: notasTodas.filter(function(n){return n>=4&&n<5;}).length, color: '#fbbf24' },
+      { label: '5,0 – 6,0', count: notasTodas.filter(function(n){return n>=5&&n<6;}).length, color: '#60a5fa' },
+      { label: 'Sobre 6,0', count: notasTodas.filter(function(n){return n>=6;}).length, color: '#4ade80' }
+    ];
+    html += '<div style="margin-top:14px"><div style="font-size:11px;color:var(--tx3);font-weight:700;margin-bottom:8px;text-transform:uppercase">Distribución de promedios</div>';
+    html += '<div style="display:flex;height:28px;border-radius:8px;overflow:hidden;gap:1px;">';
+    rangos.forEach(function(r) {
+      var pct = notasTodas.length ? r.count/notasTodas.length*100 : 0;
+      if (pct < 1) return;
+      html += '<div style="background:' + r.color + ';flex:' + pct + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#111;" title="' + r.label + ': ' + r.count + '">' + (pct > 8 ? r.label : '') + '</div>';
+    });
+    html += '</div>';
+    html += '<div style="display:flex;gap:12px;margin-top:6px;flex-wrap:wrap;">';
+    rangos.forEach(function(r) {
+      html += '<span style="font-size:11px;color:var(--tx2)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + r.color + ';margin-right:4px;"></span>' + r.label + ': ' + r.count + '</span>';
+    });
+    html += '</div></div>';
+  }
+  html += '</div>';
+
+  // ── Tarjeta por curso ──
+  if (filtro === 'todos' && dataCursos.length > 1) {
+    html += '<div class="stat-card" style="grid-column:1/-1">';
+    html += '<div class="stat-card-title">Rendimiento por curso</div>';
+    html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
+    html += '<thead><tr style="background:var(--sur2)">'
+      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:left">Curso</th>'
+      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Alumnos</th>'
+      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Promedio notas</th>'
+      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Asistencia</th>'
+      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Retiros</th>'
+      + '</tr></thead><tbody>';
+
+    dataCursos.filter(function(d){ return d.activos > 0; }).forEach(function(d, i) {
+      var bg = i%2===0 ? 'var(--sur)' : 'var(--sur2)';
+      var pc = d.promNotas ? d.promNotas.toFixed(1) : '—';
+      var pcol = d.promNotas ? (d.promNotas>=5?'var(--verde)':d.promNotas>=4?'var(--amarillo)':'var(--rojo)') : 'var(--tx3)';
+      var ac = d.promAsist !== null ? d.promAsist + '%' : '—';
+      var acol = d.promAsist !== null ? (d.promAsist>=90?'var(--verde)':d.promAsist>=85?'var(--amarillo)':'var(--rojo)') : 'var(--tx3)';
+      html += '<tr style="background:' + bg + '">'
+        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);font-weight:700">' + d.label + '</td>'
+        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">' + d.activos + '</td>'
+        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;font-weight:700;color:' + pcol + '">' + pc + '</td>'
+        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;font-weight:700;color:' + acol + '">' + ac + '</td>'
+        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;color:var(--rojo)">' + (d.retirados||0) + '</td>'
+        + '</tr>';
+    });
+    html += '</tbody></table></div></div>';
+  }
+
+  // ── Gráfico barras asistencia por nivel ──
+  if (filtro === 'todos') {
+    html += '<div class="stat-card">';
+    html += '<div class="stat-card-title">Asistencia por nivel</div>';
+    var nivData = {};
+    dataCursos.forEach(function(d) {
+      var niv = d.clave.split('__')[0];
+      if (!nivData[niv]) nivData[niv] = { sum: 0, cnt: 0, label: '' };
+      var label = NIVELES.find(function(n){ return n.key === niv; });
+      nivData[niv].label = label ? label.label : niv;
+      if (d.promAsist !== null) { nivData[niv].sum += d.promAsist; nivData[niv].cnt++; }
+    });
+    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+    Object.values(nivData).forEach(function(nd) {
+      var pct = nd.cnt ? Math.round(nd.sum/nd.cnt) : 0;
+      var col = pct >= 90 ? '#4ade80' : pct >= 85 ? '#fbbf24' : '#f87171';
+      html += '<div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-bottom:3px;">'
+        + '<span>' + nd.label + '</span><span style="font-weight:700;color:' + col + '">' + pct + '%</span></div>'
+        + '<div style="background:var(--sur2);border-radius:999px;height:10px;overflow:hidden;">'
+        + '<div style="background:' + col + ';width:' + pct + '%;height:100%;border-radius:999px;transition:width .5s"></div></div></div>';
+    });
+    html += '</div></div>';
+
+    // ── Alumnos en riesgo ──
+    html += '<div class="stat-card">';
+    html += '<div class="stat-card-title">⚠️ Alumnos en riesgo</div>';
+    html += '<div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Asistencia bajo 85% o promedio bajo 4,0</div>';
+    var riesgo = [];
+    cursosAnalizar.forEach(function(clave) {
+      var curso = state[clave];
+      if (!curso) return;
+      var label = clave.split('__')[1];
+      (curso.alumnos || []).forEach(function(a) {
+        if (a.retiro && a.retiro.fecha) return;
+        var nombre = (a.full || ((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
+        var dias = curso.dias || {};
+        var total = Object.keys(dias).length;
+        if (!total) return;
+        var pres = Object.values(dias).filter(function(d){ return d[nombre]==='P'||d[nombre]==='J'; }).length;
+        var pct = Math.round(pres/total*100);
+        if (pct < 85) riesgo.push({ nombre: nombre, curso: label, tipo: 'Asistencia: ' + pct + '%', col: 'var(--amarillo)' });
+      });
+    });
+    if (!riesgo.length) {
+      html += '<div style="text-align:center;color:var(--verde);font-size:13px;padding:10px">✓ Sin alumnos en riesgo</div>';
+    } else {
+      html += '<div style="max-height:200px;overflow-y:auto">';
+      riesgo.slice(0,20).forEach(function(r) {
+        html += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--bor);font-size:12px;">'
+          + '<span style="font-weight:600;color:var(--tx)">' + escHtml(r.nombre) + '</span>'
+          + '<span style="color:var(--tx3)">' + r.curso + '</span>'
+          + '<span style="color:' + r.col + ';font-weight:700">' + r.tipo + '</span></div>';
+      });
+      if (riesgo.length > 20) html += '<div style="text-align:center;font-size:11px;color:var(--tx3);padding-top:6px">...y ' + (riesgo.length-20) + ' más</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  document.getElementById('statsGrid').innerHTML = html;
+  document.getElementById('statsUltimaAct').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-CL');
+}
+
+function kpiHtml(val, lbl, color) {
+  return '<div class="stat-kpi"><div class="stat-kpi-val" style="color:' + color + '">' + val + '</div><div class="stat-kpi-lbl">' + lbl + '</div></div>';
+}
+
+
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
@@ -7038,5 +7383,65 @@ async function init(){
 
 init();
 </script>
+
+  <!-- Panel Estadísticas (solo admin) -->
+  <div id="panel-stats" class="module-panel" style="flex-direction:column;overflow-y:auto;">
+    <div style="padding:20px 24px;max-width:1200px;width:100%;margin:0 auto;">
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:20px;font-weight:900;color:var(--tx)">📊 Estadísticas del establecimiento</div>
+          <div style="font-size:12px;color:var(--tx3);margin-top:2px">Datos en tiempo real · Año <span id="stats-year"></span></div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+          <select id="stats-nivel-sel" onchange="statsActualizar()" style="padding:6px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:12px;outline:none;">
+            <option value="todos">Todos los niveles</option>
+            <option value="1M">1° Medio</option>
+            <option value="2M">2° Medio</option>
+            <option value="3M">3° Medio</option>
+            <option value="4M">4° Medio</option>
+          </select>
+          <button onclick="statsActualizar()" class="btn primary" style="padding:6px 14px;font-size:12px">↻ Actualizar</button>
+        </div>
+      </div>
+
+      <!-- KPIs principales -->
+      <div class="stats-grid" id="stats-kpis"></div>
+
+      <!-- Gráficos fila 1 -->
+      <div class="charts-2col">
+        <div class="chart-wrap">
+          <div class="chart-title">Aprobación por curso (%)</div>
+          <canvas id="chart-aprobacion" height="220"></canvas>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Distribución de promedios generales</div>
+          <canvas id="chart-distribucion" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráficos fila 2 -->
+      <div class="charts-2col">
+        <div class="chart-wrap">
+          <div class="chart-title">Asistencia promedio por curso (%)</div>
+          <canvas id="chart-asistencia" height="220"></canvas>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Alumnos en riesgo por curso</div>
+          <canvas id="chart-riesgo" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabla resumen -->
+      <div class="chart-wrap">
+        <div class="chart-title">Resumen por curso</div>
+        <div style="overflow-x:auto;">
+          <table id="stats-tabla" style="width:100%;border-collapse:collapse;font-size:12.5px;"></table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </body>
 </html>
