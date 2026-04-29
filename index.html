@@ -1640,16 +1640,15 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
 .active-stats { border-bottom: 2px solid #a78bfa !important; color: #c4b5fd !important; }
 
 /* Dashboard stats */
-#panel-stats { display:none; }
-#panel-stats.visible { display:flex; flex-direction:column; overflow-y:auto; }
-.stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; padding:20px; overflow-y:auto; }
+/* panel-stats usa module-panel genérico */
+
 .stat-card { background:var(--sur); border:0.5px solid var(--bor2); border-radius:12px; padding:18px; }
 .stat-card-title { font-size:12px; font-weight:700; color:var(--tx2); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
 .stat-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
 .stat-kpi { text-align:center; padding:10px 6px; background:var(--sur2); border-radius:8px; border:0.5px solid var(--bor2); }
 .stat-kpi-val { font-size:22px; font-weight:800; }
 .stat-kpi-lbl { font-size:10px; color:var(--tx3); margin-top:2px; }
-.stats-toolbar { display:flex; align-items:center; gap:12px; padding:14px 20px; background:var(--sur); border-bottom:1px solid var(--bor2); flex-wrap:wrap; }
+/* stats-toolbar inline */
 
 </style>
 </head>
@@ -2047,6 +2046,24 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
           <div class="pie-empty-sub">Selecciona un alumno de la lista o agrega uno nuevo para comenzar a registrar consultas.</div>
         </div>
       </div>
+    </div>
+  </div>
+
+
+    <!-- Panel Estadísticas (solo admin) -->
+  <div id="panel-stats" class="module-panel" style="flex-direction:column;">
+    <!-- Toolbar fijo -->
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--sur);border-bottom:1px solid var(--bor2);flex-wrap:wrap;flex-shrink:0;">
+      <div style="font-size:16px;font-weight:800;color:var(--tx)">📊 Dashboard de Indicadores</div>
+      <select id="statsCursoFiltro" onchange="statsRender()" style="padding:6px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;outline:none;">
+        <option value="todos">Todos los cursos</option>
+      </select>
+      <button onclick="statsRender()" class="btn primary" style="padding:6px 14px;font-size:12px;">🔄 Actualizar</button>
+      <span id="statsUltimaAct" style="font-size:11px;color:var(--tx3);margin-left:auto;"></span>
+    </div>
+    <!-- Grid con scroll propio -->
+    <div id="statsGrid" style="flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;padding:20px;align-content:start;">
+      <div style="padding:40px;text-align:center;color:var(--tx3)">Cargando indicadores...</div>
     </div>
   </div>
 
@@ -7093,9 +7110,19 @@ function statsInicializarFiltro() {
 }
 
 function statsRender() {
+  console.log('[STATS] statsRender llamado');
+  var grid = document.getElementById('statsGrid');
+  console.log('[STATS] statsGrid element:', grid);
+  console.log('[STATS] state keys:', Object.keys(state||{}).length);
+  console.log('[STATS] NIVELES:', NIVELES ? NIVELES.length : 'no existe');
+
+  if (!grid) {
+    console.error('[STATS] statsGrid no encontrado en DOM');
+    return;
+  }
+
   statsInicializarFiltro();
   var filtro = document.getElementById('statsCursoFiltro').value;
-  var grid   = document.getElementById('statsGrid');
   grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--tx3)">Calculando...</div>';
 
   // Recopilar datos
@@ -7116,6 +7143,7 @@ function statsRender() {
   var asistTodas    = [];
   var dataCursos    = [];
 
+  try {
   cursosAnalizar.forEach(function(clave) {
     var curso = state[clave];
     if (!curso) return;
@@ -7184,6 +7212,12 @@ function statsRender() {
       asist: asistCurso
     });
   });
+
+  } catch(loopErr) {
+    console.error('[STATS] Error en loop cursos:', loopErr);
+    grid.innerHTML = '<div style="padding:20px;color:var(--rojo)">Error calculando estadísticas: ' + loopErr.message + '</div>';
+    return;
+  }
 
   // KPIs globales
   var aprobados  = notasTodas.filter(function(n){ return n >= 4.0; }).length;
@@ -7362,7 +7396,7 @@ async function init(){
         document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncFromSheets();});
         window.addEventListener('focus',syncFromSheets);
         // Init calificaciones
-        updateBanner();filtrarCursos();cargarAlumnosCurso();renderTabla();renderDocentesList();rebuildDocenteSelect();renderAluList();
+        renderDocentesList();rebuildDocenteSelect();renderAluList();
         return;
       }
     }
@@ -7378,70 +7412,12 @@ async function init(){
   window.addEventListener('focus',syncFromSheets);
 
   // Init calificaciones (sin sesión — para cuando se loguee)
-  updateBanner();filtrarCursos();cargarAlumnosCurso();renderTabla();renderDocentesList();rebuildDocenteSelect();renderAluList();
+  renderDocentesList();rebuildDocenteSelect();renderAluList();
 }
 
 init();
 </script>
 
-  <!-- Panel Estadísticas (solo admin) -->
-  <div id="panel-stats" class="module-panel" style="flex-direction:column;overflow-y:auto;">
-    <div style="padding:20px 24px;max-width:1200px;width:100%;margin:0 auto;">
-
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-        <div>
-          <div style="font-size:20px;font-weight:900;color:var(--tx)">📊 Estadísticas del establecimiento</div>
-          <div style="font-size:12px;color:var(--tx3);margin-top:2px">Datos en tiempo real · Año <span id="stats-year"></span></div>
-        </div>
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-          <select id="stats-nivel-sel" onchange="statsActualizar()" style="padding:6px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:12px;outline:none;">
-            <option value="todos">Todos los niveles</option>
-            <option value="1M">1° Medio</option>
-            <option value="2M">2° Medio</option>
-            <option value="3M">3° Medio</option>
-            <option value="4M">4° Medio</option>
-          </select>
-          <button onclick="statsActualizar()" class="btn primary" style="padding:6px 14px;font-size:12px">↻ Actualizar</button>
-        </div>
-      </div>
-
-      <!-- KPIs principales -->
-      <div class="stats-grid" id="stats-kpis"></div>
-
-      <!-- Gráficos fila 1 -->
-      <div class="charts-2col">
-        <div class="chart-wrap">
-          <div class="chart-title">Aprobación por curso (%)</div>
-          <canvas id="chart-aprobacion" height="220"></canvas>
-        </div>
-        <div class="chart-wrap">
-          <div class="chart-title">Distribución de promedios generales</div>
-          <canvas id="chart-distribucion" height="220"></canvas>
-        </div>
-      </div>
-
-      <!-- Gráficos fila 2 -->
-      <div class="charts-2col">
-        <div class="chart-wrap">
-          <div class="chart-title">Asistencia promedio por curso (%)</div>
-          <canvas id="chart-asistencia" height="220"></canvas>
-        </div>
-        <div class="chart-wrap">
-          <div class="chart-title">Alumnos en riesgo por curso</div>
-          <canvas id="chart-riesgo" height="220"></canvas>
-        </div>
-      </div>
-
-      <!-- Tabla resumen -->
-      <div class="chart-wrap">
-        <div class="chart-title">Resumen por curso</div>
-        <div style="overflow-x:auto;">
-          <table id="stats-tabla" style="width:100%;border-collapse:collapse;font-size:12.5px;"></table>
-        </div>
-      </div>
-
-    </div>
-  </div>
 
 </body>
 </html>
