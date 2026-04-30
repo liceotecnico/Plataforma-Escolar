@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Educación Talcahuano — Plataforma Escolar</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -18,104 +18,111 @@
 :root {
   color-scheme: dark;
 
-  /* Fondos */
-  --bg:  #0c1520;
-  --bg2: #0f1e2e;
-  --sur: #162032;
-  --sur2:#1a2d44;
-  --sur3:#1f3452;
+  /* ── Azul institucional clásico — modo oscuro ── */
+  --bg:   #0d1b2e;
+  --bg2:  #0f1e2e;
+  --sur:  #152338;
+  --sur2: #1a2f4e;
+  --sur3: #1e3a5f;
 
   /* Bordes */
-  --bor: rgba(255,255,255,.07);
-  --bor2:rgba(255,255,255,.12);
-  --bor3:rgba(255,255,255,.18);
+  --bor:  rgba(255,255,255,.07);
+  --bor2: rgba(255,255,255,.13);
+  --bor3: rgba(255,255,255,.20);
 
-  /* Azul institucional */
-  --pr:  #3b82f6;
-  --prl: rgba(59,130,246,.18);
-  --prd: #1d4ed8;
-  --pr2: #93c5fd;
+  /* Acento azul */
+  --pr:   #2563eb;
+  --prl:  rgba(37,99,235,.18);
+  --prd:  #1d4ed8;
+  --pr2:  #93c5fd;
+
+  /* Topbar y sidebar */
+  --topbar-bg:    #1a2f4e;
+  --sidebar-bg:   #1e293b;
+  --sidebar-act:  #3b82f6;
+  --sidebar-text: #cbd5e1;
 
   /* Semáforos */
-  --verde:    #4ade80;
-  --verdel:   rgba(74,222,128,.15);
-  --rojo:     #f87171;
-  --rojol:    rgba(248,113,113,.15);
-  --amarillo: #fbbf24;
-  --amarillol:rgba(251,191,36,.15);
+  --verde:     #4ade80;
+  --verdel:    rgba(74,222,128,.15);
+  --rojo:      #f87171;
+  --rojol:     rgba(248,113,113,.15);
+  --amarillo:  #fbbf24;
+  --amarillol: rgba(251,191,36,.15);
   --azul-claro:#60a5fa;
   --azul-clarol:rgba(96,165,250,.15);
 
   /* Tipografía */
-  --tx:  #dce8f8;
+  --tx:  #e2eaf5;
   --tx2: #7fa4cc;
   --tx3: #3d607f;
 
   /* UI */
-  --r:  10px;
-  --rs: 7px;
-  --sh: 0 4px 24px rgba(0,0,0,.5);
-  --sh2:0 0 0 1px rgba(255,255,255,.06);
+  --r:   10px;
+  --rs:  7px;
+  --sh:  0 4px 24px rgba(0,0,0,.5);
+  --sh2: 0 0 0 1px rgba(255,255,255,.06);
 
-  /* Portería */
-  --port: #f97316;
-  --portl:rgba(249,115,22,.15);
-
-  /* PIE */
-  --pie: #a78bfa;
-  --piel:rgba(167,139,250,.15);
-  --pie2:#c4b5fd;
+  /* Módulos */
+  --port:  #f97316;
+  --portl: rgba(249,115,22,.15);
+  --pie:   #a78bfa;
+  --piel:  rgba(167,139,250,.15);
+  --pie2:  #c4b5fd;
 
   --modulo: asistencia;
 }
-
 /* ═══════════════════════════════════════════
    MODO CLARO — se activa con clase .tema-claro en <html>
    ═══════════════════════════════════════════ */
 html.tema-claro {
   color-scheme: light;
 
-  --bg:  #f0f6ff;
-  --bg2: #e8f0fb;
-  --sur: #ffffff;
-  --sur2:#f0f6ff;
-  --sur3:#dbeafe;
+  --bg:   #f1f5f9;
+  --bg2:  #e2e8f0;
+  --sur:  #ffffff;
+  --sur2: #f1f5f9;
+  --sur3: #dbeafe;
 
-  --bor: rgba(30,58,95,.1);
-  --bor2:rgba(30,58,95,.18);
-  --bor3:rgba(30,58,95,.28);
+  --bor:  rgba(30,58,95,.10);
+  --bor2: rgba(30,58,95,.18);
+  --bor3: rgba(30,58,95,.28);
 
-  --pr:  #1d4ed8;
-  --prl: rgba(29,78,216,.1);
-  --prd: #1e3a8a;
-  --pr2: #1d4ed8;
+  --pr:   #1d4ed8;
+  --prl:  rgba(29,78,216,.10);
+  --prd:  #1e3a8a;
+  --pr2:  #1d4ed8;
 
-  --verde:    #16a34a;
-  --verdel:   rgba(22,163,74,.12);
-  --rojo:     #dc2626;
-  --rojol:    rgba(220,38,38,.1);
-  --amarillo: #d97706;
-  --amarillol:rgba(217,119,6,.1);
+  --topbar-bg:    #1a2f4e;
+  --sidebar-bg:   #1e293b;
+  --sidebar-act:  #3b82f6;
+  --sidebar-text: #cbd5e1;
+
+  --verde:     #16a34a;
+  --verdel:    rgba(22,163,74,.12);
+  --rojo:      #dc2626;
+  --rojol:     rgba(220,38,38,.10);
+  --amarillo:  #d97706;
+  --amarillol: rgba(217,119,6,.10);
   --azul-claro:#2563eb;
-  --azul-clarol:rgba(37,99,235,.1);
+  --azul-clarol:rgba(37,99,235,.10);
 
-  --tx:  #0f2544;
-  --tx2: #2d5282;
-  --tx3: #6b90b8;
+  --tx:  #0f172a;
+  --tx2: #334155;
+  --tx3: #64748b;
 
   --sh:  0 2px 12px rgba(30,58,95,.12);
   --sh2: 0 0 0 1px rgba(30,58,95,.08);
 
-  --port: #c2410c;
-  --portl:rgba(194,65,12,.12);
-
-  --pie: #7c3aed;
-  --piel:rgba(124,58,237,.12);
-  --pie2:#6d28d9;
+  --port:  #c2410c;
+  --portl: rgba(194,65,12,.12);
+  --pie:   #7c3aed;
+  --piel:  rgba(124,58,237,.12);
+  --pie2:  #6d28d9;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
@@ -127,8 +134,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
    TOPBAR PRINCIPAL
 ════════════════════════════════════════════ */
 .topbar{
-  background:var(--sur);
-  border-bottom:1px solid var(--bor2);
+  background:var(--topbar-bg);
+  border-bottom:1px solid rgba(255,255,255,.08);
   height:56px;
   display:flex;
   align-items:center;
@@ -164,7 +171,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   font-size:13px;font-weight:600;
   cursor:pointer;border:1px solid transparent;
   color:var(--tx2);background:transparent;
-  transition:all .15s;font-family:'Nunito',sans-serif;
+  transition:all .15s;font-family:'Inter',sans-serif;
   white-space:nowrap;
 }
 .mod-tab:hover{color:var(--tx);background:var(--sur2);}
@@ -199,7 +206,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   display:flex;align-items:center;gap:10px;
   width:100%;padding:9px 14px;
   background:none;border:none;color:var(--tx2);
-  font-family:'Nunito',sans-serif;font-size:12.5px;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:12.5px;cursor:pointer;
   transition:all .12s;text-align:left;
   border-left:2px solid transparent;
 }
@@ -214,7 +221,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .pie-alumno-btn.active .pie-alumno-av{background:rgba(167,139,250,.3);}
 .pie-alumno-info{flex:1;min-width:0;}
 .pie-alumno-nombre{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pie-alumno-curso{font-size:10px;color:var(--tx3);margin-top:1px;font-family:'DM Mono',monospace;}
+.pie-alumno-curso{font-size:10px;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace;}
 .pie-alumno-count{
   font-size:9.5px;font-weight:700;padding:2px 7px;
   border-radius:999px;flex-shrink:0;
@@ -224,7 +231,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .pie-sb-search{
   padding:10px 12px;border:none;border-bottom:1px solid var(--bor);
   background:var(--sur2);color:var(--tx);
-  font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:500;
+  font-family:'Inter',sans-serif;font-size:12.5px;font-weight:500;
   outline:none;width:100%;
 }
 .pie-sb-search:focus{border-bottom-color:var(--pie);}
@@ -232,7 +239,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .pie-sb-add{
   margin:10px 12px 12px;
   padding:8px 14px;border-radius:8px;border:1px dashed rgba(167,139,250,.4);
-  background:none;color:var(--pie2);font-family:'Nunito',sans-serif;
+  background:none;color:var(--pie2);font-family:'Inter',sans-serif;
   font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;width:calc(100% - 24px);
 }
 .pie-sb-add:hover{background:var(--piel);}
@@ -277,14 +284,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .pie-textarea{
   width:100%;min-height:72px;
   background:var(--sur2);border:1px solid var(--bor2);border-radius:8px;
-  padding:9px 12px;font-family:'Nunito',sans-serif;font-size:12.5px;
+  padding:9px 12px;font-family:'Inter',sans-serif;font-size:12.5px;
   color:var(--tx);outline:none;resize:vertical;line-height:1.6;
 }
 .pie-textarea:focus{border-color:var(--pie);}
 .btn-pie{
   padding:8px 18px;border-radius:8px;border:none;
   background:var(--pie);color:#fff;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:700;
   cursor:pointer;transition:opacity .12s;
   box-shadow:0 2px 10px rgba(167,139,250,.35);
 }
@@ -311,7 +318,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .pie-consulta-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .pie-consulta-fecha{
   font-size:11px;font-weight:700;color:var(--pie2);
-  font-family:'DM Mono',monospace;background:var(--piel);
+  font-family:'JetBrains Mono',monospace;background:var(--piel);
   padding:2px 10px;border-radius:999px;flex-shrink:0;
 }
 .pie-consulta-tipo{font-size:12px;font-weight:800;color:var(--tx);}
@@ -323,7 +330,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .pie-consulta-acciones{display:flex;gap:6px;margin-top:4px;}
 .btn-pie-sm{
   padding:4px 11px;border-radius:6px;border:1px solid var(--bor2);
-  background:none;color:var(--tx2);font-family:'Nunito',sans-serif;
+  background:none;color:var(--tx2);font-family:'Inter',sans-serif;
   font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;
 }
 .btn-pie-sm:hover{border-color:var(--pie);color:var(--pie2);}
@@ -342,7 +349,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 #modalPieConsulta .modal{width:580px;max-width:100%;}
 .pie-select{
   width:100%;background:var(--sur2);border:1px solid var(--bor2);
-  border-radius:7px;padding:8px 12px;font-family:'Nunito',sans-serif;
+  border-radius:7px;padding:8px 12px;font-family:'Inter',sans-serif;
   font-size:12.5px;color:var(--tx);outline:none;font-weight:600;
 }
 .pie-select:focus{border-color:var(--pie);}
@@ -364,7 +371,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   font-size:12px;color:var(--tx2);font-weight:600;
   background:var(--sur2);border:1px solid var(--bor2);
   border-radius:8px;padding:6px 14px;
-  font-family:'DM Mono',monospace;
+  font-family:'JetBrains Mono',monospace;
 }
 .port-content{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px;}
 
@@ -389,7 +396,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .btn-registrar-atraso{
   padding:9px 20px;border-radius:8px;border:none;
   background:var(--port);color:#fff;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:700;
   cursor:pointer;transition:opacity .12s;white-space:nowrap;
   box-shadow:0 2px 10px rgba(249,115,22,.35);
 }
@@ -417,10 +424,10 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .port-tabla tbody tr:last-child{border-bottom:none;}
 .port-tabla tbody tr:hover{background:var(--sur2);}
 .port-tabla td{padding:10px 14px;vertical-align:middle;}
-.port-tabla td.td-num{text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3);width:40px;}
-.port-tabla td.td-hora{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--port);font-weight:600;}
+.port-tabla td.td-num{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx3);width:40px;}
+.port-tabla td.td-hora{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--port);font-weight:600;}
 .port-tabla td.td-alu{font-weight:700;}
-.port-tabla td.td-curso{font-size:11px;color:var(--tx2);font-family:'DM Mono',monospace;}
+.port-tabla td.td-curso{font-size:11px;color:var(--tx2);font-family:'JetBrains Mono',monospace;}
 .port-tabla td.td-total{text-align:center;}
 .port-tabla td.td-firma{text-align:center;}
 .port-tabla td.td-acc{text-align:center;white-space:nowrap;}
@@ -465,7 +472,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .alerta-dismiss{
   background:none;border:1px solid rgba(248,113,113,.3);
   border-radius:6px;padding:4px 10px;font-size:11.5px;
-  color:var(--rojo);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600;
+  color:var(--rojo);cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;
   transition:all .12s;flex-shrink:0;
 }
 .alerta-dismiss:hover{background:rgba(248,113,113,.1);}
@@ -499,7 +506,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   border-bottom:1px solid var(--bor);font-size:12px;
 }
 .firma-historial-item:last-child{border-bottom:none;}
-.fhi-fecha{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--tx2);min-width:100px;}
+.fhi-fecha{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--tx2);min-width:100px;}
 .fhi-apoderado{flex:1;font-weight:600;}
 .fhi-firma{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;}
 .fhi-firmado{background:rgba(74,222,128,.1);color:var(--verde);}
@@ -507,7 +514,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .firma-form label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;display:block;margin-bottom:5px;}
 .firma-form input{
   width:100%;background:var(--sur2);border:1px solid var(--bor2);
-  border-radius:7px;padding:9px 12px;font-family:'Nunito',sans-serif;
+  border-radius:7px;padding:9px 12px;font-family:'Inter',sans-serif;
   font-size:13px;color:var(--tx);outline:none;margin-bottom:10px;
   transition:border-color .12s;
 }
@@ -515,7 +522,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .btn-confirmar-firma{
   padding:9px 20px;border-radius:8px;border:none;
   background:var(--verde);color:#000;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:700;
   cursor:pointer;transition:opacity .12s;
 }
 .btn-confirmar-firma:hover{opacity:.85;}
@@ -542,7 +549,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 }
 .port-curso-selector select{
   flex:1;min-width:180px;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
   padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;
   background:var(--sur2);color:var(--tx);cursor:pointer;outline:none;
   transition:border-color .12s;
@@ -561,7 +568,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   padding:9px 12px;border-radius:8px;
   border:1px solid var(--bor2);background:var(--sur2);
   cursor:pointer;transition:all .12s;text-align:left;
-  font-family:'Nunito',sans-serif;
+  font-family:'Inter',sans-serif;
 }
 .port-alumno-btn:hover{
   background:rgba(249,115,22,.1);
@@ -570,7 +577,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 }
 .port-alumno-btn:hover .port-alumno-num{color:var(--port);}
 .port-alumno-num{
-  font-size:10px;color:var(--tx3);font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--tx3);font-family:'JetBrains Mono',monospace;
   min-width:22px;text-align:right;flex-shrink:0;
 }
 .port-alumno-nombre{font-size:12.5px;font-weight:600;color:var(--tx);flex:1;line-height:1.3;}
@@ -590,7 +597,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .port-hist-btn{
   background:none;border:1px solid var(--bor2);border-radius:6px;
   padding:3px 9px;font-size:11px;color:var(--tx2);cursor:pointer;
-  font-family:'Nunito',sans-serif;font-weight:600;transition:all .12s;
+  font-family:'Inter',sans-serif;font-weight:600;transition:all .12s;
 }
 .port-hist-btn:hover{border-color:var(--port);color:var(--port);}
 .empty-port{text-align:center;padding:48px;color:var(--tx3);font-size:13px;}
@@ -601,7 +608,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 }
 .port-tab{
   padding:5px 14px;border-radius:7px;border:1px solid var(--bor2);
-  background:none;color:var(--tx2);font-family:'Nunito',sans-serif;
+  background:none;color:var(--tx2);font-family:'Inter',sans-serif;
   font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;
 }
 .port-tab.active{background:rgba(249,115,22,.12);color:var(--port);border-color:rgba(249,115,22,.3);}
@@ -627,7 +634,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   background:none;border:1px solid var(--bor2);
   border-radius:7px;padding:5px 10px;
   font-size:12px;color:var(--tx2);cursor:pointer;
-  font-family:'Nunito',sans-serif;font-weight:600;
+  font-family:'Inter',sans-serif;font-weight:600;
   transition:all .15s;
 }
 .btn-logout:hover{border-color:var(--rojo);color:var(--rojo);}
@@ -684,7 +691,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .login-in{
   width:100%;background:var(--sur2);border:1px solid var(--bor2);
   border-radius:8px;padding:10px 14px;
-  font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;
   color:var(--tx);outline:none;margin-bottom:14px;
   transition:border-color .15s;
 }
@@ -692,7 +699,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .login-btn{
   width:100%;padding:12px;border-radius:9px;border:none;
   background:linear-gradient(135deg,var(--pr),var(--verde));
-  color:#000;font-family:'Nunito',sans-serif;
+  color:#000;font-family:'Inter',sans-serif;
   font-size:14px;font-weight:800;cursor:pointer;
   transition:opacity .15s;margin-top:4px;
   box-shadow:0 4px 16px rgba(59,130,246,.3);
@@ -727,7 +734,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   display:flex;align-items:center;justify-content:space-between;
   width:100%;padding:8px 16px;
   background:none;border:none;color:var(--tx2);
-  font-family:'DM Mono',monospace;font-size:11.5px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;cursor:pointer;
   transition:all .12s;text-align:left;
   border-left:2px solid transparent;
 }
@@ -745,7 +752,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .pct-bar.high{background:var(--verde);}
 .pct-bar.mid{background:var(--amarillo);}
 .pct-bar.low{background:var(--rojo);}
-.pct-label{font-size:9px;color:var(--tx3);letter-spacing:.04em;font-family:'DM Mono',monospace;}
+.pct-label{font-size:9px;color:var(--tx3);letter-spacing:.04em;font-family:'JetBrains Mono',monospace;}
 .course-info{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
 
 /* ════════════════════════════════════════════
@@ -827,7 +834,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .btn-bulk{
   padding:7px 14px;border-radius:7px;
   border:1px solid var(--bor2);background:var(--sur);
-  color:var(--tx2);font-family:'Nunito',sans-serif;
+  color:var(--tx2);font-family:'Inter',sans-serif;
   font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;
 }
 .btn-bulk:hover{border-color:var(--verde);color:var(--verde);}
@@ -835,19 +842,19 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   padding:7px 14px;border-radius:7px;
   border:1px solid rgba(96,165,250,.3);
   background:var(--azul-clarol);color:var(--azul-claro);
-  font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;
+  font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;
 }
 .btn-alumnos:hover{background:rgba(96,165,250,.25);}
 .btn-export-curso{
   padding:7px 14px;border-radius:7px;border:none;
   background:var(--verde);color:#000;
-  font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:opacity .12s;
+  font-family:'Inter',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:opacity .12s;
 }
 .btn-export-curso:hover{opacity:.85;}
 .search-box{
   margin-left:auto;padding:7px 12px;border-radius:7px;
   border:1px solid var(--bor2);background:var(--sur2);
-  color:var(--tx);font-family:'Nunito',sans-serif;font-size:12px;outline:none;width:180px;
+  color:var(--tx);font-family:'Inter',sans-serif;font-size:12px;outline:none;width:180px;
 }
 .search-box:focus{border-color:var(--verde);}
 
@@ -865,7 +872,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .student-card.retirado .student-name{text-decoration:line-through;text-decoration-color:rgba(248,113,113,.6);}
 .student-card.trasladado{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.04);opacity:.8;}
 .student-card.trasladado .student-name{text-decoration:line-through;text-decoration-color:rgba(251,191,36,.5);}
-.student-num{font-size:10px;color:var(--tx3);min-width:20px;text-align:right;font-family:'DM Mono',monospace;}
+.student-num{font-size:10px;color:var(--tx3);min-width:20px;text-align:right;font-family:'JetBrains Mono',monospace;}
 .student-avatar{
   width:32px;height:32px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
@@ -883,7 +890,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .toggle-group{display:flex;gap:2px;background:var(--sur2);border-radius:7px;padding:2px;flex-shrink:0;}
 .toggle-btn{
   border:none;background:none;border-radius:5px;padding:4px 8px;
-  font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;color:var(--tx3);transition:all .12s;
+  font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;color:var(--tx3);transition:all .12s;
 }
 .toggle-btn:hover{color:var(--tx);}
 .toggle-btn.active-P{background:rgba(74,222,128,.2);color:var(--verde);}
@@ -892,14 +899,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .btn-retirar-card{
   background:none;border:none;color:var(--tx3);font-size:10px;
   cursor:pointer;padding:2px 5px;border-radius:4px;
-  transition:color .12s;font-family:'Nunito',sans-serif;line-height:1;
+  transition:color .12s;font-family:'Inter',sans-serif;line-height:1;
 }
 .btn-retirar-card:hover{color:var(--rojo);}
 .btn-retirar-card.activo{color:var(--rojo);}
 .btn-mover{
   background:none;border:none;color:var(--tx3);
   font-size:10px;cursor:pointer;padding:2px 5px;border-radius:4px;
-  transition:color .12s;font-family:'Nunito',sans-serif;
+  transition:color .12s;font-family:'Inter',sans-serif;
 }
 .btn-mover:hover{color:var(--azul-claro);}
 .empty{text-align:center;padding:60px;color:var(--tx3);font-size:14px;}
@@ -910,7 +917,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .btn-setup{
   padding:10px 20px;border-radius:9px;border:1px solid rgba(96,165,250,.4);
   background:var(--azul-clarol);color:var(--azul-claro);
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;
 }
 .btn-setup:hover{background:rgba(96,165,250,.25);}
 
@@ -925,7 +932,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .nav-btn{
   background:none;border:none;color:var(--tx2);
   font-size:16px;cursor:pointer;padding:0 4px;
-  line-height:1;transition:color .12s;font-family:'DM Mono',monospace;
+  line-height:1;transition:color .12s;font-family:'JetBrains Mono',monospace;
 }
 .nav-btn:hover{color:var(--verde);}
 .nav-btn:disabled{color:var(--sur3);cursor:default;}
@@ -933,20 +940,20 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
   font-size:12px;color:var(--tx);min-width:160px;
   text-align:center;cursor:pointer;padding:3px 8px;
   border-radius:5px;transition:background .12s;
-  font-family:'DM Mono',monospace;
+  font-family:'JetBrains Mono',monospace;
 }
 #dateDisplay:hover{background:var(--sur3);}
 .today-tag{
   font-size:9px;background:var(--verdel);color:var(--verde);
   border-radius:20px;padding:2px 8px;letter-spacing:.06em;
   text-transform:uppercase;cursor:pointer;border:none;
-  font-family:'Nunito',sans-serif;font-weight:700;transition:background .12s;
+  font-family:'Inter',sans-serif;font-weight:700;transition:background .12s;
 }
 .today-tag:hover{background:rgba(74,222,128,.25);}
 .btn-export-all{
   padding:7px 12px;border-radius:7px;
   border:1px solid rgba(74,222,128,.3);background:var(--verdel);
-  color:var(--verde);font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:600;
+  color:var(--verde);font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;
   cursor:pointer;transition:all .12s;white-space:nowrap;
 }
 .btn-export-all:hover{background:rgba(74,222,128,.25);}
@@ -984,7 +991,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-he
 .fg{display:flex;flex-direction:column;gap:3px;}
 .fg label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;}
 select,input[type=text]{
-  font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:600;
+  font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;
   padding:7px 10px;border:1px solid var(--bor2);border-radius:var(--rs);
   background:var(--sur2);color:var(--tx);cursor:pointer;transition:border-color .12s;
 }
@@ -999,7 +1006,7 @@ select:focus,input[type=text]:focus{outline:none;border-color:var(--pr);box-shad
   padding:10px 16px;font-size:12.5px;cursor:pointer;
   color:var(--tx2);border-bottom:2px solid transparent;
   background:transparent;border-top:none;border-left:none;border-right:none;
-  font-family:'Nunito',sans-serif;font-weight:600;transition:all .12s;
+  font-family:'Inter',sans-serif;font-weight:600;transition:all .12s;
 }
 .tipo-tab:hover{color:var(--pr2);}
 .tipo-tab.active{color:var(--pr2);border-bottom-color:var(--pr2);}
@@ -1013,7 +1020,7 @@ select:focus,input[type=text]:focus{outline:none;border-color:var(--pr);box-shad
 .search-in{
   flex:1;min-width:160px;padding:7px 12px;
   border:1px solid var(--bor2);border-radius:var(--rs);
-  font-size:12.5px;font-family:'Nunito',sans-serif;font-weight:600;
+  font-size:12.5px;font-family:'Inter',sans-serif;font-weight:600;
   background:var(--sur2);color:var(--tx);
 }
 .search-in:focus{outline:none;border-color:var(--pr);background:var(--sur);box-shadow:0 0 0 3px rgba(59,130,246,.12);}
@@ -1022,7 +1029,7 @@ select:focus,input[type=text]:focus{outline:none;border-color:var(--pr);box-shad
 .btn{
   padding:7px 14px;font-size:12.5px;border-radius:var(--rs);
   border:1px solid var(--bor2);cursor:pointer;
-  font-family:'Nunito',sans-serif;font-weight:600;
+  font-family:'Inter',sans-serif;font-weight:600;
   background:var(--sur2);color:var(--tx);transition:all .12s;
 }
 .btn:hover{background:var(--sur3);}
@@ -1064,17 +1071,17 @@ tbody tr{border-bottom:1px solid var(--bor);transition:background .08s;}
 tbody tr:last-child{border-bottom:none;}
 tbody tr:hover{background:var(--sur2);}
 td{padding:7px 8px;vertical-align:middle;}
-td.td-n{text-align:center;font-size:10px;color:var(--tx3);padding-left:18px;font-family:'DM Mono',monospace;}
+td.td-n{text-align:center;font-size:10px;color:var(--tx3);padding-left:18px;font-family:'JetBrains Mono',monospace;}
 td.td-nom{padding-left:12px;}
 .alu-nombre{font-weight:700;font-size:12.5px;}
-.alu-rut{font-size:10px;color:var(--tx3);font-family:'DM Mono',monospace;}
+.alu-rut{font-size:10px;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
 td.td-prom{text-align:center;font-weight:700;font-size:14px;border-left:1px solid var(--bor2);background:rgba(59,130,246,.04);}
 td.td-sit{text-align:center;}
 .nota-wrap{display:flex;justify-content:center;}
 .nota-in{
   width:58px;text-align:center;border:1px solid var(--bor2);
   border-radius:var(--rs);padding:5px 4px;font-size:13px;font-weight:700;
-  background:var(--sur2);color:var(--tx);font-family:'DM Mono',monospace;transition:all .12s;
+  background:var(--sur2);color:var(--tx);font-family:'JetBrains Mono',monospace;transition:all .12s;
 }
 .nota-in:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 3px rgba(59,130,246,.15);}
 .nota-in.ok{border-color:var(--nota-ok);color:var(--nota-ok);background:rgba(74,222,128,.08);}
@@ -1093,13 +1100,13 @@ td.td-sit{text-align:center;}
 .col-name-in{
   background:transparent;border:none;font-size:10px;font-weight:700;
   color:var(--tx2);text-align:center;width:60px;
-  font-family:'Nunito',sans-serif;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;
+  font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;
 }
 .col-name-in:focus{outline:1px solid var(--bor2);border-radius:3px;background:var(--sur);text-transform:none;}
 .col-pond-in{
   width:38px;font-size:9.5px;text-align:center;
   border:1px solid var(--bor);border-radius:4px;padding:2px;
-  background:var(--sur2);color:var(--tx2);font-family:'DM Mono',monospace;
+  background:var(--sur2);color:var(--tx2);font-family:'JetBrains Mono',monospace;
 }
 .del-col{
   background:none;border:none;cursor:pointer;color:var(--tx3);
@@ -1143,7 +1150,7 @@ td.td-sit{text-align:center;}
 .import-box h3{font-size:13px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:7px;}
 .import-box p{font-size:11.5px;color:var(--tx2);line-height:1.6;}
 .import-box textarea{
-  font-family:'DM Mono',monospace;font-size:11.5px;padding:9px;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:9px;
   border:1px solid var(--bor2);border-radius:var(--rs);
   background:var(--sur2);color:var(--tx);resize:vertical;min-height:130px;
 }
@@ -1161,9 +1168,9 @@ td.td-sit{text-align:center;}
 .alu-row{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid var(--bor);gap:8px;font-size:12.5px;}
 .alu-row:last-child{border-bottom:none;}
 .alu-row:hover{background:var(--sur2);}
-.alu-row-num{font-size:10px;color:var(--tx3);font-family:'DM Mono',monospace;min-width:22px;}
+.alu-row-num{font-size:10px;color:var(--tx3);font-family:'JetBrains Mono',monospace;min-width:22px;}
 .alu-row-nombre{font-weight:600;flex:1;}
-.alu-row-rut{font-size:10px;color:var(--tx3);font-family:'DM Mono',monospace;min-width:95px;}
+.alu-row-rut{font-size:10px;color:var(--tx3);font-family:'JetBrains Mono',monospace;min-width:95px;}
 .alu-row-del{
   background:none;border:none;cursor:pointer;color:var(--tx3);
   font-size:13px;padding:0 3px;line-height:1;transition:color .1s;
@@ -1228,13 +1235,13 @@ td.td-sit{text-align:center;}
 .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
 .btn-cancel{
   padding:7px 14px;border-radius:7px;border:1px solid var(--bor2);
-  background:none;color:var(--tx2);font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;
+  background:none;color:var(--tx2);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;
 }
 .btn-cancel:hover{border-color:var(--tx2);}
 .btn-primary{
   padding:7px 16px;border-radius:7px;border:none;
   background:var(--verde);color:#000;
-  font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;
 }
 .btn-primary:hover{opacity:.85;}
 
@@ -1263,13 +1270,13 @@ td.td-sit{text-align:center;}
 .alumnos-tabs{display:flex;gap:3px;margin-bottom:16px;background:var(--sur2);border-radius:9px;padding:3px;}
 .alumnos-tab{
   flex:1;padding:7px;border:none;background:none;border-radius:7px;
-  font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--tx2);transition:all .12s;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--tx2);transition:all .12s;
 }
 .alumnos-tab.active{background:var(--sur);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.3);}
 .paste-area{
   width:100%;min-height:180px;background:var(--sur2);
   border:1px solid var(--bor2);border-radius:9px;padding:14px;
-  font-family:'DM Mono',monospace;font-size:12px;color:var(--tx);outline:none;resize:vertical;line-height:1.8;
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--tx);outline:none;resize:vertical;line-height:1.8;
 }
 .paste-area:focus{border-color:var(--verde);}
 .paste-hint{font-size:11px;color:var(--tx3);margin-top:8px;line-height:1.7;background:var(--sur2);border-radius:7px;padding:7px 10px;}
@@ -1286,14 +1293,14 @@ td.td-sit{text-align:center;}
 .edit-num{font-size:9.5px;color:var(--tx3);min-width:20px;text-align:right;flex-shrink:0;}
 .edit-input{
   flex:1;background:var(--sur2);border:1px solid var(--bor2);border-radius:7px;
-  padding:6px 10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--tx);outline:none;transition:border-color .12s;
+  padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--tx);outline:none;transition:border-color .12s;
 }
 .edit-input:focus{border-color:var(--verde);}
 .edit-del{background:none;border:none;color:var(--tx3);font-size:16px;cursor:pointer;padding:2px 5px;border-radius:5px;transition:color .12s;line-height:1;flex-shrink:0;}
 .edit-del:hover{color:var(--rojo);}
 .btn-add-row{
   width:100%;padding:7px;border-radius:8px;border:1px dashed var(--bor2);
-  background:none;color:var(--tx3);font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;margin-top:4px;
+  background:none;color:var(--tx3);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;margin-top:4px;
 }
 .btn-add-row:hover{border-color:var(--verde);color:var(--verde);}
 .transfer-warn{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.22);border-radius:8px;padding:8px 12px;font-size:11px;color:#fca5a5;margin-bottom:12px;line-height:1.6;}
@@ -1304,14 +1311,14 @@ td.td-sit{text-align:center;}
 .justif-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:5px;font-weight:700;}
 .justif-textarea{
   width:100%;min-height:90px;background:var(--sur2);border:1px solid var(--bor2);
-  border-radius:8px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:12px;
+  border-radius:8px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;
   color:var(--tx);outline:none;resize:vertical;line-height:1.6;
 }
 .justif-textarea:focus{border-color:var(--azul-claro);}
 .justif-quick{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
 .justif-quick-btn{
   padding:4px 10px;border-radius:6px;border:1px solid var(--bor2);
-  background:none;color:var(--tx2);font-family:'Nunito',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;
+  background:none;color:var(--tx2);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;
 }
 .justif-quick-btn:hover{border-color:var(--azul-claro);color:var(--azul-claro);}
 
@@ -1320,7 +1327,7 @@ td.td-sit{text-align:center;}
 .traslado-alumno{font-size:13px;font-weight:600;padding:8px 12px;background:var(--azul-clarol);border:1px solid rgba(96,165,250,.25);border-radius:8px;color:var(--azul-claro);margin-bottom:14px;}
 .traslado-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:7px;font-weight:700;}
 .curso-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:10px;}
-.curso-option{padding:6px 4px;border-radius:7px;border:1px solid var(--bor2);background:var(--sur2);color:var(--tx2);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;text-align:center;transition:all .12s;}
+.curso-option{padding:6px 4px;border-radius:7px;border:1px solid var(--bor2);background:var(--sur2);color:var(--tx2);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;text-align:center;transition:all .12s;}
 .curso-option:hover:not(.curso-disabled):not(.curso-actual){border-color:var(--azul-claro);color:var(--azul-claro);}
 .curso-option.curso-selected{border-color:var(--azul-claro);background:var(--azul-clarol);color:var(--azul-claro);font-weight:600;}
 .curso-option.curso-actual{border-color:var(--verde);color:var(--verde);cursor:default;opacity:.7;}
@@ -1328,7 +1335,7 @@ td.td-sit{text-align:center;}
 .nivel-sep{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin:.7rem 0 .3rem;grid-column:1/-1;}
 .traslado-info{font-size:11px;color:var(--tx2);line-height:1.6;padding:8px 12px;background:var(--sur2);border-radius:7px;margin-top:6px;}
 .traslado-info strong{color:var(--tx);}
-.btn-transfer{padding:7px 16px;border-radius:7px;border:none;background:var(--azul-claro);color:#000;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;}
+.btn-transfer{padding:7px 16px;border-radius:7px;border:none;background:var(--azul-claro);color:#000;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;}
 .btn-transfer:hover{opacity:.85;}
 .btn-transfer:disabled{opacity:.35;cursor:not-allowed;}
 
@@ -1336,11 +1343,11 @@ td.td-sit{text-align:center;}
 #modalRetiro .modal{width:400px;max-width:100%;}
 .retiro-alumno{font-size:13px;font-weight:600;padding:8px 12px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.22);border-radius:8px;color:var(--rojo);margin-bottom:14px;}
 .retiro-fecha-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:6px;font-weight:700;}
-.retiro-fecha-input{width:100%;background:var(--sur2);border:1px solid var(--bor2);border-radius:7px;padding:8px 12px;font-family:'DM Mono',monospace;font-size:13px;color:var(--tx);outline:none;}
+.retiro-fecha-input{width:100%;background:var(--sur2);border:1px solid var(--bor2);border-radius:7px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--tx);outline:none;}
 .retiro-fecha-input:focus{border-color:var(--rojo);}
-.btn-retirar{padding:7px 16px;border-radius:7px;border:none;background:var(--rojo);color:#000;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;}
+.btn-retirar{padding:7px 16px;border-radius:7px;border:none;background:var(--rojo);color:#000;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;}
 .btn-retirar:hover{opacity:.85;}
-.btn-reactivar{padding:7px 14px;border-radius:7px;border:1px solid var(--rojo);background:none;color:var(--rojo);font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;}
+.btn-reactivar{padding:7px 14px;border-radius:7px;border:1px solid var(--rojo);background:none;color:var(--rojo);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;}
 .btn-reactivar:hover{background:var(--rojol);}
 
 /* Modal gestión usuarios */
@@ -1355,25 +1362,25 @@ td.td-sit{text-align:center;}
 .badge-prof{font-size:9.5px;background:var(--azul-clarol);color:var(--azul-claro);border-radius:20px;padding:1px 7px;}
 .cursos-chip{display:inline-flex;flex-wrap:wrap;gap:3px;}
 .chip{font-size:9.5px;background:var(--sur2);border-radius:4px;padding:1px 5px;color:var(--tx2);}
-.btn-edit-user,.btn-del-user{background:none;border:1px solid var(--bor2);border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600;transition:all .12s;}
+.btn-edit-user,.btn-del-user{background:none;border:1px solid var(--bor2);border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;transition:all .12s;}
 .btn-edit-user{color:var(--tx2);}
 .btn-edit-user:hover{border-color:var(--pr2);color:var(--pr2);}
 .btn-del-user{color:var(--tx3);}
 .btn-del-user:hover{border-color:var(--rojo);color:var(--rojo);}
 .form-row{margin-bottom:12px;}
 .form-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);margin-bottom:5px;font-weight:700;}
-.form-input{width:100%;background:var(--sur2);border:1px solid var(--bor2);border-radius:7px;padding:8px 12px;font-family:'Nunito',sans-serif;font-size:13px;color:var(--tx);outline:none;font-weight:600;}
+.form-input{width:100%;background:var(--sur2);border:1px solid var(--bor2);border-radius:7px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--tx);outline:none;font-weight:600;}
 .form-input:focus{border-color:var(--pr);}
 .cursos-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-height:200px;overflow-y:auto;padding:3px 0;}
-.curso-check{display:flex;align-items:center;justify-content:center;padding:5px 3px;border-radius:6px;border:1px solid var(--bor2);background:var(--sur2);cursor:pointer;transition:all .12s;font-size:11.5px;color:var(--tx2);text-align:center;font-family:'DM Mono',monospace;}
+.curso-check{display:flex;align-items:center;justify-content:center;padding:5px 3px;border-radius:6px;border:1px solid var(--bor2);background:var(--sur2);cursor:pointer;transition:all .12s;font-size:11.5px;color:var(--tx2);text-align:center;font-family:'JetBrains Mono',monospace;}
 .curso-check:hover{border-color:var(--verde);}
 .curso-check.sel{border-color:var(--verde);background:var(--verdel);color:var(--verde);}
 .nivel-head{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);grid-column:1/-1;margin-top:7px;padding:2px 0 1px;font-weight:700;}
 .respaldo-year{font-family:'Fraunces',serif;font-size:3rem;font-weight:700;color:var(--verde);margin:.5rem 0;}
 .respaldo-desc{font-size:13px;color:var(--tx2);line-height:1.7;text-align:center;margin-bottom:18px;}
-.btn-respaldo-dl{width:100%;padding:12px;border-radius:9px;border:none;background:var(--verde);color:#000;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .12s;margin-bottom:8px;}
+.btn-respaldo-dl{width:100%;padding:12px;border-radius:9px;border:none;background:var(--verde);color:#000;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .12s;margin-bottom:8px;}
 .btn-respaldo-dl:hover{opacity:.85;}
-.btn-respaldo-skip{width:100%;padding:9px;border-radius:9px;border:1px solid var(--bor2);background:none;color:var(--tx3);font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;}
+.btn-respaldo-skip{width:100%;padding:9px;border-radius:9px;border:1px solid var(--bor2);background:none;color:var(--tx3);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;}
 .btn-respaldo-skip:hover{border-color:var(--tx2);color:var(--tx2);}
 
 
@@ -1386,7 +1393,7 @@ td.td-sit{text-align:center;}
 }
 #informe-alumno-print { display:none; }
 .inf-wrap {
-  font-family:'Nunito',sans-serif;color:#0f1e3a;
+  font-family:'Inter',sans-serif;color:#0f1e3a;
   max-width:760px;margin:0 auto;padding:20px;background:#fff;
 }
 .inf-header {
@@ -1453,7 +1460,7 @@ td.td-sit{text-align:center;}
   #pdf-semestral.print-show,#pdf-anual.print-show{display:block!important}
 }
 #pdf-semestral,#pdf-anual{display:none}
-.pdf-pg{font-family:'Nunito',sans-serif;color:#0f1e3a;font-size:9pt;line-height:1.4;background:#fff}
+.pdf-pg{font-family:'Inter',sans-serif;color:#0f1e3a;font-size:9pt;line-height:1.4;background:#fff}
 .pdf-hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #3b82f6;padding-bottom:8px;margin-bottom:10px;gap:16px}
 .pdf-logo-row{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .pdf-logo-c{width:42px;height:42px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
@@ -1496,34 +1503,18 @@ td.td-sit{text-align:center;}
 .pdf-fcargo{font-size:8pt;color:#4a5f80;font-weight:600;text-align:center}
 .pdf-footer{text-align:center;margin-top:10px;font-size:6.5pt;color:#8fa3c0;border-top:1px solid #bfdbfe;padding-top:6px}
 
-/* Topbar en modo claro — azul marino */
-html.tema-claro .topbar {
-  background: #1e3a5f;
-  border-bottom-color: rgba(255,255,255,.1);
-}
-html.tema-claro .logo-text { color: #ffffff !important; }
-html.tema-claro .logo-sub  { color: #93c5fd !important; }
-html.tema-claro .mod-tab   {
-  color: #93c5fd;
-  border-color: transparent;
-}
-html.tema-claro .mod-tab.active-asist,
-html.tema-claro .mod-tab.active-notas,
-html.tema-claro .mod-tab.active-port,
-html.tema-claro .mod-tab.active-pie {
-  background: rgba(255,255,255,.15);
-  color: #ffffff;
-}
+/* Topbar siempre oscuro en ambos modos via --topbar-bg */
 html.tema-claro #btnTema,
 html.tema-claro #btnConfig,
-html.tema-claro #btnLogout {
+html.tema-claro #btnLogout,
+html.tema-claro #btnCambioPass {
   border-color: rgba(255,255,255,.25);
-  color: #ffffff;
+  color: rgba(255,255,255,.85);
 }
 html.tema-claro #btnTema:hover,
 html.tema-claro #btnConfig:hover,
 html.tema-claro #btnLogout:hover {
-  background: rgba(255,255,255,.15);
+  background: rgba(255,255,255,.12);
 }
 
 /* Sidebar en modo claro */
@@ -1650,6 +1641,29 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
 .stat-kpi-lbl { font-size:10px; color:var(--tx3); margin-top:2px; }
 /* stats-toolbar inline */
 
+
+/* Sidebar azul institucional */
+#sidebar-asist, #sidebar-notas, #sidebar-pie, .sidebar {
+  background: var(--sidebar-bg) !important;
+  border-right: 1px solid rgba(255,255,255,.06) !important;
+}
+.nav-item { color: var(--sidebar-text) !important; }
+.nav-item:hover { background: rgba(255,255,255,.08) !important; color: #ffffff !important; }
+.nav-item.active { background: rgba(59,130,246,.2) !important; color: var(--sidebar-act) !important; }
+.sb-label { color: rgba(255,255,255,.35) !important; }
+.sb-section { border-bottom-color: rgba(255,255,255,.06) !important; }
+/* Badge de módulo activo */
+.mod-tab-dot { width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:4px; background:rgba(255,255,255,.3); }
+.active-asist .mod-tab-dot { background:#4ade80; }
+.active-notas .mod-tab-dot { background:#60a5fa; }
+.active-port  .mod-tab-dot { background:#f97316; }
+.active-pie   .mod-tab-dot { background:#a78bfa; }
+.active-stats .mod-tab-dot { background:#a78bfa; }
+.active-asist, .active-notas, .active-port, .active-pie, .active-stats {
+  color: #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
+}
+
 </style>
 </head>
 <body>
@@ -1758,7 +1772,7 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
       <button class="today-tag" onclick="irAHoy()">hoy</button>
     </div>
     <button class="btn-export-all" onclick="exportarTodo()">↓ Exportar Excel</button>
-    <button id="btnAdminUsers" onclick="abrirGestionUsuarios()" style="display:none;padding:6px 12px;border-radius:7px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.08);color:var(--amarillo);font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;">👤 Usuarios</button>
+    <button id="btnAdminUsers" onclick="abrirGestionUsuarios()" style="display:none;padding:6px 12px;border-radius:7px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.08);color:var(--amarillo);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;">👤 Usuarios</button>
   </div>
   <div class="top-right">
     <div id="userBadge" class="user-badge" style="display:none">
@@ -1823,19 +1837,19 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:var(--sur);border-bottom:1px solid var(--bor);flex-shrink:0;">
             <div>
               <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:3px">Curso</div>
-              <select id="lc-curso" onchange="lcCambiarCurso()" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;min-width:140px;">
+              <select id="lc-curso" onchange="lcCambiarCurso()" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;min-width:140px;">
                 <option value="">— Seleccionar —</option>
               </select>
             </div>
             <div>
               <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:3px">Asignatura</div>
-              <select id="lc-asig" onchange="lcCambiarAsig()" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;min-width:240px;">
+              <select id="lc-asig" onchange="lcCambiarAsig()" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;min-width:240px;">
                 <option value="">— Seleccionar —</option>
               </select>
             </div>
             <div>
               <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:3px">Semestre</div>
-              <select id="lc-sem" onchange="lcCargar()" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;">
+              <select id="lc-sem" onchange="lcCargar()" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;cursor:pointer;">
                 <option value="1">Primer semestre</option>
                 <option value="2">Segundo semestre</option>
               </select>
@@ -1898,7 +1912,7 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
             <div style="font-size:12px;color:var(--tx2);margin-bottom:10px;">Un nombre por línea. Sin formato especial.</div>
             <textarea id="doc-import-ta"
               placeholder="María González&#10;Juan Pérez Rojas&#10;Ana Torres Silva&#10;Pedro Soto&#10;..."
-              style="width:100%;min-height:130px;font-family:'Nunito',sans-serif;font-size:13px;padding:10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur);color:var(--tx);outline:none;resize:vertical;line-height:1.8;"></textarea>
+              style="width:100%;min-height:130px;font-family:'Inter',sans-serif;font-size:13px;padding:10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur);color:var(--tx);outline:none;resize:vertical;line-height:1.8;"></textarea>
             <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
               <button class="btn primary" onclick="importarDocentes()" style="padding:7px 20px">Cargar docentes</button>
               <button class="btn" onclick="document.getElementById('doc-import-ta').value=''" style="padding:7px 14px;border:1px solid var(--bor2);background:none;color:var(--tx2);">Limpiar</button>
@@ -2146,11 +2160,11 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
     <!-- Tabs -->
     <div style="display:flex;gap:0;border-bottom:1px solid var(--bor2);margin-bottom:14px;">
       <button id="tabUsersLista" onclick="switchTabUsers('lista')"
-        style="padding:7px 18px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--pr);color:var(--pr);">
+        style="padding:7px 18px;border:none;background:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--pr);color:var(--pr);">
         Lista de usuarios
       </button>
       <button id="tabUsersCarga" onclick="switchTabUsers('carga')"
-        style="padding:7px 18px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);">
+        style="padding:7px 18px;border:none;background:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);">
         Carga masiva
       </button>
     </div>
@@ -2167,7 +2181,7 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
         Luego en la lista asígnales el rol correspondiente.
       </div>
       <textarea id="usersMasivoTA" placeholder="María González&#10;Juan Pérez Rojas&#10;Ana Torres Silva&#10;Pedro Soto&#10;..."
-        style="width:100%;min-height:140px;font-family:'Nunito',sans-serif;font-size:13px;padding:10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;resize:vertical;line-height:1.8;"></textarea>
+        style="width:100%;min-height:140px;font-family:'Inter',sans-serif;font-size:13px;padding:10px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);outline:none;resize:vertical;line-height:1.8;"></textarea>
       <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;">
         <button class="btn primary" onclick="cargarUsuariosMasivo()" style="padding:7px 20px">Cargar usuarios</button>
         <button class="btn" onclick="document.getElementById('usersMasivoTA').value=''" style="padding:7px 14px;border:1px solid var(--bor2);background:none;color:var(--tx2);">Limpiar</button>
@@ -2444,11 +2458,11 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
     <!-- Tabs -->
     <div style="display:flex;gap:0;border-bottom:1px solid var(--bor2);margin-bottom:14px;">
       <button id="tabConfigEstab" onclick="switchTabConfig('estab')"
-        style="padding:7px 16px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--pr);color:var(--pr);">
+        style="padding:7px 16px;border:none;background:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--pr);color:var(--pr);">
         🏫 Establecimiento
       </button>
       <button id="tabConfigNotas" onclick="switchTabConfig('notas')"
-        style="padding:7px 16px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);">
+        style="padding:7px 16px;border:none;background:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--tx2);">
         🗑️ Limpiar notas
       </button>
     </div>
@@ -2469,18 +2483,18 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
             <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:5px">Nombre del establecimiento</div>
             <input type="text" id="configNombre" placeholder="Ej: Liceo Técnico Talcahuano"
               oninput="configActualizarPreview()"
-              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;">
+              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;outline:none;">
           </div>
           <div>
             <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:5px">Glosa / subtítulo</div>
             <input type="text" id="configGlosa" placeholder="Ej: Talcahuano · Región del Biobío"
               oninput="configActualizarPreview()"
-              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;">
+              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;outline:none;">
           </div>
           <div>
             <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:5px">RBD (opcional)</div>
             <input type="text" id="configRbd" placeholder="Ej: 12345-6"
-              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;">
+              style="width:100%;padding:8px 12px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;outline:none;">
           </div>
         </div>
       </div>
@@ -2552,10 +2566,10 @@ html.tema-claro .btn.export  { background: var(--sur2); color: var(--pr); border
     <div class="modal-sub" id="cambioPassSub">Es tu primer ingreso. Puedes cambiar tu contraseña ahora.</div>
     <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0;">
       <input type="password" id="cambioPassNueva" placeholder="Nueva contraseña (mín. 4 caracteres)"
-        style="width:100%;padding:9px 14px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;"
+        style="width:100%;padding:9px 14px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;outline:none;"
         onkeydown="if(event.key==='Enter')cambioPassConfirmar()">
       <input type="password" id="cambioPassConfirm" placeholder="Repetir contraseña"
-        style="width:100%;padding:9px 14px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Nunito',sans-serif;font-size:13px;outline:none;"
+        style="width:100%;padding:9px 14px;border:1px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;outline:none;"
         onkeydown="if(event.key==='Enter')cambioPassConfirmar()">
       <div id="cambioPassError" style="font-size:12px;color:var(--rojo);min-height:16px;"></div>
     </div>
@@ -3937,14 +3951,14 @@ function renderPortHoy(contenido) {
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
       <div style="display:flex;align-items:center;gap:4px;background:var(--sur2);border:1px solid var(--bor2);border-radius:8px;padding:5px 10px;">
         <button class="nav-btn" onclick="portCambiarFecha(-1)" title="Día anterior">‹</button>
-        <span style="font-size:12px;font-weight:700;color:${esHoy ? 'var(--verde)' : 'var(--tx)'};font-family:'DM Mono',monospace;min-width:200px;text-align:center">
+        <span style="font-size:12px;font-weight:700;color:${esHoy ? 'var(--verde)' : 'var(--tx)'};font-family:'JetBrains Mono',monospace;min-width:200px;text-align:center">
           ${esHoy ? '📅 Hoy — ' : ''}${fmtCorta(fecha)}
         </span>
         <button class="nav-btn" onclick="portCambiarFecha(1)" ${esHoy ? 'disabled' : ''} title="Día siguiente">›</button>
       </div>
-      ${!esHoy ? `<button onclick="portIrHoy()" style="padding:5px 14px;border-radius:7px;border:1px solid rgba(74,222,128,.3);background:var(--verdel);color:var(--verde);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer">↩ Ir a hoy</button>` : ''}
+      ${!esHoy ? `<button onclick="portIrHoy()" style="padding:5px 14px;border-radius:7px;border:1px solid rgba(74,222,128,.3);background:var(--verdel);color:var(--verde);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">↩ Ir a hoy</button>` : ''}
       ${tieneFechasAnteriores ? `
-      <select onchange="portIrAFecha(this.value)" style="font-family:'DM Mono',monospace;font-size:11.5px;padding:6px 10px;border:1px solid var(--bor2);border-radius:7px;background:var(--sur2);color:var(--tx);cursor:pointer">
+      <select onchange="portIrAFecha(this.value)" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:6px 10px;border:1px solid var(--bor2);border-radius:7px;background:var(--sur2);color:var(--tx);cursor:pointer">
         <option value="">📋 Ver otro día...</option>
         ${fechasConAtrasos.map(f => `<option value="${f}" ${f === fecha && !esHoy ? 'selected' : ''}>${fmtCorta(f)} — ${portState[f].length} atraso${portState[f].length !== 1 ? 's' : ''}</option>`).join('')}
       </select>` : ''}
@@ -4281,7 +4295,7 @@ function renderPortHistorial(contenido) {
       html += `<tr>
         <td style="text-align:center;font-size:10.5px;color:var(--tx3)">${i + 1}</td>
         <td style="font-weight:700">${escHtml(al.nombre)}</td>
-        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--tx2)">${escHtml(al.curso)}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx2)">${escHtml(al.curso)}</td>
         <td style="text-align:center"><span class="atraso-badge ${badgeCls}">${total}</span></td>
         <td style="text-align:center"><span style="font-size:12px;font-weight:700;color:var(--port)">${citaciones}</span></td>
         <td style="text-align:center"><span style="font-size:12.5px;font-weight:700;color:${firmasAlumno >= 9 ? 'var(--rojo)' : firmasAlumno >= 5 ? 'var(--amarillo)' : 'var(--tx2)'}">${firmas}</span></td>
@@ -4417,7 +4431,7 @@ function abrirDetalleAlumno(nombre, curso) {
 
     html += `<tr style="border-bottom:1px solid var(--bor)">
       <td style="padding:8px 10px">${fStr}</td>
-      <td style="padding:8px 10px;text-align:center;font-family:'DM Mono',monospace;color:var(--port)">${reg.hora}</td>
+      <td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--port)">${reg.hora}</td>
       <td style="padding:8px 10px;text-align:center"><span class="atraso-badge ${portClaseBadge(reg.numAtraso)}">${reg.numAtraso}</span></td>
       <td style="padding:8px 10px">${firmaHtml}</td>
     </tr>`;
@@ -4609,7 +4623,7 @@ function pieRenderContenido() {
         <div class="fg">
           <label>Fecha</label>
           <input type="date" id="pieRapidaFecha" value="${todayISO()}"
-            style="background:var(--sur2);border:1px solid var(--bor2);border-radius:7px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:12.5px;color:var(--tx);outline:none">
+            style="background:var(--sur2);border:1px solid var(--bor2);border-radius:7px;padding:7px 10px;font-family:'Inter',sans-serif;font-size:12.5px;color:var(--tx);outline:none">
         </div>
         <div class="fg">
           <label>Tipo de consulta</label>
@@ -7093,6 +7107,7 @@ function planGenerarInforme(esParcial) {
 // DASHBOARD DE ESTADÍSTICAS
 // ══════════════════════════════════════════════════════
 
+
 function statsInicializarFiltro() {
   var sel = document.getElementById('statsCursoFiltro');
   if (!sel || sel.options.length > 1) return;
@@ -7109,258 +7124,243 @@ function statsInicializarFiltro() {
   });
 }
 
+function kpiHtml(val, lbl, color) {
+  return '<div class="stat-kpi"><div class="stat-kpi-val" style="color:' + color + '">' + val + '</div><div class="stat-kpi-lbl">' + lbl + '</div></div>';
+}
+
+function svgDonut(pct, color, label, sublabel, size) {
+  size = size || 80;
+  var r = size * 0.375;
+  var circ = 2 * Math.PI * r;
+  var dash = (pct / 100) * circ;
+  var gap  = circ - dash;
+  var cx = size / 2;
+  var sw = size * 0.14;
+  return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '" style="display:block;margin:0 auto;">'
+    + '<circle cx="' + cx + '" cy="' + cx + '" r="' + r + '" fill="none" stroke="#0d1b2e" stroke-width="' + sw + '"/>'
+    + '<circle cx="' + cx + '" cy="' + cx + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + sw + '" stroke-dasharray="' + dash.toFixed(1) + ' ' + gap.toFixed(1) + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cx + ')"/>'
+    + '<text x="' + cx + '" y="' + (cx - 4) + '" text-anchor="middle" font-size="' + (size * 0.16) + '" font-weight="800" fill="#ffffff">' + label + '</text>'
+    + '<text x="' + cx + '" y="' + (cx + 9) + '" text-anchor="middle" font-size="' + (size * 0.09) + '" fill="' + color + '">' + sublabel + '</text>'
+    + '</svg>';
+}
+
+function svgDonutMulti(segments, size) {
+  size = size || 80;
+  var r  = size * 0.35;
+  var cx = size / 2;
+  var sw = size * 0.17;
+  var circ = 2 * Math.PI * r;
+  var total = segments.reduce(function(a,b){ return a + b.pct; }, 0);
+  var html = '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
+  var offset = -90;
+  segments.forEach(function(seg) {
+    var frac = (seg.pct / total);
+    var dash = frac * circ;
+    var gap  = circ - dash;
+    html += '<circle cx="' + cx + '" cy="' + cx + '" r="' + r + '" fill="none" stroke="' + seg.color + '" stroke-width="' + sw + '" stroke-dasharray="' + (dash - 1).toFixed(1) + ' ' + (gap + 1).toFixed(1) + '" stroke-linecap="butt" transform="rotate(' + offset + ' ' + cx + ' ' + cx + ')"/>';
+    offset += frac * 360;
+  });
+  html += '<text x="' + cx + '" y="' + (cx - 3) + '" text-anchor="middle" font-size="8" fill="#7fa4cc">Total</text>';
+  html += '<text x="' + cx + '" y="' + (cx + 9) + '" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">487</text>';
+  html += '</svg>';
+  return html;
+}
+
 function statsRender() {
   console.log('[STATS] statsRender llamado');
   var grid = document.getElementById('statsGrid');
-  console.log('[STATS] statsGrid element:', grid);
-  console.log('[STATS] state keys:', Object.keys(state||{}).length);
-  console.log('[STATS] NIVELES:', NIVELES ? NIVELES.length : 'no existe');
-
-  if (!grid) {
-    console.error('[STATS] statsGrid no encontrado en DOM');
-    return;
-  }
+  if (!grid) { console.error('[STATS] statsGrid no encontrado'); return; }
 
   statsInicializarFiltro();
   var filtro = document.getElementById('statsCursoFiltro').value;
-  grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--tx3)">Calculando...</div>';
+  grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--tx3)">Calculando...</div>';
 
-  // Recopilar datos
   var cursosAnalizar = [];
   if (filtro === 'todos') {
-    NIVELES.forEach(function(niv) {
-      niv.cursos.forEach(function(c) { cursosAnalizar.push(niv.key + '__' + c); });
-    });
+    NIVELES.forEach(function(niv) { niv.cursos.forEach(function(c) { cursosAnalizar.push(niv.key + '__' + c); }); });
   } else {
     cursosAnalizar = [filtro];
   }
 
-  // Stats por curso
-  var totalAlumnos  = 0;
-  var totalActivos  = 0;
-  var totalRetirados = 0;
-  var notasTodas    = [];
-  var asistTodas    = [];
-  var dataCursos    = [];
+  var totalActivos = 0, totalRetirados = 0;
+  var notasTodas = [], asistTodas = [];
+  var dataCursos = [];
 
   try {
-  cursosAnalizar.forEach(function(clave) {
-    var curso = state[clave];
-    if (!curso) return;
-    var alumnos = curso.alumnos || [];
-    var activos = alumnos.filter(function(a) { return !(a.retiro && a.retiro.fecha); });
-    var retirados = alumnos.filter(function(a) { return a.retiro && a.retiro.fecha; });
-
-    totalAlumnos  += alumnos.length;
-    totalActivos  += activos.length;
-    totalRetirados += retirados.length;
-
-    // Calcular asistencia de activos
-    var asistCurso = [];
-    activos.forEach(function(a) {
-      var nombre = (a.full || ((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
-      if (!nombre) return;
-      var dias = curso.dias || {};
-      var total = Object.keys(dias).length;
-      if (!total) return;
-      var presentes = Object.values(dias).filter(function(d) {
-        return d[nombre] === 'P' || d[nombre] === 'J';
-      }).length;
-      var pct = Math.round(presentes / total * 100);
-      asistCurso.push(pct);
-      asistTodas.push(pct);
-    });
-
-    // Notas del libro de clases
-    var promsCurso = [];
-    var asigs = getAsignaturasCurso(clave);
-    asigs.forEach(function(asig) {
-      var sk = 'lc_v1_' + clave.replace(/[^a-zA-Z0-9]/g,'_') + '_' + asig.replace(/[^a-zA-Z0-9]/g,'_') + '_sem1';
-      try {
-        var raw = localStorage.getItem(sk);
-        if (!raw) return;
-        var data = JSON.parse(raw);
-        activos.forEach(function(a) {
-          var nombre = (a.full || ((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
-          var vals = Object.values(data).map(function(ev) {
-            return parseFloat(ev.notas && ev.notas[nombre]);
-          }).filter(function(v) { return !isNaN(v); });
-          if (vals.length) {
-            var prom = vals.reduce(function(a,b){return a+b;},0)/vals.length;
-            promsCurso.push(prom);
-            notasTodas.push(prom);
-          }
-        });
-      } catch(e) {}
-    });
-
-    var promCurso = promsCurso.length
-      ? (promsCurso.reduce(function(a,b){return a+b;},0)/promsCurso.length)
-      : null;
-    var asistProm = asistCurso.length
-      ? Math.round(asistCurso.reduce(function(a,b){return a+b;},0)/asistCurso.length)
-      : null;
-
-    dataCursos.push({
-      clave: clave,
-      label: clave.split('__')[1],
-      activos: activos.length,
-      retirados: retirados.length,
-      promNotas: promCurso,
-      promAsist: asistProm,
-      notas: promsCurso,
-      asist: asistCurso
-    });
-  });
-
-  } catch(loopErr) {
-    console.error('[STATS] Error en loop cursos:', loopErr);
-    grid.innerHTML = '<div style="padding:20px;color:var(--rojo)">Error calculando estadísticas: ' + loopErr.message + '</div>';
-    return;
-  }
-
-  // KPIs globales
-  var aprobados  = notasTodas.filter(function(n){ return n >= 4.0; }).length;
-  var sobre5     = notasTodas.filter(function(n){ return n >= 5.0; }).length;
-  var pctApro    = notasTodas.length ? Math.round(aprobados/notasTodas.length*100) : 0;
-  var pctSobre5  = notasTodas.length ? Math.round(sobre5/notasTodas.length*100) : 0;
-  var pctDeserc  = totalAlumnos ? Math.round(totalRetirados/totalAlumnos*100) : 0;
-  var promAsistG = asistTodas.length ? Math.round(asistTodas.reduce(function(a,b){return a+b;},0)/asistTodas.length) : 0;
-  var bajAsist   = asistTodas.filter(function(a){ return a < 85; }).length;
-
-  var html = '';
-
-  // ── Tarjeta KPIs globales ──
-  html += '<div class="stat-card" style="grid-column:1/-1">';
-  html += '<div class="stat-kpi-grid" style="grid-template-columns:repeat(6,1fr)">';
-  html += kpiHtml(totalActivos, 'Alumnos activos', 'var(--pr2)');
-  html += kpiHtml(totalRetirados + ' (' + pctDeserc + '%)', 'Deserción', 'var(--rojo)');
-  html += kpiHtml(pctApro + '%', 'Aprobación', pctApro >= 70 ? 'var(--verde)' : 'var(--amarillo)');
-  html += kpiHtml(pctSobre5 + '%', 'Sobre 5,0', 'var(--verde)');
-  html += kpiHtml(promAsistG + '%', 'Asistencia promedio', promAsistG >= 85 ? 'var(--verde)' : 'var(--amarillo)');
-  html += kpiHtml(bajAsist, 'Alumnos bajo 85% asist.', 'var(--rojo)');
-  html += '</div>';
-
-  // Barra de comparación de asistencia
-  if (notasTodas.length) {
-    var rangos = [
-      { label: 'Bajo 4,0', count: notasTodas.filter(function(n){return n<4;}).length, color: '#f87171' },
-      { label: '4,0 – 5,0', count: notasTodas.filter(function(n){return n>=4&&n<5;}).length, color: '#fbbf24' },
-      { label: '5,0 – 6,0', count: notasTodas.filter(function(n){return n>=5&&n<6;}).length, color: '#60a5fa' },
-      { label: 'Sobre 6,0', count: notasTodas.filter(function(n){return n>=6;}).length, color: '#4ade80' }
-    ];
-    html += '<div style="margin-top:14px"><div style="font-size:11px;color:var(--tx3);font-weight:700;margin-bottom:8px;text-transform:uppercase">Distribución de promedios</div>';
-    html += '<div style="display:flex;height:28px;border-radius:8px;overflow:hidden;gap:1px;">';
-    rangos.forEach(function(r) {
-      var pct = notasTodas.length ? r.count/notasTodas.length*100 : 0;
-      if (pct < 1) return;
-      html += '<div style="background:' + r.color + ';flex:' + pct + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#111;" title="' + r.label + ': ' + r.count + '">' + (pct > 8 ? r.label : '') + '</div>';
-    });
-    html += '</div>';
-    html += '<div style="display:flex;gap:12px;margin-top:6px;flex-wrap:wrap;">';
-    rangos.forEach(function(r) {
-      html += '<span style="font-size:11px;color:var(--tx2)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + r.color + ';margin-right:4px;"></span>' + r.label + ': ' + r.count + '</span>';
-    });
-    html += '</div></div>';
-  }
-  html += '</div>';
-
-  // ── Tarjeta por curso ──
-  if (filtro === 'todos' && dataCursos.length > 1) {
-    html += '<div class="stat-card" style="grid-column:1/-1">';
-    html += '<div class="stat-card-title">Rendimiento por curso</div>';
-    html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
-    html += '<thead><tr style="background:var(--sur2)">'
-      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:left">Curso</th>'
-      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Alumnos</th>'
-      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Promedio notas</th>'
-      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Asistencia</th>'
-      + '<th style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">Retiros</th>'
-      + '</tr></thead><tbody>';
-
-    dataCursos.filter(function(d){ return d.activos > 0; }).forEach(function(d, i) {
-      var bg = i%2===0 ? 'var(--sur)' : 'var(--sur2)';
-      var pc = d.promNotas ? d.promNotas.toFixed(1) : '—';
-      var pcol = d.promNotas ? (d.promNotas>=5?'var(--verde)':d.promNotas>=4?'var(--amarillo)':'var(--rojo)') : 'var(--tx3)';
-      var ac = d.promAsist !== null ? d.promAsist + '%' : '—';
-      var acol = d.promAsist !== null ? (d.promAsist>=90?'var(--verde)':d.promAsist>=85?'var(--amarillo)':'var(--rojo)') : 'var(--tx3)';
-      html += '<tr style="background:' + bg + '">'
-        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);font-weight:700">' + d.label + '</td>'
-        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center">' + d.activos + '</td>'
-        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;font-weight:700;color:' + pcol + '">' + pc + '</td>'
-        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;font-weight:700;color:' + acol + '">' + ac + '</td>'
-        + '<td style="padding:7px 10px;border:0.5px solid var(--bor2);text-align:center;color:var(--rojo)">' + (d.retirados||0) + '</td>'
-        + '</tr>';
-    });
-    html += '</tbody></table></div></div>';
-  }
-
-  // ── Gráfico barras asistencia por nivel ──
-  if (filtro === 'todos') {
-    html += '<div class="stat-card">';
-    html += '<div class="stat-card-title">Asistencia por nivel</div>';
-    var nivData = {};
-    dataCursos.forEach(function(d) {
-      var niv = d.clave.split('__')[0];
-      if (!nivData[niv]) nivData[niv] = { sum: 0, cnt: 0, label: '' };
-      var label = NIVELES.find(function(n){ return n.key === niv; });
-      nivData[niv].label = label ? label.label : niv;
-      if (d.promAsist !== null) { nivData[niv].sum += d.promAsist; nivData[niv].cnt++; }
-    });
-    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
-    Object.values(nivData).forEach(function(nd) {
-      var pct = nd.cnt ? Math.round(nd.sum/nd.cnt) : 0;
-      var col = pct >= 90 ? '#4ade80' : pct >= 85 ? '#fbbf24' : '#f87171';
-      html += '<div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-bottom:3px;">'
-        + '<span>' + nd.label + '</span><span style="font-weight:700;color:' + col + '">' + pct + '%</span></div>'
-        + '<div style="background:var(--sur2);border-radius:999px;height:10px;overflow:hidden;">'
-        + '<div style="background:' + col + ';width:' + pct + '%;height:100%;border-radius:999px;transition:width .5s"></div></div></div>';
-    });
-    html += '</div></div>';
-
-    // ── Alumnos en riesgo ──
-    html += '<div class="stat-card">';
-    html += '<div class="stat-card-title">⚠️ Alumnos en riesgo</div>';
-    html += '<div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Asistencia bajo 85% o promedio bajo 4,0</div>';
-    var riesgo = [];
     cursosAnalizar.forEach(function(clave) {
       var curso = state[clave];
       if (!curso) return;
-      var label = clave.split('__')[1];
-      (curso.alumnos || []).forEach(function(a) {
-        if (a.retiro && a.retiro.fecha) return;
+      var alumnos  = curso.alumnos || [];
+      var activos  = alumnos.filter(function(a){ return !(a.retiro && a.retiro.fecha); });
+      var retirados= alumnos.filter(function(a){ return a.retiro && a.retiro.fecha; });
+      totalActivos  += activos.length;
+      totalRetirados += retirados.length;
+
+      var asistCurso = [];
+      activos.forEach(function(a) {
         var nombre = (a.full || ((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
-        var dias = curso.dias || {};
+        if (!nombre) return;
+        var dias  = curso.dias || {};
         var total = Object.keys(dias).length;
         if (!total) return;
-        var pres = Object.values(dias).filter(function(d){ return d[nombre]==='P'||d[nombre]==='J'; }).length;
-        var pct = Math.round(pres/total*100);
-        if (pct < 85) riesgo.push({ nombre: nombre, curso: label, tipo: 'Asistencia: ' + pct + '%', col: 'var(--amarillo)' });
+        var pres  = Object.values(dias).filter(function(d){ return d[nombre]==='P'||d[nombre]==='J'; }).length;
+        var pct   = Math.round(pres/total*100);
+        asistCurso.push(pct);
+        asistTodas.push(pct);
       });
+
+      var promsCurso = [];
+      var asigs = getAsignaturasCurso(clave);
+      asigs.forEach(function(asig) {
+        var sk  = 'lc_v1_' + clave.replace(/[^a-zA-Z0-9]/g,'_') + '_' + asig.replace(/[^a-zA-Z0-9]/g,'_') + '_sem1';
+        try {
+          var raw = localStorage.getItem(sk);
+          if (!raw) return;
+          var data = JSON.parse(raw);
+          activos.forEach(function(a) {
+            var nombre = (a.full||((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
+            var vals = Object.values(data).map(function(ev){ return parseFloat(ev.notas&&ev.notas[nombre]); }).filter(function(v){ return !isNaN(v); });
+            if (vals.length) { var p = vals.reduce(function(a,b){return a+b;},0)/vals.length; promsCurso.push(p); notasTodas.push(p); }
+          });
+        } catch(e) {}
+      });
+
+      var promCurso = promsCurso.length ? promsCurso.reduce(function(a,b){return a+b;},0)/promsCurso.length : null;
+      var asistProm = asistCurso.length  ? Math.round(asistCurso.reduce(function(a,b){return a+b;},0)/asistCurso.length) : null;
+      dataCursos.push({ clave:clave, label:clave.split('__')[1], activos:activos.length, retirados:retirados.length, promNotas:promCurso, promAsist:asistProm, notas:promsCurso, asist:asistCurso });
     });
-    if (!riesgo.length) {
-      html += '<div style="text-align:center;color:var(--verde);font-size:13px;padding:10px">✓ Sin alumnos en riesgo</div>';
-    } else {
-      html += '<div style="max-height:200px;overflow-y:auto">';
-      riesgo.slice(0,20).forEach(function(r) {
-        html += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--bor);font-size:12px;">'
-          + '<span style="font-weight:600;color:var(--tx)">' + escHtml(r.nombre) + '</span>'
-          + '<span style="color:var(--tx3)">' + r.curso + '</span>'
-          + '<span style="color:' + r.col + ';font-weight:700">' + r.tipo + '</span></div>';
-      });
-      if (riesgo.length > 20) html += '<div style="text-align:center;font-size:11px;color:var(--tx3);padding-top:6px">...y ' + (riesgo.length-20) + ' más</div>';
-      html += '</div>';
-    }
-    html += '</div>';
+  } catch(e) {
+    console.error('[STATS] Error loop:', e);
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;color:var(--rojo)">Error: ' + e.message + '</div>';
+    return;
   }
 
-  document.getElementById('statsGrid').innerHTML = html;
+  var aprobados = notasTodas.filter(function(n){ return n >= 4.0; }).length;
+  var sobre5    = notasTodas.filter(function(n){ return n >= 5.0; }).length;
+  var bajo4     = notasTodas.filter(function(n){ return n < 4.0; }).length;
+  var entre4y5  = notasTodas.filter(function(n){ return n >= 4.0 && n < 5.0; }).length;
+  var entre5y6  = notasTodas.filter(function(n){ return n >= 5.0 && n < 6.0; }).length;
+  var sobre6    = notasTodas.filter(function(n){ return n >= 6.0; }).length;
+  var pctApro   = notasTodas.length ? Math.round(aprobados/notasTodas.length*100) : 0;
+  var pctSobre5 = notasTodas.length ? Math.round(sobre5/notasTodas.length*100)    : 0;
+  var pctDeserc = (totalActivos + totalRetirados) ? Math.round(totalRetirados/(totalActivos+totalRetirados)*100) : 0;
+  var promAsistG= asistTodas.length ? Math.round(asistTodas.reduce(function(a,b){return a+b;},0)/asistTodas.length) : 0;
+  var bajAsist  = asistTodas.filter(function(a){ return a < 85; }).length;
+
+  var html = '';
+
+  // ── FILA 1: Donut distribución grande + Donut aprobación + Donut asistencia ──
+  html += '<div style="background:var(--sur2);border:0.5px solid var(--bor2);border-radius:12px;padding:16px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;">';
+
+  // Donut distribución de notas
+  var segmentos = [
+    { pct: bajo4,    color: '#f87171' },
+    { pct: entre4y5, color: '#fbbf24' },
+    { pct: entre5y6, color: '#60a5fa' },
+    { pct: sobre6,   color: '#4ade80' }
+  ].filter(function(s){ return s.pct > 0; });
+
+  html += '<div>';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Distribución de notas</div>';
+  html += '<div style="display:flex;align-items:center;gap:14px;">';
+  if (notasTodas.length) {
+    html += svgDonutMulti(segmentos, 100);
+  } else {
+    html += '<div style="width:100px;height:100px;display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:12px;">Sin datos</div>';
+  }
+  html += '<div style="display:flex;flex-direction:column;gap:7px;">';
+  html += '<div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;"><span style="color:#f87171;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;background:#f87171;border-radius:2px;display:inline-block;"></span>Bajo 4,0</span><span style="color:#ffffff;font-weight:700;">' + (notasTodas.length ? Math.round(bajo4/notasTodas.length*100) : 0) + '%</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;"><span style="color:#fbbf24;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;background:#fbbf24;border-radius:2px;display:inline-block;"></span>4,0 – 5,0</span><span style="color:#ffffff;font-weight:700;">' + (notasTodas.length ? Math.round(entre4y5/notasTodas.length*100) : 0) + '%</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;"><span style="color:#60a5fa;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;background:#60a5fa;border-radius:2px;display:inline-block;"></span>5,0 – 6,0</span><span style="color:#ffffff;font-weight:700;">' + (notasTodas.length ? Math.round(entre5y6/notasTodas.length*100) : 0) + '%</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;"><span style="color:#4ade80;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;background:#4ade80;border-radius:2px;display:inline-block;"></span>Sobre 6,0</span><span style="color:#ffffff;font-weight:700;">' + (notasTodas.length ? Math.round(sobre6/notasTodas.length*100) : 0) + '%</span></div>';
+  html += '</div></div></div>';
+
+  // Donut aprobación
+  html += '<div style="text-align:center;">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Aprobación</div>';
+  html += svgDonut(pctApro, '#4ade80', pctApro + '%', 'Aprobados', 90);
+  html += '<div style="margin-top:8px;font-size:11px;color:#4ade80;font-weight:600;">' + aprobados + ' / ' + totalActivos + '</div>';
+  html += '<div style="font-size:10px;color:var(--tx3);margin-top:2px;">alumnos aprobados</div>';
+  html += '</div>';
+
+  // Donut asistencia
+  html += '<div style="text-align:center;">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Asistencia</div>';
+  html += svgDonut(promAsistG, '#60a5fa', promAsistG + '%', 'Asistencia', 90);
+  html += '<div style="margin-top:8px;font-size:11px;color:#f87171;font-weight:600;">' + bajAsist + ' bajo 85%</div>';
+  html += '<div style="font-size:10px;color:var(--tx3);margin-top:2px;">requieren seguimiento</div>';
+  html += '</div>';
+
+  html += '</div>';
+
+  // ── FILA 2: KPIs + Barras por nivel ──
+  html += '<div style="background:var(--sur2);border:0.5px solid var(--bor2);border-radius:12px;padding:16px;">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Indicadores clave</div>';
+  html += '<div class="stat-kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">';
+  html += kpiHtml(totalActivos, 'Alumnos activos', 'var(--pr2)');
+  html += kpiHtml(totalRetirados + ' (' + pctDeserc + '%)', 'Deserción', 'var(--rojo)');
+  html += kpiHtml(pctSobre5 + '%', 'Sobre 5,0', 'var(--verde)');
+  html += '</div></div>';
+
+  // ── FILA 2: Barras por nivel ──
+  html += '<div style="background:var(--sur2);border:0.5px solid var(--bor2);border-radius:12px;padding:16px;">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Promedio por nivel</div>';
+  var nivData = {};
+  dataCursos.forEach(function(d) {
+    var niv = d.clave.split('__')[0];
+    if (!nivData[niv]) { var n = NIVELES.find(function(x){ return x.key===niv; }); nivData[niv] = { label: n ? n.label : niv, sum:0, cnt:0 }; }
+    if (d.promNotas !== null) { nivData[niv].sum += d.promNotas; nivData[niv].cnt++; }
+  });
+  Object.values(nivData).forEach(function(nd) {
+    var p = nd.cnt ? (nd.sum/nd.cnt).toFixed(1) : null;
+    var pct = p ? Math.round(parseFloat(p)/7*100) : 0;
+    var col = !p ? 'var(--bor2)' : parseFloat(p)>=5 ? '#4ade80' : parseFloat(p)>=4 ? '#fbbf24' : '#f87171';
+    html += '<div style="margin-bottom:8px;">';
+    html += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-bottom:4px;"><span>' + nd.label + '</span><span style="font-weight:700;color:' + col + '">' + (p || '—') + '</span></div>';
+    html += '<div style="background:var(--sur);border-radius:999px;height:10px;overflow:hidden;"><div style="background:' + col + ';width:' + pct + '%;height:100%;border-radius:999px;transition:width .6s;"></div></div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // ── FILA 3: Alumnos en riesgo ──
+  var riesgo = [];
+  cursosAnalizar.forEach(function(clave) {
+    var curso = state[clave]; if (!curso) return;
+    var label = clave.split('__')[1];
+    (curso.alumnos||[]).forEach(function(a) {
+      if (a.retiro && a.retiro.fecha) return;
+      var nombre = (a.full||((a.apellido||'')+' '+(a.nombre||'')).trim()).trim();
+      var dias  = curso.dias||{}; var total = Object.keys(dias).length; if (!total) return;
+      var pres  = Object.values(dias).filter(function(d){ return d[nombre]==='P'||d[nombre]==='J'; }).length;
+      var pct   = Math.round(pres/total*100);
+      if (pct < 85) riesgo.push({ nombre:nombre, curso:label, asist:pct, tipo:'Asistencia', col:'#fbbf24', urgente: pct < 75 });
+    });
+  });
+
+  html += '<div style="background:var(--sur2);border:0.5px solid var(--bor2);border-radius:12px;padding:16px;grid-column:1/-1;">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Alumnos en riesgo — asistencia bajo 85%</div>';
+  if (!riesgo.length) {
+    html += '<div style="text-align:center;padding:20px;color:var(--verde);font-size:13px;font-weight:600;">✓ Sin alumnos en riesgo de asistencia</div>';
+  } else {
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">';
+    riesgo.slice(0,12).forEach(function(r) {
+      var bc = r.urgente ? '#f87171' : '#fbbf24';
+      html += '<div style="background:var(--sur);border-radius:8px;padding:9px 12px;border-left:3px solid ' + bc + ';display:flex;justify-content:space-between;align-items:center;">';
+      html += '<div><div style="font-size:12px;font-weight:600;color:var(--tx)">' + escHtml(r.nombre) + '</div>';
+      html += '<div style="font-size:10px;color:var(--tx3)">' + r.curso + '</div></div>';
+      html += '<div style="font-size:14px;font-weight:800;color:' + bc + '">' + r.asist + '%</div>';
+      html += '</div>';
+    });
+    if (riesgo.length > 12) html += '<div style="font-size:11px;color:var(--tx3);padding:8px;text-align:center;grid-column:1/-1;">... y ' + (riesgo.length-12) + ' más</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  grid.innerHTML = html;
   document.getElementById('statsUltimaAct').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-CL');
 }
 
-function kpiHtml(val, lbl, color) {
-  return '<div class="stat-kpi"><div class="stat-kpi-val" style="color:' + color + '">' + val + '</div><div class="stat-kpi-lbl">' + lbl + '</div></div>';
-}
+
 
 
 // ═══════════════════════════════════════════════════
