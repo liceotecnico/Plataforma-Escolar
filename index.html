@@ -2,8 +2,16 @@
 <html lang="es" class="tema-claro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Educación Talcahuano — Plataforma Escolar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Plataforma Escolar — Liceo Técnico Talcahuano</title>
+<meta name="description" content="Plataforma Escolar Integrada — Liceo Técnico Talcahuano">
+<meta name="theme-color" content="#1565C0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plataforma LTT">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1859,6 +1867,7 @@ td.td-sit{text-align:center;}
         <button class="port-tab active" id="ptab-hoy" onclick="portCambiarVista('hoy')">📋 Hoy</button>
         <!-- Tab historial alumnos oculto -->
         <button class="port-tab" id="ptab-alertas" onclick="portCambiarVista('alertas')">🚨 Alertas</button>
+        <button class="port-tab" id="ptab-justificaciones" onclick="portCambiarVista('justificaciones')">📄 Justificaciones</button>
         <button class="port-tab" id="ptab-dashboard" onclick="portCambiarVista('dashboard')">📊 Dashboard</button>
       </div>
       <button class="btn" onclick="exportarPorteria()" style="margin-left:auto;font-size:11.5px;padding:6px 12px;">↓ Exportar Excel</button>
@@ -2459,6 +2468,15 @@ td.td-sit{text-align:center;}
   </div>
 </div>
 
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js')
+      .then(function(reg) { console.log('SW registrado:', reg.scope); })
+      .catch(function(e) { console.log('SW error:', e); });
+  });
+}
+</script>
 </body>
 <script>
 // ═══════════════════════════════════════════════════
@@ -3756,15 +3774,12 @@ function confirmarFirma() {
 // Vista portería
 function portCambiarVista(vista) {
   portVistaActual = vista;
-  ['hoy','historial','alertas','dashboard'].forEach(function(v) {
+  ['hoy','historial','alertas','justificaciones','dashboard'].forEach(function(v) {
     var btn = document.getElementById('ptab-' + v);
     if (btn) btn.classList.toggle('active', v === vista);
   });
-  if (vista === 'dashboard') {
-    var cont = document.getElementById('portContent');
-    if (cont) portRenderDashboard();
-    return;
-  }
+  if (vista === 'dashboard')      { portRenderDashboard();     return; }
+  if (vista === 'justificaciones'){ portRenderJustificaciones(); return; }
   renderPortContent();
 }
 
@@ -7864,6 +7879,149 @@ function kpiPortCard(val, lbl, color, icon) {
     + '<div style="font-size:28px;font-weight:900;color:' + color + ';line-height:1;">' + val + '</div>'
     + '<div style="font-size:11px;color:var(--tx3);margin-top:5px;">' + lbl + '</div>'
     + '</div>';
+}
+
+
+
+// ══════════════════════════════════════════════════════
+// VISTA JUSTIFICACIONES DE ATRASOS
+// ══════════════════════════════════════════════════════
+function portRenderJustificaciones() {
+  var cont = document.getElementById('portContent');
+  if (!cont) return;
+
+  // Recopilar todos los AJ de portState
+  var registros = [];
+  Object.keys(portState).forEach(function(fecha) {
+    var lista = portState[fecha];
+    if (!Array.isArray(lista)) return;
+    lista.forEach(function(reg, idx) {
+      if (!reg.justificado) return;
+      registros.push({
+        fecha:  fecha,
+        idx:    idx,
+        hora:   reg.hora   || '—',
+        nombre: reg.nombre || '—',
+        curso:  reg.curso  || '—',
+        numAtraso: reg.numAtraso || '—',
+        obs:    reg.obsJust || ''
+      });
+    });
+  });
+
+  // Ordenar por fecha descendente
+  registros.sort(function(a, b) { return b.fecha.localeCompare(a.fecha); });
+
+  // KPIs
+  var totalAJ   = registros.length;
+  var alumnos   = new Set(registros.map(function(r){ return r.nombre; })).size;
+  var conObs    = registros.filter(function(r){ return r.obs && r.obs.trim(); }).length;
+
+  var html = '<div style="display:flex;flex-direction:column;gap:14px;">';
+
+  // ── KPIs ──
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">';
+  html += kpiPortCard(totalAJ,  'Atrasos justificados',  '#F57F17', '📄');
+  html += kpiPortCard(alumnos,  'Alumnos distintos',      '#1565C0', '👤');
+  html += kpiPortCard(conObs,   'Con observación',        '#2E7D32', '📝');
+  html += '</div>';
+
+  // ── Filtros ──
+  html += '<div style="background:var(--sur);border:0.5px solid var(--bor2);border-radius:10px;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">';
+  html += '<select id="filtJustCurso" onchange="portFiltrarJust()" style="padding:6px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:12px;outline:none;">';
+  html += '<option value="">Todos los cursos</option>';
+  var cursosUnicos = [...new Set(registros.map(function(r){ return r.curso; }))].sort();
+  cursosUnicos.forEach(function(c){ html += '<option value="' + escHtml(c) + '">' + escHtml(c) + '</option>'; });
+  html += '</select>';
+  html += '<input type="text" id="filtJustNombre" oninput="portFiltrarJust()" placeholder="Buscar alumno..." style="padding:6px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:12px;outline:none;flex:1;min-width:150px;">';
+  html += '<button onclick="portExportarJust()" style="padding:6px 14px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap;">↓ Exportar Excel</button>';
+  html += '</div>';
+
+  // ── Tabla ──
+  html += '<div style="background:var(--sur);border:0.5px solid var(--bor2);border-radius:10px;overflow:hidden;" id="tablaJustWrap">';
+
+  if (!registros.length) {
+    html += '<div style="padding:40px;text-align:center;color:var(--tx3);font-size:13px;">Sin atrasos justificados registrados aún.<br><span style="font-size:11px;">Cuando registres un atraso con justificación médica aparecerá aquí.</span></div>';
+  } else {
+    html += portTablaJust(registros);
+  }
+
+  html += '</div>';
+  html += '</div>';
+
+  cont.innerHTML = html;
+  // Guardar registros globalmente para filtros
+  window._portJustRegistros = registros;
+}
+
+function portTablaJust(registros) {
+  var html = '<div style="overflow-x:auto;">';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+  html += '<thead><tr style="background:var(--sur2);">';
+  ['Fecha','Hora','Alumno/a','Curso','N° atraso','Observación','Acciones'].forEach(function(h) {
+    html += '<th style="padding:9px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);border-bottom:0.5px solid var(--bor2);white-space:nowrap;">' + h + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  registros.forEach(function(r, i) {
+    var bg = i % 2 === 0 ? 'var(--sur)' : 'var(--sur2)';
+    var numCol = r.numAtraso >= 9 ? '#C62828' : r.numAtraso >= 6 ? '#F57F17' : '#2E7D32';
+    var numBg  = r.numAtraso >= 9 ? '#fee2e2' : r.numAtraso >= 6 ? '#FAEEDA' : '#DCFCE7';
+    html += '<tr style="background:' + bg + ';border-bottom:0.5px solid var(--bor2);">';
+    html += '<td style="padding:9px 12px;white-space:nowrap;">' + escHtml(fmtDia ? fmtDia(r.fecha) : r.fecha) + '</td>';
+    html += '<td style="padding:9px 12px;font-family:\'JetBrains Mono\',monospace;color:#C2410C;white-space:nowrap;">' + escHtml(r.hora) + '</td>';
+    html += '<td style="padding:9px 12px;font-weight:600;color:var(--tx);">' + escHtml(r.nombre) + '</td>';
+    html += '<td style="padding:9px 12px;color:var(--tx2);">' + escHtml(r.curso) + '</td>';
+    html += '<td style="padding:9px 12px;text-align:center;"><span style="background:' + numBg + ';color:' + numCol + ';font-size:12px;padding:2px 9px;border-radius:20px;font-weight:600;">' + escHtml(String(r.numAtraso)) + '</span></td>';
+    html += '<td style="padding:9px 12px;"><div style="font-size:12px;color:var(--tx);">' + (r.obs ? escHtml(r.obs) : '<span style="color:var(--tx3);font-style:italic;">Sin observación</span>') + '</div></td>';
+    html += '<td style="padding:9px 12px;"><button onclick="portQuitarJust(\'' + r.fecha + '\',' + r.idx + ')" style="font-size:11px;background:none;border:0.5px solid var(--bor2);border-radius:6px;padding:3px 8px;color:var(--tx3);cursor:pointer;" title="Quitar justificación">✕ Quitar</button></td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function portFiltrarJust() {
+  var curso  = (document.getElementById('filtJustCurso')  || {}).value  || '';
+  var nombre = ((document.getElementById('filtJustNombre') || {}).value || '').toLowerCase().trim();
+  var filtrados = (window._portJustRegistros || []).filter(function(r) {
+    var okC = !curso  || r.curso  === curso;
+    var okN = !nombre || r.nombre.toLowerCase().includes(nombre);
+    return okC && okN;
+  });
+  var wrap = document.getElementById('tablaJustWrap');
+  if (wrap) wrap.innerHTML = filtrados.length ? portTablaJust(filtrados) : '<div style="padding:24px;text-align:center;color:var(--tx3);">Sin resultados</div>';
+}
+
+function portQuitarJust(fecha, idx) {
+  if (!confirm('¿Quitar la justificación de este atraso? Pasará a ser atraso simple (A).')) return;
+  var dia = portGetDia(fecha);
+  if (dia && dia[idx]) {
+    dia[idx].justificado = false;
+    dia[idx].obsJust = '';
+  }
+  portSave();
+  portRenderJustificaciones();
+  showToast('Justificación eliminada', 'warn');
+}
+
+function portExportarJust() {
+  var registros = window._portJustRegistros || [];
+  if (!registros.length) { showToast('Sin registros para exportar', 'warn'); return; }
+  try {
+    var ws_data = [['Fecha','Hora','Alumno/a','Curso','N° Atraso','Observación']];
+    registros.forEach(function(r) {
+      ws_data.push([fmtDia ? fmtDia(r.fecha) : r.fecha, r.hora, r.nombre, r.curso, r.numAtraso, r.obs]);
+    });
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(ws_data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Justificaciones');
+    XLSX.writeFile(wb, 'atrasos_justificados.xlsx');
+    showToast('✓ Excel descargado', 'ok');
+  } catch(e) {
+    showToast('Error al exportar: ' + e.message, 'error');
+  }
 }
 
 
