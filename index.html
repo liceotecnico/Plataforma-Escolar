@@ -2,16 +2,9 @@
 <html lang="es" class="tema-claro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Plataforma Escolar — Liceo Técnico Talcahuano</title>
-<meta name="description" content="Plataforma Escolar Integrada — Liceo Técnico Talcahuano">
-<meta name="theme-color" content="#1565C0">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Plataforma LTT">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Educación Talcahuano — Plataforma Escolar</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1510,160 +1503,6 @@ td.td-sit{text-align:center;}
 }
 .pie-sb-add:hover{background:rgba(255,255,255,.12) !important;}
 
-/* ══════════════════════════════════════════════
-   RESPONSIVE MÓVIL — pantallas < 768px
-══════════════════════════════════════════════ */
-@media (max-width: 768px) {
-
-  /* Topbar: compacto en móvil */
-  .topbar {
-    padding: 0 10px;
-    gap: 6px;
-    height: 50px;
-    flex-wrap: nowrap;
-    overflow: hidden;
-  }
-  .logo-text { font-size: 12px !important; }
-  .logo-sub  { display: none; }
-  .logo-icon { width: 28px !important; height: 28px !important; }
-
-  /* Tabs: scroll horizontal */
-  .mod-tabs {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 0;
-    flex-shrink: 0;
-  }
-  .mod-tabs::-webkit-scrollbar { display: none; }
-  .mod-tab {
-    font-size: 11px !important;
-    padding: 4px 10px !important;
-    white-space: nowrap;
-  }
-
-  /* Ocultar elementos del topbar que no caben */
-  #btnTema, .top-div { display: none !important; }
-  #btnConfig, #btnCambioPass { padding: 4px 8px !important; font-size: 12px !important; }
-  #userBadge { font-size: 11px !important; padding: 3px 8px !important; }
-
-  /* App body: columna en vez de fila */
-  .app-body {
-    flex-direction: column !important;
-    height: calc(100dvh - 50px) !important;
-  }
-
-  /* ── ASISTENCIA MÓVIL ── */
-  #sidebar-asist {
-    width: 100% !important;
-    min-width: unset !important;
-    max-height: 45vh;
-    overflow-y: auto;
-    border-right: none !important;
-    border-bottom: 1px solid rgba(255,255,255,.15) !important;
-    flex-shrink: 0;
-  }
-  /* Cuando hay un curso seleccionado, ocultar sidebar */
-  #sidebar-asist.curso-activo {
-    max-height: 0;
-    overflow: hidden;
-    padding: 0 !important;
-  }
-
-  /* Content area asistencia */
-  #contentArea {
-    padding: 12px !important;
-    font-size: 13px;
-  }
-
-  /* Tarjetas de alumnos: 2 columnas en móvil */
-  .student-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 6px !important;
-  }
-
-  /* ── NOTAS MÓVIL ── */
-  #sidebar-notas {
-    width: 100% !important;
-    min-width: unset !important;
-    border-right: none !important;
-    border-bottom: 1px solid rgba(255,255,255,.15) !important;
-    max-height: 50px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  /* ── PORTERÍA MÓVIL ── */
-  .port-topbar {
-    padding: 8px 12px !important;
-    gap: 8px !important;
-    flex-wrap: wrap;
-  }
-  .port-filtros {
-    order: 2;
-    width: 100%;
-    overflow-x: auto;
-    display: flex;
-    gap: 4px;
-    padding-bottom: 2px;
-  }
-  .port-tab {
-    font-size: 11px !important;
-    padding: 5px 10px !important;
-    white-space: nowrap;
-  }
-  .port-content {
-    padding: 12px !important;
-  }
-
-  /* Tabla de portería: scroll horizontal */
-  .port-tabla { font-size: 12px !important; }
-  .td-firma, .td-num { display: none; }
-
-  /* ── ESTADÍSTICAS MÓVIL ── */
-  #statsGrid {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* ── PIE MÓVIL ── */
-  #sidebar-pie {
-    width: 100% !important;
-    min-width: unset !important;
-    max-height: 40vh;
-    border-right: none !important;
-    border-bottom: 1px solid rgba(255,255,255,.15) !important;
-    flex-shrink: 0;
-  }
-
-  /* Modales: full screen en móvil */
-  .modal {
-    width: 96vw !important;
-    max-width: 96vw !important;
-    max-height: 90vh !important;
-    margin: 0 !important;
-    border-radius: 12px !important;
-    overflow-y: auto;
-  }
-  .modal-overlay {
-    padding: 5vh 2vw !important;
-    align-items: flex-start !important;
-  }
-
-  /* Botones: más grandes para touch */
-  .btn, button { min-height: 36px; }
-
-  /* Login: full width */
-  .login-wrap {
-    width: 94vw !important;
-    padding: 24px 20px !important;
-  }
-}
-
-/* Pantallas muy pequeñas < 400px */
-@media (max-width: 400px) {
-  .student-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
   .alumno-card { padding: 6px 8px !important; }
   .alumno-nombre { font-size: 11px !important; }
 }
@@ -2627,15 +2466,7 @@ td.td-sit{text-align:center;}
   </div>
 </div>
 
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js')
-      .then(function(reg) { console.log('SW registrado:', reg.scope); })
-      .catch(function(e) { console.log('SW error:', e); });
-  });
-}
-</script>
+
 </body>
 <script>
 // ═══════════════════════════════════════════════════
