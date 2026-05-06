@@ -1468,6 +1468,11 @@ td.td-sit{text-align:center;}
 .pie-alumno-btn.active .pie-alumno-count{background:rgba(253,216,53,.25) !important;color:#FDD835 !important;}
 .pie-sb-empty{color:rgba(255,255,255,.55) !important;}
 
+/* Portería: tabla sin límite de altura — scroll en el contenedor */
+.port-content { overflow-y: auto !important; }
+.port-lista-card { overflow: visible !important; }
+.port-tabla { width: 100%; }
+
 /* ── Topbar: botones Exportar Excel, Sync y Guardado ── */
 .btn-export-all {
   border-color: rgba(255,255,255,.4) !important;
@@ -1852,7 +1857,7 @@ td.td-sit{text-align:center;}
       <div class="port-fecha-info" id="portFechaInfo"></div>
       <div class="port-filtros">
         <button class="port-tab active" id="ptab-hoy" onclick="portCambiarVista('hoy')">📋 Hoy</button>
-        <button class="port-tab" id="ptab-historial" onclick="portCambiarVista('historial')">📊 Historial alumnos</button>
+        <!-- Tab historial alumnos oculto -->
         <button class="port-tab" id="ptab-alertas" onclick="portCambiarVista('alertas')">🚨 Alertas</button>
         <button class="port-tab" id="ptab-dashboard" onclick="portCambiarVista('dashboard')">📊 Dashboard</button>
       </div>
@@ -2166,11 +2171,11 @@ td.td-sit{text-align:center;}
 
 <!-- Modal detalle alumno portería -->
 <div class="modal-overlay" id="modalDetalleAlumno" onclick="if(event.target===this)cerrarModal('modalDetalleAlumno')">
-  <div class="modal" style="width:520px;max-width:100%">
-    <div class="modal-title" id="detalleAlumnoNombre"></div>
-    <div class="modal-sub" id="detalleAlumnoSub"></div>
-    <div id="detalleAlumnoContenido"></div>
-    <div class="modal-footer">
+  <div class="modal" style="width:680px;max-width:98vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;">
+    <div class="modal-title" id="detalleAlumnoNombre" style="flex-shrink:0;"></div>
+    <div class="modal-sub" id="detalleAlumnoSub" style="flex-shrink:0;margin-bottom:10px;"></div>
+    <div id="detalleAlumnoContenido" style="flex:1;overflow-y:auto;min-height:0;"></div>
+    <div class="modal-footer" style="flex-shrink:0;margin-top:10px;">
       <button class="btn-cancel" onclick="cerrarModal('modalDetalleAlumno')">Cerrar</button>
     </div>
   </div>
@@ -2436,6 +2441,23 @@ td.td-sit{text-align:center;}
 ═══════════════════════════════ -->
 
 
+
+
+<!-- Modal justificación atraso -->
+<div class="modal-overlay" id="modalJustAtraso" onclick="if(event.target===this)cerrarModalJust()">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title">📄 Atraso con justificación médica</div>
+    <div class="modal-sub" id="modalJustSub">Alumno · Curso · hora</div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Observación (diagnóstico, fecha del documento)</div>
+      <textarea id="modalJustObs" rows="3" placeholder="Ej: Control médico 03/05, certificado Dr. Pérez..." style="width:100%;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;resize:none;outline:none;"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="cerrarModalJust()" class="btn-cancel" style="flex:1;">Cancelar — guardar como atraso simple</button>
+      <button onclick="confirmarJustAtraso()" style="flex:1;background:#F57F17;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;">✓ Confirmar justificación</button>
+    </div>
+  </div>
+</div>
 
 </body>
 <script>
@@ -2858,7 +2880,8 @@ function cambiarDia(n){const nueva=addDays(fechaActiva,n);if(nueva>todayISO())re
 function irAHoy(){fechaActiva=todayISO();updateDateDisplay();buildSidebar();if(cursoActivo)renderContent();}
 
 // Modales
-function cerrarModal(id){document.getElementById(id).classList.remove('open');}
+function abrirModal(id){var el=document.getElementById(id);if(el)el.classList.add('open');}
+function cerrarModal(id){var el=document.getElementById(id);if(el)el.classList.remove('open');}
 
 // Calendario
 let calY,calM;
@@ -3479,7 +3502,8 @@ const ALUMNOS=[];
 
 // Estado portería — guardado en localStorage + Google Sheets (misma infra)
 const SK_PORT = 'port_v1';
-let portState = {}; // { fecha: [ { hora, nombre, curso, totalAtrasos, firmas:[{fecha,apoderado,obs}] } ] }
+let portState = {};
+let _portPendienteJust = null; // { fecha, idx } del último atraso registrado, pendiente de clasificar // { fecha: [ { hora, nombre, curso, totalAtrasos, firmas:[{fecha,apoderado,obs}] } ] }
 let portVistaActual = 'hoy';
 let portFirmaIdx = null; // { fecha, idx }
 let portFechaSeleccionada = null; // null = hoy
@@ -3604,6 +3628,17 @@ function portRegistrarAtraso() {
   }
 
   renderPortContent();
+
+  // Abrir modal de justificación (siempre, como paso opcional rápido)
+  const idxNuevo = portGetDia(fecha).length - 1;
+  _portPendienteJust = { fecha, idx: idxNuevo };
+  const modalSub = document.getElementById('modalJustSub');
+  if (modalSub) modalSub.textContent = nombreRaw + ' · ' + cursoVal + ' · llegó a las ' + hora;
+  const obs = document.getElementById('modalJustObs');
+  if (obs) obs.value = '';
+  if (!esCitacion) {
+    setTimeout(function() { abrirModal('modalJustAtraso'); }, 200);
+  }
 
   const tipo  = totalNuevo >= 27 ? 'error' : esCitacion ? 'warn' : 'ok';
   const extra = esCitacion ? ` — <strong>📢 Citación N° ${numeroCitacion} al apoderado</strong>` : '';
@@ -3862,7 +3897,7 @@ function renderPortHoy(contenido) {
   if (!totalDia) {
     html += `<div class="empty-port">📋 Sin atrasos registrados — ${fmtCorta(fecha)}</div>`;
   } else {
-    html += `<table class="port-tabla">
+    html += `<div style="overflow-x:auto;"><table class="port-tabla">
       <thead><tr>
         <th class="td-num">#</th>
         <th>Hora</th>
@@ -3900,9 +3935,12 @@ function renderPortHoy(contenido) {
         <td class="td-alu">${escHtml(reg.nombre)}${posicion === 0 ? ' <span style="font-size:9.5px;background:rgba(249,115,22,.2);color:var(--port);padding:1px 6px;border-radius:999px;font-weight:700">último</span>' : ''}${alertaConducta ? ' <span style="font-size:10px;color:var(--rojo)">🚨</span>' : ''}</td>
         <td class="td-curso">${escHtml(reg.curso)}</td>
         <td class="td-total"><span class="atraso-badge ${badgeCls}" title="Atraso histórico N°${reg.numAtraso}">${reg.numAtraso}</span></td>
+        <td class="td-just">${reg.justificado
+          ? `<span style="font-size:10px;background:#FAEEDA;border:0.5px solid #EF9F27;color:#854F0B;padding:2px 8px;border-radius:20px;font-weight:600;" title="${escHtml(reg.obsJust||'')}">📄 Justificado</span>`
+          : `<button onclick="portAgregarJustHistorial('${fecha}',${idx})" style="font-size:10px;background:none;border:0.5px solid var(--bor2);border-radius:6px;padding:2px 8px;color:var(--tx3);cursor:pointer;" title="Agregar justificación médica">+ justificación</button>`
+        }</td>
         <td class="td-firma">${firmaHtml}</td>
         <td class="td-acc">
-          <button class="port-hist-btn" onclick="abrirDetalleAlumno('${escHtml(reg.nombre)}','${escHtml(reg.curso)}')">Historial</button>
           <button class="port-hist-btn" style="margin-left:4px;border-color:rgba(248,113,113,.3);color:var(--rojo)" onclick="portEliminarRegistro('${fecha}',${idx})">✕</button>
         </td>
       </tr>`;
@@ -4057,7 +4095,16 @@ function portRegistrarAtrasoAlumno(nombre, curso) {
   }
 
   // Alerta Dirección al llegar al atraso 27
-  if (totalNuevo === 27) {
+  // Abrir modal justificación
+  const _idxNuevoA = portGetDia(fecha).length - 1;
+  _portPendienteJust = { fecha, idx: _idxNuevoA };
+  const _subA = document.getElementById('modalJustSub');
+  if (_subA) _subA.textContent = nombre + ' · ' + curso + ' · llegó a las ' + hora;
+  const _obsA = document.getElementById('modalJustObs');
+  if (_obsA) _obsA.value = '';
+  if (!esCitacion) setTimeout(function(){ abrirModal('modalJustAtraso'); }, 500);
+
+    if (totalNuevo === 27) {
     setTimeout(() => mostrarAlertaDireccion(nombre, curso), 500);
   }
 
@@ -4142,10 +4189,10 @@ function renderPortHistorial(contenido) {
         <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx2)">${escHtml(al.curso)}</td>
         <td style="text-align:center"><span class="atraso-badge ${badgeCls}">${total}</span></td>
         <td style="text-align:center"><span style="font-size:12px;font-weight:700;color:var(--port)">${citaciones}</span></td>
-        <td style="text-align:center"><span style="font-size:12.5px;font-weight:700;color:${firmasAlumno >= 9 ? 'var(--rojo)' : firmasAlumno >= 5 ? 'var(--amarillo)' : 'var(--tx2)'}">${firmas}</span></td>
+        <td style="text-align:center"><span style="font-size:12.5px;font-weight:700;color:${firmas >= 9 ? 'var(--rojo)' : firmas >= 5 ? 'var(--amarillo)' : 'var(--tx2)'}">${firmas}</span></td>
         <td style="font-size:11px;color:var(--tx2)">${fmtDia(ultimo.fecha)}</td>
         <td>${estadoHtml}</td>
-        <td><button class="port-hist-btn" onclick="abrirDetalleAlumno('${escHtml(al.nombre)}','${escHtml(al.curso)}')">Ver detalle</button></td>
+        <td><button class="port-hist-btn" data-nombre="${al.nombre}" data-curso="${al.curso}" onclick="abrirDetalleAlumno(this.dataset.nombre,this.dataset.curso)">Ver detalle</button></td>
       </tr>`;
     });
 
@@ -4202,7 +4249,7 @@ function renderPortAlertas(contenido) {
                 : `→ Faltan <strong>${faltanPara27} atraso${faltanPara27 !== 1 ? 's' : ''}</strong> para completar 9 citaciones y activar la alerta de Dirección.`}
             </div>
           </div>
-          <button class="port-hist-btn" style="flex-shrink:0" onclick="abrirDetalleAlumno('${escHtml(a.nombre)}','${escHtml(a.curso)}')">Ver historial</button>
+          <button class="port-hist-btn" style="flex-shrink:0" data-nombre="${a.nombre}" data-curso="${a.curso}" onclick="abrirDetalleAlumno(this.dataset.nombre,this.dataset.curso)">Ver historial</button>
         </div>`;
     });
   }
@@ -4257,12 +4304,13 @@ function abrirDetalleAlumno(nombre, curso) {
   </div>`;
 
   html += `<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);font-weight:700;margin-bottom:6px">Historial de atrasos</div>
-  <div style="max-height:280px;overflow-y:auto">
+  <div>
   <table style="width:100%;border-collapse:collapse;font-size:12px">
     <thead><tr>
       <th style="background:var(--sur2);padding:7px 10px;border-bottom:1px solid var(--bor2);text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3)">Fecha</th>
       <th style="background:var(--sur2);padding:7px 10px;border-bottom:1px solid var(--bor2);text-align:center;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3)">Hora</th>
       <th style="background:var(--sur2);padding:7px 10px;border-bottom:1px solid var(--bor2);text-align:center;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3)">Atraso N°</th>
+      <th style="background:var(--sur2);padding:7px 10px;border-bottom:1px solid var(--bor2);text-align:center;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3)">Tipo</th>
       <th style="background:var(--sur2);padding:7px 10px;border-bottom:1px solid var(--bor2);text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3)">Firma apoderado</th>
     </tr></thead><tbody>`;
 
@@ -4273,10 +4321,14 @@ function abrirDetalleAlumno(nombre, curso) {
       ? firmaDia.map(f => `<span style="color:var(--verde);font-size:11px">✓ ${escHtml(f.apoderado)}${f.obs ? ` — <em>${escHtml(f.obs)}</em>` : ''}</span>`).join('<br>')
       : reg.requiereFirma ? `<span style="color:var(--amarillo);font-size:11px">⏳ Pendiente</span>` : `<span style="color:var(--tx3);font-size:10.5px">No requerida</span>`;
 
+    const tipoHtml = reg.justificado
+      ? `<span style="font-size:10px;background:#FAEEDA;border:0.5px solid #EF9F27;color:#854F0B;padding:2px 7px;border-radius:20px;font-weight:600;" title="${escHtml(reg.obsJust||'')}">AJ</span>`
+      : `<span style="font-size:10px;background:var(--sur2);border:0.5px solid var(--bor2);color:var(--tx3);padding:2px 7px;border-radius:20px;">A</span>`;
     html += `<tr style="border-bottom:1px solid var(--bor)">
       <td style="padding:8px 10px">${fStr}</td>
       <td style="padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--port)">${reg.hora}</td>
       <td style="padding:8px 10px;text-align:center"><span class="atraso-badge ${portClaseBadge(reg.numAtraso)}">${reg.numAtraso}</span></td>
+      <td style="padding:8px 10px;text-align:center">${tipoHtml}</td>
       <td style="padding:8px 10px">${firmaHtml}</td>
     </tr>`;
   });
@@ -7594,6 +7646,42 @@ async function statsRender() {
 
 
 
+
+function cerrarModalJust() {
+  cerrarModal('modalJustAtraso');
+  _portPendienteJust = null;
+}
+
+function confirmarJustAtraso() {
+  if (!_portPendienteJust) { cerrarModalJust(); return; }
+  var fecha = _portPendienteJust.fecha;
+  var idx   = _portPendienteJust.idx;
+  var obs   = (document.getElementById('modalJustObs').value || '').trim();
+  var dia   = portGetDia(fecha);
+  if (dia && dia[idx]) {
+    dia[idx].justificado = true;
+    dia[idx].obsJust     = obs;
+  }
+  portSave();
+  cerrarModalJust();
+  renderPortContent();
+  showToast('📄 Atraso justificado registrado — documento médico', 'ok');
+}
+
+// Agregar justificación desde el historial
+function portAgregarJustHistorial(fecha, idx) {
+  _portPendienteJust = { fecha, idx };
+  var dia = portGetDia(fecha);
+  if (dia && dia[idx]) {
+    var r = dia[idx];
+    var sub = document.getElementById('modalJustSub');
+    if (sub) sub.textContent = r.nombre + ' · ' + r.curso + ' · ' + r.hora;
+    var obs = document.getElementById('modalJustObs');
+    if (obs) obs.value = r.obsJust || '';
+  }
+  abrirModal('modalJustAtraso');
+}
+
 // ══════════════════════════════════════════════
 // DASHBOARD DE PORTERÍA — Opción P2
 // ══════════════════════════════════════════════
@@ -7610,25 +7698,31 @@ function portRenderDashboard() {
   var atrasosHoy   = [];
   var citados      = 0;
 
+  // portState = { fecha: [ {nombre, curso, hora, ...} ] }
   Object.keys(portState).forEach(function(fecha) {
-    var dia = portState[fecha];
-    if (!dia || !dia.atrasos) return;
-    Object.keys(dia.atrasos).forEach(function(clave) {
-      var lista = dia.atrasos[clave];
-      if (!Array.isArray(lista)) return;
-      var niv = clave.split('__')[0];
-      var cur = clave.split('__')[1] || clave;
-      lista.forEach(function(reg) {
-        totalAtrasos++;
-        porCurso[clave] = (porCurso[clave]||0) + 1;
-        if (porNivel[niv] !== undefined) porNivel[niv]++;
-        var nombre = reg.nombre || reg;
-        if (!nombre) return;
-        if (!porAlumno[nombre]) porAlumno[nombre] = { cnt:0, curso:cur, citado:false };
-        porAlumno[nombre].cnt++;
-        if (porAlumno[nombre].cnt >= 6) { porAlumno[nombre].citado = true; }
-        if (fecha === hoy) atrasosHoy.push({ nombre:nombre, curso:cur, hora:reg.hora||'—' });
-      });
+    var lista = portState[fecha];
+    if (!Array.isArray(lista)) return;
+    lista.forEach(function(reg) {
+      totalAtrasos++;
+      var cur   = reg.curso || '';
+      var clave = cur;
+      // Intentar mapear label → clave completa (ej: "1°A" → "1M__1°A")
+      for (var ni = 0; ni < NIVELES.length; ni++) {
+        var niv2 = NIVELES[ni];
+        if (niv2.cursos.indexOf(cur) !== -1) {
+          clave = niv2.key + '__' + cur;
+          break;
+        }
+      }
+      var niv = clave.split('__')[0] || '';
+      porCurso[cur] = (porCurso[cur]||0) + 1;
+      if (porNivel[niv] !== undefined) porNivel[niv]++;
+      var nombre = reg.nombre || '';
+      if (!nombre) return;
+      if (!porAlumno[nombre]) porAlumno[nombre] = { cnt:0, curso:cur, citado:false };
+      porAlumno[nombre].cnt++;
+      if (porAlumno[nombre].cnt >= 6) porAlumno[nombre].citado = true;
+      if (fecha === hoy) atrasosHoy.push({ nombre:nombre, curso:cur, hora:reg.hora||'—' });
     });
   });
 
