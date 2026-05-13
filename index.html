@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 /* ════════════════════════════════════════════
    VARIABLES Y RESET
@@ -2616,6 +2618,8 @@ td.td-sit{text-align:center;}
 // SWITCH DE MÓDULO
 // ═══════════════════════════════════════════════════
 var planifData = {};
+var inasistJust = [];
+var _portJustTab = 'atrasos';
 let moduloActivo = 'asistencia';
 
 function switchModulo(m) {
@@ -2931,7 +2935,8 @@ async function syncFromSheets(){
   state=JSON.parse(r.value);try{localStorage.setItem(SK,r.value);}catch(e){}NIVELES.forEach(niv=>niv.cursos.forEach(c=>initCurso(getCursoKey(niv.key,c))));buildSidebar();if(cursoActivo)renderContent();setSaveStatus('synced');showToast('🔄 Datos actualizados','ok');}catch(e){}
 }
 async function syncManual(){_lastHash='';setSaveStatus('saving');await syncFromSheets();
-  await planifCargar();setSaveStatus('saved');}
+  await planifCargar();
+  await inasistCargar();setSaveStatus('saved');}
 function setSaveStatus(status){
   const el=document.getElementById('saveStatus');if(!el)return;
   const map={saving:{icon:'⟳',txt:'Guardando…',color:'rgba(255,255,255,.7)'},saved:{icon:'✓',txt:'Guardado',color:'#FDD835'},synced:{icon:'🔄',txt:'Sincronizado',color:'#ffffff'},error:{icon:'⚠',txt:'Error',color:'#fca5a5'}};
@@ -3039,8 +3044,8 @@ function cerrarModal(id){
   if(!el) return;
   el.classList.remove('open');
   // Si es un modal dinámico (planificaciones), eliminarlo del DOM
-  if(id==='modalPlanif'||id==='modalPlanifEdit'){
-    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },200);
+  if(id==='modalPlanif'||id==='modalPlanifEdit'||id==='modalNuevaInasist'){
+    setTimeout(function(){ if(el && el.parentNode) el.parentNode.removeChild(el); },200);
   }
 }
 
@@ -8113,7 +8118,24 @@ function kpiPortCard(val, lbl, color, icon) {
 // ══════════════════════════════════════════════════════
 // VISTA JUSTIFICACIONES DE ATRASOS
 // ══════════════════════════════════════════════════════
+function portJustTabs() {
+  var tabs = [
+    {id:'atrasos',      label:'📄 Justif. Atrasos'},
+    {id:'inasistencia', label:'🏥 Justif. Inasistencia'},
+  ];
+  var html = '<div style="display:flex;gap:6px;margin-bottom:4px;">';
+  tabs.forEach(function(t){
+    var act = _portJustTab === t.id;
+    html += '<button onclick="portCambiarJustTab(\''+t.id+'\')" style="font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:'+(act?'600':'400')+';border:0.5px solid '+(act?'#85B7EB':'var(--bor2)')+';background:'+(act?'#E6F1FB':'none')+';color:'+(act?'#185FA5':'var(--tx3)')+';">'+t.label+'</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
 function portRenderJustificaciones() {
+  // Despachar según sub-pestaña activa
+  if (_portJustTab === 'inasistencia') { portRenderInasistencias(); return; }
+
   var cont = document.getElementById('portContent');
   if (!cont) return;
 
@@ -8145,6 +8167,7 @@ function portRenderJustificaciones() {
   var conObs    = registros.filter(function(r){ return r.obs && r.obs.trim(); }).length;
 
   var html = '<div style="display:flex;flex-direction:column;gap:14px;">';
+  html += portJustTabs();
 
   // ── KPIs ──
   html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">';
@@ -8971,6 +8994,250 @@ function portFirmarDesdeAlerta(nombre, curso) {
     btnConf._desdeAlertas = true;
   }
 }
+
+const SK_INASIST = 'inasist_just_v1';
+
+async function inasistCargar() {
+  try {
+    var r = await gsGet(SK_INASIST);
+    if (r && r.value) inasistJust = JSON.parse(r.value);
+  } catch(e) {}
+}
+
+async function inasistGuardar() {
+  try { await gsSet(SK_INASIST, JSON.stringify(inasistJust)); } catch(e) {}
+}
+
+
+// ══════════════════════════════════════════════════════
+// JUSTIFICACIONES DE INASISTENCIA — desde Portería
+// ══════════════════════════════════════════════════════
+
+// Modificar portRenderJustificaciones para mostrar sub-pestañas
+
+function portCambiarJustTab(tab) {
+  _portJustTab = tab;
+  portRenderJustificaciones();
+}
+
+// ── Sub-vista: Justificaciones de inasistencia ──
+function portRenderInasistencias() {
+  var cont = document.getElementById('portContent');
+  if (!cont) return;
+
+  var totalDias = inasistJust.reduce(function(s,j){ return s + (j.dias||1); }, 0);
+  var totalAlumnos = new Set(inasistJust.map(function(j){ return j.nombre; })).size;
+  var pendientes = inasistJust.filter(function(j){ return j.doc === 'Sin documento'; }).length;
+
+  // Filtros
+  var filtCurso  = window._filtInasistCurso  || '';
+  var filtNombre = (window._filtInasistNombre || '').toLowerCase();
+
+  var cursos = [];
+  NIVELES.forEach(function(n){ n.cursos.forEach(function(c){ cursos.push(c); }); });
+
+  var lista = inasistJust.filter(function(j){
+    var okC = !filtCurso  || j.curso === filtCurso;
+    var okN = !filtNombre || j.nombre.toLowerCase().includes(filtNombre);
+    return okC && okN;
+  }).sort(function(a,b){ return b.fechaInicio.localeCompare(a.fechaInicio); });
+
+  var html = '<div style="display:flex;flex-direction:column;gap:14px;">';
+
+  // Sub-pestañas
+  html += portJustTabs();
+
+  // KPIs
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">';
+  html += kpiPortCard(totalDias,    'Días justificados',      '#2E7D32', '📅');
+  html += kpiPortCard(totalAlumnos, 'Alumnos con justif.',    '#1565C0', '👤');
+  html += kpiPortCard(pendientes,   'Sin documento',          '#F57F17', '⏳');
+  html += '</div>';
+
+  // Toolbar
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">';
+  html += '<select id="filtInasistCurso" onchange="window._filtInasistCurso=this.value;portRenderInasistencias()" style="padding:6px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:12px;">';
+  html += '<option value="">Todos los cursos</option>';
+  cursos.forEach(function(c){ html += '<option value="'+escHtml(c)+'"'+(c===filtCurso?' selected':'')+'>'+escHtml(c)+'</option>'; });
+  html += '</select>';
+  html += '<input type="text" id="filtInasistNombre" oninput="window._filtInasistNombre=this.value;portRenderInasistencias()" placeholder="Buscar alumno..." value="'+escHtml(window._filtInasistNombre||'')+'" style="flex:1;min-width:150px;padding:6px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:12px;">';
+  html += '<button onclick="portNuevaInasist()" style="padding:6px 14px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">+ Agregar justificación</button>';
+  html += '<button onclick="portExportarInasist()" style="padding:6px 12px;border:0.5px solid var(--bor2);border-radius:8px;background:none;color:var(--tx3);font-size:12px;cursor:pointer;">↓ Excel</button>';
+  html += '</div>';
+
+  // Tabla
+  html += '<div style="background:var(--sur);border:0.5px solid var(--bor2);border-radius:10px;overflow:hidden;">';
+  if (!lista.length) {
+    html += '<div style="padding:40px;text-align:center;color:var(--tx3);font-size:13px;">Sin justificaciones de inasistencia registradas.<br><span style="font-size:11px;">Usa el botón "+ Agregar justificación" para ingresar una.</span></div>';
+  } else {
+    html += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    html += '<thead><tr style="background:var(--sur2);">';
+    ['Fecha(s)','Alumno/a','Curso','Días','Motivo','Documento','Estado','Acciones'].forEach(function(h){
+      html += '<th style="padding:9px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);border-bottom:0.5px solid var(--bor2);white-space:nowrap;">'+h+'</th>';
+    });
+    html += '</tr></thead><tbody>';
+    lista.forEach(function(j, i){
+      var idx = inasistJust.indexOf(j);
+      var fechaStr = j.fechaFin && j.fechaFin !== j.fechaInicio
+        ? j.fechaInicio.split('-').reverse().join('/') + ' — ' + j.fechaFin.split('-').reverse().join('/')
+        : j.fechaInicio.split('-').reverse().join('/');
+      var docBadge = j.doc === 'Sin documento'
+        ? '<span style="font-size:11px;background:#FEF3C7;border:0.5px solid #FCD34D;color:#92400E;padding:2px 9px;border-radius:20px;">⏳ Sin documento</span>'
+        : '<span style="font-size:11px;background:#EAF3DE;border:0.5px solid #97C459;color:#3B6D11;padding:2px 9px;border-radius:20px;">📄 '+escHtml(j.doc)+'</span>';
+      var estadoBadge = j.doc === 'Sin documento'
+        ? '<span style="font-size:11px;background:#FEF3C7;color:#92400E;padding:2px 9px;border-radius:20px;">Pendiente</span>'
+        : '<span style="font-size:11px;background:#EAF3DE;color:#3B6D11;padding:2px 9px;border-radius:20px;">✓ Aprobada</span>';
+      var bg = i%2===0?'var(--sur)':'var(--sur2)';
+      html += '<tr style="background:'+bg+';border-bottom:0.5px solid var(--bor2);">';
+      html += '<td style="padding:9px 12px;white-space:nowrap;">'+fechaStr+'</td>';
+      html += '<td style="padding:9px 12px;font-weight:600;">'+escHtml(j.nombre)+'</td>';
+      html += '<td style="padding:9px 12px;color:var(--tx3);">'+escHtml(j.curso)+'</td>';
+      html += '<td style="padding:9px 12px;text-align:center;"><span style="background:#E6F1FB;color:#185FA5;font-size:12px;padding:2px 9px;border-radius:20px;font-weight:600;">'+j.dias+'</span></td>';
+      html += '<td style="padding:9px 12px;font-size:12px;">'+escHtml(j.motivo)+'</td>';
+      html += '<td style="padding:9px 12px;">'+docBadge+'</td>';
+      html += '<td style="padding:9px 12px;">'+estadoBadge+'</td>';
+      html += '<td style="padding:9px 12px;"><button data-idx="'+idx+'" onclick="portQuitarInasist(parseInt(this.dataset.idx))" style="font-size:11px;background:none;border:0.5px solid var(--bor2);border-radius:6px;padding:3px 8px;color:var(--tx3);cursor:pointer;">✕ Quitar</button></td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+  html += '</div>';
+
+  // Nota informativa
+  html += '<div style="font-size:11px;color:var(--tx3);padding:10px 14px;background:var(--sur2);border-radius:8px;border-left:3px solid #1565C0;">';
+  html += '💡 Las inasistencias justificadas <strong>no modifican el registro de asistencia</strong> — el alumno sigue marcado como Ausente. Al exportar el informe anual se descontarán automáticamente del porcentaje oficial.';
+  html += '</div>';
+  html += '</div>';
+
+  cont.innerHTML = html;
+}
+
+
+function portNuevaInasist() {
+  // Eliminar modal existente si quedó huérfano
+  var existente = document.getElementById('modalNuevaInasist');
+  if (existente && existente.parentNode) existente.parentNode.removeChild(existente);
+  var cursos = [];
+  NIVELES.forEach(function(n){ n.cursos.forEach(function(c){ cursos.push(c); }); });
+
+  var html = '<div class="modal-overlay open" id="modalNuevaInasist" onclick="if(event.target===this)cerrarModal(\'modalNuevaInasist\')">';
+  html += '<div class="modal" style="width:480px;max-width:96vw;">';
+  html += '<div class="modal-title">🏥 Nueva justificación de inasistencia</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:10px;">';
+
+  html += '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;">Curso</label>';
+  html += '<select id="inasistCurso" onchange="portCargarAlumnosInasist()" style="width:100%;margin-top:4px;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;">';
+  html += '<option value="">— Seleccionar curso —</option>';
+  cursos.forEach(function(c){ html += '<option value="'+escHtml(c)+'">'+escHtml(c)+'</option>'; });
+  html += '</select></div>';
+
+  html += '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;">Alumno/a</label>';
+  html += '<select id="inasistAlumno" style="width:100%;margin-top:4px;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;"><option value="">— Primero selecciona un curso —</option></select></div>';
+
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
+  html += '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;">Fecha inicio</label>';
+  html += '<input id="inasistFechaI" type="date" style="width:100%;margin-top:4px;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;"></div>';
+  html += '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;">Fecha término</label>';
+  html += '<input id="inasistFechaF" type="date" style="width:100%;margin-top:4px;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;"></div>';
+  html += '</div>';
+
+  html += '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;">Motivo</label>';
+  html += '<select id="inasistMotivo" style="width:100%;margin-top:4px;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;">';
+  ['Hospitalización','Control médico','Enfermedad','Razones familiares','Duelo','Otro'].forEach(function(m){
+    html += '<option value="'+m+'">'+m+'</option>';
+  });
+  html += '</select></div>';
+
+  html += '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;">Documento</label>';
+  html += '<select id="inasistDoc" style="width:100%;margin-top:4px;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;">';
+  ['Certificado médico','Certificado del centro de salud','Certificado del hospital','Sin documento'].forEach(function(d){
+    html += '<option value="'+d+'">'+d+'</option>';
+  });
+  html += '</select></div>';
+
+  html += '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;">Observación (opcional)</label>';
+  html += '<textarea id="inasistObs" rows="2" placeholder="Diagnóstico, nombre del médico, etc." style="width:100%;margin-top:4px;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;resize:none;box-sizing:border-box;"></textarea></div>';
+
+  html += '</div>';
+  html += '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">';
+  html += '<button onclick="cerrarModal(\'modalNuevaInasist\')" class="btn-cancel">Cancelar</button>';
+  html += '<button onclick="portGuardarInasist()" style="padding:8px 18px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Guardar justificación</button>';
+  html += '</div></div></div>';
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function portCargarAlumnosInasist() {
+  var curso = (document.getElementById('inasistCurso')||{}).value;
+  var sel = document.getElementById('inasistAlumno');
+  if (!sel || !curso) return;
+  var claveCurso = '';
+  NIVELES.forEach(function(n){
+    if (n.cursos.includes(curso)) claveCurso = n.key + '__' + curso;
+  });
+  var alumnos = getAlumnos(claveCurso) || [];
+  sel.innerHTML = '<option value="">— Seleccionar alumno —</option>';
+  alumnos.forEach(function(a){
+    var nombre = (a.nombre||'') + ' ' + (a.apellido||'');
+    sel.innerHTML += '<option value="'+escHtml(nombre.trim())+'">'+escHtml(nombre.trim())+'</option>';
+  });
+}
+
+async function portGuardarInasist() {
+  var curso   = (document.getElementById('inasistCurso') ||{}).value;
+  var nombre  = (document.getElementById('inasistAlumno')||{}).value;
+  var fechaI  = (document.getElementById('inasistFechaI')||{}).value;
+  var fechaF  = (document.getElementById('inasistFechaF')||{}).value || fechaI;
+  var motivo  = (document.getElementById('inasistMotivo')||{}).value;
+  var doc     = (document.getElementById('inasistDoc')   ||{}).value;
+  var obs     = (document.getElementById('inasistObs')   ||{}).value.trim();
+
+  if (!curso)  { showToast('Selecciona un curso', 'warn'); return; }
+  if (!nombre) { showToast('Selecciona un alumno', 'warn'); return; }
+  if (!fechaI) { showToast('Ingresa la fecha de inicio', 'warn'); return; }
+
+  // Calcular días hábiles entre fechaI y fechaF
+  var d1 = new Date(fechaI), d2 = new Date(fechaF);
+  var dias = 0;
+  var cur = new Date(d1);
+  while (cur <= d2) {
+    var dow = cur.getDay();
+    if (dow >= 1 && dow <= 5) dias++;
+    cur.setDate(cur.getDate() + 1);
+  }
+  if (dias < 1) dias = 1;
+
+  inasistJust.push({ nombre, curso, fechaInicio:fechaI, fechaFin:fechaF, dias, motivo, doc, obs, creadoEn: new Date().toISOString() });
+  await inasistGuardar();
+  cerrarModal('modalNuevaInasist');
+  portRenderInasistencias();
+  showToast('✅ Justificación de inasistencia registrada — '+dias+' día(s)', 'ok');
+}
+
+async function portQuitarInasist(idx) {
+  if (!confirm('¿Quitar esta justificación?')) return;
+  inasistJust.splice(idx, 1);
+  await inasistGuardar();
+  portRenderInasistencias();
+  showToast('Justificación eliminada', 'warn');
+}
+
+function portExportarInasist() {
+  if (!inasistJust.length) { showToast('Sin registros para exportar', 'warn'); return; }
+  try {
+    var ws_data = [['Alumno/a','Curso','Fecha Inicio','Fecha Término','Días','Motivo','Documento','Observación']];
+    inasistJust.forEach(function(j){
+      ws_data.push([j.nombre, j.curso, j.fechaInicio, j.fechaFin, j.dias, j.motivo, j.doc, j.obs||'']);
+    });
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(ws_data);
+    ws['!cols'] = [{wch:30},{wch:8},{wch:12},{wch:12},{wch:6},{wch:20},{wch:25},{wch:30}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Justificaciones Inasistencia');
+    XLSX.writeFile(wb, 'justificaciones_inasistencia.xlsx');
+    showToast('✓ Excel descargado', 'ok');
+  } catch(e) { showToast('Error al exportar', 'error'); }
+}
+
 
 // ═══════════════════════════════════════════════════
 // INIT
