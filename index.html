@@ -1726,6 +1726,11 @@ td.td-sit{text-align:center;}
 ═══════════════════════════════ -->
 <div class="app-body">
 
+  <!-- ─── PORTAL DE BIENVENIDA ─── -->
+  <div id="panel-portal" class="module-panel" style="flex-direction:column;overflow-y:auto;background:var(--bg);">
+    <div id="portalContent" style="max-width:1000px;margin:0 auto;width:100%;padding:24px;"></div>
+  </div>
+
   <!-- ─── MÓDULO ASISTENCIA ─── -->
   <div id="panel-asistencia" class="module-panel visible" style="flex-direction:row;">
     <!-- Sidebar asistencia -->
@@ -9239,6 +9244,256 @@ function portExportarInasist() {
 }
 
 
+
+// ══════════════════════════════════════════════════════
+// PORTAL DE BIENVENIDA
+// ══════════════════════════════════════════════════════
+
+function mostrarPortal() {
+  // Ocultar todos los módulos y mostrar el portal
+  document.querySelectorAll('.module-panel').forEach(function(p) {
+    p.classList.remove('visible');
+  });
+  var panel = document.getElementById('panel-portal');
+  if (panel) panel.classList.add('visible');
+
+  // Ocultar topbar nav items que no corresponden
+  renderPortal();
+}
+
+function renderPortal() {
+  var cont = document.getElementById('portalContent');
+  if (!cont || !sesion) return;
+
+  var rol    = sesion.rol || 'profesor';
+  var nombre = sesion.nombre || sesion.username || 'Usuario';
+  var hora   = new Date().getHours();
+  var saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
+  var fecha  = new Date().toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+  // Módulos según rol
+  var MODULOS = {
+    admin: [
+      {ic:'📋', bg:'#E6F1FB', name:'Asistencia',      desc:'Registro diario por curso',                    subs:['Registro diario','Justificaciones','Exportar Excel'],           mod:'asistencia'},
+      {ic:'📖', bg:'#EAF3DE', name:'Docentes',         desc:'Libro de clases, planificaciones y panorama',  subs:['Libro de clases','Planificaciones','Panorama del Curso'],        mod:'notas'},
+      {ic:'🚪', bg:'#FAEEDA', name:'Portería',         desc:'Atrasos, justificaciones, alertas y dashboard',subs:['Registro atrasos','Justif. Inasistencia','Alertas','Dashboard'], mod:'porteria'},
+      {ic:'🧠', bg:'#EEEDFE', name:'PIE / Dupla',      desc:'Seguimiento psicosocial confidencial',         subs:['Alumnos en seguimiento'],                                        mod:'pie'},
+      {ic:'📊', bg:'#E1F5EE', name:'Estadísticas',     desc:'Dashboard institucional con vista Director',   subs:['Vista General','Vista Director'],                                mod:'stats'},
+    ],
+    profesor: [
+      {ic:'📖', bg:'#EAF3DE', name:'Docentes',         desc:'Libro de clases, planificaciones y panorama del curso', subs:['Libro de clases','Planificaciones','Panorama del Curso'], mod:'notas'},
+    ],
+    asistente: [
+      {ic:'📋', bg:'#E6F1FB', name:'Asistencia',       desc:'Registro de presencia, ausencias y justificaciones',    subs:['Registro diario','Justificaciones','Traslados'],           mod:'asistencia'},
+    ],
+    portero: [
+      {ic:'🚪', bg:'#FAEEDA', name:'Portería',         desc:'Atrasos, justificaciones, alertas y dashboard',          subs:['Registro atrasos','Justif. Inasistencia','Alertas','Dashboard'], mod:'porteria'},
+    ],
+    psicologo: [
+      {ic:'🧠', bg:'#EEEDFE', name:'PIE / Dupla',      desc:'Seguimiento psicosocial de alumnos asignados',           subs:['Alumnos en seguimiento','Historial'],                     mod:'pie'},
+    ],
+    asistente_social: [
+      {ic:'🧠', bg:'#EEEDFE', name:'PIE / Dupla',      desc:'Seguimiento psicosocial de alumnos asignados',           subs:['Alumnos en seguimiento','Historial'],                     mod:'pie'},
+    ],
+  };
+
+  var mods = MODULOS[rol] || MODULOS['profesor'];
+  var cols = mods.length === 1 ? 1 : mods.length === 2 ? 2 : mods.length <= 4 ? 2 : 3;
+
+  var rolBadges = {
+    admin:            {label:'Administrador', bg:'#FDD835', tc:'#0D47A1'},
+    profesor:         {label:'Docente',       bg:'#EAF3DE', tc:'#3B6D11'},
+    asistente:        {label:'Asist. Educación', bg:'#E6F1FB', tc:'#185FA5'},
+    portero:          {label:'Portero',       bg:'#FAEEDA', tc:'#854F0B'},
+    psicologo:        {label:'Psicólogo/a PIE', bg:'#EEEDFE', tc:'#534AB7'},
+    asistente_social: {label:'Asist. Social',bg:'#EEEDFE', tc:'#534AB7'},
+  };
+  var badge = rolBadges[rol] || {label: rol, bg:'#E6F1FB', tc:'#185FA5'};
+
+  var html = '';
+
+  // Header
+  html += '<div style="background:#1565C0;border-radius:14px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">';
+  html += '<div style="display:flex;align-items:center;gap:12px;">';
+  html += '<div style="width:40px;height:40px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;">🏫</div>';
+  html += '<div><div style="font-size:15px;font-weight:600;color:#fff;">Liceo Técnico Talcahuano</div><div style="font-size:11px;color:#BBDEFB;">Plataforma Escolar Integrada</div></div>';
+  html += '</div>';
+  html += '<div style="font-size:12px;color:#BBDEFB;text-align:right;">'+fecha+'</div>';
+  html += '</div>';
+
+  // Saludo
+  html += '<div style="margin-bottom:16px;">';
+  html += '<div style="font-size:20px;font-weight:500;color:var(--tx);">'+saludo+', <span style="color:#1565C0;">'+escHtml(nombre)+'</span></div>';
+  html += '<span style="display:inline-block;font-size:11px;border-radius:20px;padding:2px 10px;margin-top:4px;background:'+badge.bg+';color:'+badge.tc+'">'+badge.label+'</span>';
+  html += '</div>';
+
+  // Módulos
+  html += '<div style="font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Mis módulos</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:12px;">';
+
+  mods.forEach(function(m) {
+    var subsH = (m.subs||[]).map(function(s){
+      return '<span style="font-size:10px;background:var(--sur);border:0.5px solid var(--bor2);border-radius:20px;padding:2px 8px;color:var(--tx3);">'+escHtml(s)+'</span>';
+    }).join('');
+
+    html += '<div onclick="portalIrModulo(\''+m.mod+'\')" style="background:var(--sur);border:0.5px solid var(--bor2);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .15s;" onmouseover="this.style.borderColor=\'#1565C0\'" onmouseout="this.style.borderColor=\'var(--bor2)\'">';
+    html += '<div style="width:38px;height:38px;border-radius:9px;background:'+m.bg+';display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;">'+m.ic+'</div>';
+    html += '<div style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:4px;">'+escHtml(m.name)+'</div>';
+    html += '<div style="font-size:12px;color:var(--tx3);margin-bottom:10px;line-height:1.4;">'+escHtml(m.desc)+'</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:4px;">'+subsH+'</div>';
+    html += '<div style="margin-top:12px;font-size:11px;color:#1565C0;font-weight:500;">Ingresar →</div>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+
+  cont.innerHTML = html;
+}
+
+function portalIrModulo(mod) {
+  // Ir al módulo haciendo clic en el tab correspondiente
+  switchModulo(mod);
+  // Ocultar portal y mostrar el módulo
+  var panel = document.getElementById('panel-portal');
+  if (panel) panel.classList.remove('visible');
+}
+
+
+
+// ══════════════════════════════════════════════════════
+// PORTAL DE BIENVENIDA
+// ══════════════════════════════════════════════════════
+function mostrarPortal() {
+  // Ocultar todos los paneles y mostrar portal
+  ['panel-asistencia','panel-notas','panel-porteria','panel-pie','panel-stats','panel-portal'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('visible');
+  });
+  document.getElementById('panel-portal').classList.add('visible');
+  document.getElementById('dateNavWrap').style.display = 'none';
+  document.querySelectorAll('.mod-tab').forEach(function(t){ t.classList.remove('active-asist','active-notas','active-port','active-pie'); });
+  renderPortal();
+}
+
+function portalIrModulo(mod) {
+  switchModulo(mod);
+}
+
+function renderPortal() {
+  var cont = document.getElementById('panel-portal');
+  if (!cont) return;
+
+  var rol    = sesion ? sesion.rol : 'admin';
+  var nombre = sesion ? sesion.nombre : 'Usuario';
+
+  var hora    = new Date().getHours();
+  var saludo  = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
+  var fechaStr = new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // KPIs según rol
+  var kpis = '';
+  if (rol === 'admin') {
+    // Calcular atrasos hoy
+    var hoy = portHoy ? portHoy() : '';
+    var atrasosHoy = hoy && portState[hoy] ? portState[hoy].length : 0;
+    kpis = kpiP('467','Alumnos activos','#185FA5') + kpiP(atrasosHoy,'Atrasos hoy','#C2410C') + kpiP('89%','Asistencia hoy','#2E7D32') + kpiP('—','Alertas críticas','#A32D2D');
+  } else if (rol === 'profesor') {
+    kpis = kpiP('3','Cursos asignados','#185FA5') + kpiP('12','Unidades planif.','#F57F17') + kpiP('89','Alumnos totales','#2E7D32') + kpiP('0','Notas pendientes','#94a3b8');
+  } else if (rol === 'asistente') {
+    kpis = kpiP('467','Alumnos activos','#185FA5') + kpiP('89%','Asistencia hoy','#2E7D32') + kpiP('12','Bajo 85%','#C2410C') + kpiP('4','Justificados hoy','#F57F17');
+  } else if (rol === 'portero') {
+    var hoyP = portHoy ? portHoy() : '';
+    var atH = hoyP && portState[hoyP] ? portState[hoyP].length : 0;
+    kpis = kpiP(atH,'Atrasos hoy','#C2410C') + kpiP('—','Alertas críticas','#A32D2D') + kpiP('0','Justificados','#2E7D32') + kpiP('—','Citas pendientes','#F57F17');
+  } else {
+    kpis = kpiP('8','En seguimiento','#534AB7') + kpiP('2','Alertas activas','#C2410C') + kpiP('5','Atenciones mes','#2E7D32') + kpiP('3','Pendientes','#F57F17');
+  }
+
+  // Módulos según rol
+  var MODS = {
+    admin:[
+      {ic:'📋',bg:'#E6F1FB',name:'Asistencia',desc:'Registro diario, justificaciones y traslados',mod:'asistencia',subs:['Registro diario','Justificaciones','Excel']},
+      {ic:'📖',bg:'#EAF3DE',name:'Docentes',desc:'Libro de clases, planificaciones y panorama del curso',mod:'notas',subs:['Libro de clases','Planificaciones','Panorama']},
+      {ic:'🚪',bg:'#FAEEDA',name:'Portería',desc:'Atrasos, justificaciones, alertas y bóucher',mod:'porteria',subs:['Registro atrasos','Justif. Inasistencia','Alertas']},
+      {ic:'🧠',bg:'#EEEDFE',name:'PIE / Dupla',desc:'Seguimiento psicosocial confidencial',mod:'pie',subs:['Alumnos en seguimiento']},
+      {ic:'📊',bg:'#E1F5EE',name:'Estadísticas',desc:'Dashboard institucional con vista Director',mod:'stats',subs:['Vista General','Vista Director']},
+    ],
+    profesor:[
+      {ic:'📖',bg:'#EAF3DE',name:'Libro de clases',desc:'Ingresa y revisa notas de tus cursos asignados',mod:'notas',subs:['N1 · N2 · N3','Promedio automático','Informes PDF']},
+      {ic:'📅',bg:'#E6F1FB',name:'Planificaciones',desc:'Unidades, fechas, OA e indicadores curriculares',mod:'notas',subs:['Unidades','OA · Indicadores','Habilidades · Actitudes']},
+      {ic:'📊',bg:'#E1F5EE',name:'Panorama del Curso',desc:'Dashboard de asistencia, riesgo y atrasos',mod:'notas',subs:['KPIs','Riesgo repitencia','Top atrasos']},
+    ],
+    asistente:[
+      {ic:'📋',bg:'#E6F1FB',name:'Asistencia',desc:'Registro de presencia, ausencias y justificaciones',mod:'asistencia',subs:['Presente · Ausente · Justificado','Justificaciones','Traslados']},
+    ],
+    portero:[
+      {ic:'🚪',bg:'#FAEEDA',name:'Portería',desc:'Registro de atrasos, justificaciones y alertas críticas',mod:'porteria',subs:['Registro atrasos','Justif. Inasistencia','Alertas críticas','Dashboard']},
+    ],
+    psicologo:[
+      {ic:'🧠',bg:'#EEEDFE',name:'PIE / Dupla',desc:'Registro confidencial de seguimiento psicosocial',mod:'pie',subs:['Historial de atenciones','Observaciones','Alertas']},
+    ],
+    asistente_social:[
+      {ic:'🧠',bg:'#EEEDFE',name:'PIE / Dupla',desc:'Registro confidencial de seguimiento psicosocial',mod:'pie',subs:['Historial de atenciones','Observaciones','Alertas']},
+    ]
+  };
+
+  var mods = MODS[rol] || MODS['admin'];
+  var cols = mods.length <= 1 ? 1 : mods.length <= 2 ? 2 : mods.length <= 4 ? 2 : 3;
+
+  var rolLabels = {admin:'Admin',profesor:'Docente',asistente:'Asistente Educación',portero:'Portero',psicologo:'Psicólogo PIE',asistente_social:'Asistente Social PIE'};
+  var rolBgs    = {admin:'#FDD835',profesor:'#EAF3DE',asistente:'#E6F1FB',portero:'#FAEEDA',psicologo:'#EEEDFE',asistente_social:'#EEEDFE'};
+  var rolTcs    = {admin:'#0D47A1',profesor:'#3B6D11',asistente:'#185FA5',portero:'#854F0B',psicologo:'#534AB7',asistente_social:'#534AB7'};
+
+  var modsH = '';
+  mods.forEach(function(m){
+    var subsH = '';
+    (m.subs||[]).forEach(function(s){
+      subsH += '<span style="font-size:10px;background:var(--sur);border:0.5px solid var(--bor2);border-radius:20px;padding:1px 7px;color:var(--tx3);">'+escHtml(s)+'</span>';
+    });
+    var div = document.createElement('div');
+    div.style.cssText = 'background:var(--sur2);border:0.5px solid var(--bor2);border-radius:12px;padding:16px 14px;cursor:pointer;transition:box-shadow .15s;';
+    div.dataset.mod = m.mod;
+    div.addEventListener('mouseover', function(){ this.style.boxShadow='0 4px 16px rgba(21,101,192,.12)'; });
+    div.addEventListener('mouseout',  function(){ this.style.boxShadow='none'; });
+    div.addEventListener('click',     function(){ portalIrModulo(this.dataset.mod); });
+    div.innerHTML = '<div style="width:38px;height:38px;border-radius:9px;background:'+m.bg+';display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;">'+m.ic+'</div>'
+      +'<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px;">'+escHtml(m.name)+'</div>'
+      +'<div style="font-size:11px;color:var(--tx3);margin-bottom:10px;line-height:1.4;">'+escHtml(m.desc)+'</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:4px;">'+subsH+'</div>';
+    modsH += div.outerHTML;
+  });
+
+  cont.innerHTML = '<div style="padding:28px 32px;max-width:900px;margin:0 auto;">'
+    +'<div style="background:#1565C0;border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;">'
+    +'<div style="width:40px;height:40px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">🏫</div>'
+    +'<div><div style="color:#fff;font-size:14px;font-weight:500;">Liceo Técnico Talcahuano</div><div style="color:#BBDEFB;font-size:11px;">Plataforma Escolar Integrada</div></div>'
+    +'</div>'
+    +'<div style="color:#BBDEFB;font-size:12px;text-align:right;">'+fechaStr+'</div>'
+    +'</div>'
+
+    +'<div style="margin-bottom:18px;">'
+    +'<div style="font-size:20px;font-weight:500;color:var(--tx);">'+saludo+', <span style="color:#1565C0;">'+escHtml(nombre)+'</span></div>'
+    +'<span style="display:inline-block;font-size:11px;background:'+rolBgs[rol]+';color:'+rolTcs[rol]+';border-radius:20px;padding:3px 12px;margin-top:6px;font-weight:500;">'+( rolLabels[rol]||rol)+'</span>'
+    +'</div>'
+
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;">'
+    +kpis+'</div>'
+
+    +'<div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:12px;">¿Qué deseas hacer hoy?</div>'
+    +'<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:12px;">'
+    +modsH+'</div>'
+    +'</div>';
+}
+
+function kpiP(v, l, c) {
+  return '<div style="background:var(--sur2);border-radius:10px;padding:12px;">'
+    +'<div style="font-size:22px;font-weight:500;color:'+c+'">'+v+'</div>'
+    +'<div style="font-size:11px;color:var(--tx3);margin-top:2px;">'+l+'</div>'
+    +'</div>';
+}
+
+
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
@@ -9255,6 +9510,8 @@ async function init(){
   await loadPie();
   await loadDocentes();
   await loadConfig();
+  await planifCargar();
+  await inasistCargar();
 
   NIVELES.forEach(niv=>niv.cursos.forEach(c=>initCurso(getCursoKey(niv.key,c))));
   updateDateDisplay();
