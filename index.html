@@ -1689,6 +1689,9 @@ td.td-sit{text-align:center;}
     <button class="mod-tab tab-port" onclick="switchModulo('porteria')">
       <span class="mod-tab-dot"></span> Portería
     </button>
+    <button class="mod-tab tab-conv" onclick="switchModulo('convivencia')">
+      <span class="mod-tab-dot"></span> Convivencia
+    </button>
     <button class="mod-tab tab-pie" onclick="switchModulo('pie')">
       <span class="mod-tab-dot"></span> PIE / Dupla
     </button>
@@ -1989,6 +1992,25 @@ td.td-sit{text-align:center;}
     </div>
   </div>
 
+
+  <!-- ─── MÓDULO CONVIVENCIA ESCOLAR ─── -->
+  <div id="panel-convivencia" class="module-panel" style="flex-direction:column;overflow-y:auto;">
+    <div style="padding:20px;max-width:900px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <span style="font-size:20px;">🤝</span>
+        <div>
+          <div style="font-size:16px;font-weight:600;color:var(--tx);">Convivencia Escolar</div>
+          <div style="font-size:11px;color:var(--tx3);">Gestión de casos, entrevistas y mediación</div>
+        </div>
+      </div>
+      <div id="convTabs" style="display:flex;gap:6px;margin-bottom:16px;border-bottom:0.5px solid var(--bor2);padding-bottom:0;">
+        <button id="ctab-as" onclick="convCambiarTab('as')" style="font-size:12px;padding:8px 14px;border:none;background:none;cursor:pointer;color:#534AB7;border-bottom:2px solid #534AB7;font-weight:600;">👤 Asistente Social</button>
+        <button id="ctab-ps" onclick="convCambiarTab('ps')" style="font-size:12px;padding:8px 14px;border:none;background:none;cursor:pointer;color:var(--tx3);border-bottom:2px solid transparent;">🧠 Psicóloga <span id="badge-deriv" style="display:none;background:#E24B4A;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:4px;font-weight:600;">0</span></button>
+        <button id="ctab-md" onclick="convCambiarTab('md')" style="font-size:12px;padding:8px 14px;border:none;background:none;cursor:pointer;color:var(--tx3);border-bottom:2px solid transparent;">⚖️ Mediación</button>
+      </div>
+      <div id="conv-content"></div>
+    </div>
+  </div>
 
   <!-- ─── MÓDULO PIE / DUPLA PSICOSOCIAL ─── -->
   <div id="panel-pie" class="module-panel" style="flex-direction:row;">
@@ -2625,6 +2647,7 @@ td.td-sit{text-align:center;}
 var planifData = {};
 var inasistJust = [];
 var _portJustTab = 'atrasos';
+var convData = { asistente:{ entrevistas:[], contactos:[] }, psicologa:{ entrevistas:[] }, mediacion:{ casos:[] } };
 let moduloActivo = 'asistencia';
 
 function switchModulo(m) {
@@ -2645,7 +2668,7 @@ function switchModulo(m) {
   moduloActivo = m;
 
   // Mostrar/ocultar paneles
-  ['asistencia','notas','porteria','pie','stats'].forEach(function(mod) {
+  ['asistencia','notas','porteria','pie','stats','convivencia'].forEach(function(mod) {
     var el = document.getElementById('panel-' + mod);
     if (el) el.classList.toggle('visible', mod === m);
   });
@@ -2772,13 +2795,13 @@ function aplicarSesion(){
   // Mostrar/ocultar tabs según rol
   const tabs = document.querySelectorAll('.mod-tab');
   const permisos = {
-    //                  asist  notas  port   pie   stats
-    admin:            [true,  true,  true,  true,  true],
-    profesor:         [false, true,  false, false, false],
-    asistente:        [true,  false, false, false, false],
-    portero:          [false, false, true,  false, false],
-    psicologo:        [false, false, false, true,  false],
-    asistente_social: [false, false, false, true,  false]
+    //                  asist  notas  port   conv   pie   stats
+    admin:            [true,  true,  true,  true,  true,  true],
+    profesor:         [false, true,  false, false, false, false],
+    asistente:        [true,  false, false, false, false, false],
+    portero:          [false, false, true,  false, false, false],
+    psicologo:        [false, false, false, true,  true,  false],
+    asistente_social: [false, false, false, true,  true,  false]
   };
   const p = permisos[sesion.rol] || [true, true, true, true, false];
   tabs.forEach((t, i) => { t.style.display = (p[i] !== false && p[i] !== undefined) ? '' : 'none'; });
@@ -2941,7 +2964,8 @@ async function syncFromSheets(){
 }
 async function syncManual(){_lastHash='';setSaveStatus('saving');await syncFromSheets();
   await planifCargar();
-  await inasistCargar();setSaveStatus('saved');}
+  await inasistCargar();
+  await convCargar();setSaveStatus('saved');}
 function setSaveStatus(status){
   const el=document.getElementById('saveStatus');if(!el)return;
   const map={saving:{icon:'⟳',txt:'Guardando…',color:'rgba(255,255,255,.7)'},saved:{icon:'✓',txt:'Guardado',color:'#FDD835'},synced:{icon:'🔄',txt:'Sincronizado',color:'#ffffff'},error:{icon:'⚠',txt:'Error',color:'#fca5a5'}};
@@ -3049,7 +3073,7 @@ function cerrarModal(id){
   if(!el) return;
   el.classList.remove('open');
   // Si es un modal dinámico (planificaciones), eliminarlo del DOM
-  if(id==='modalPlanif'||id==='modalPlanifEdit'||id==='modalNuevaInasist'){
+  if(id==='modalPlanif'||id==='modalPlanifEdit'||id==='modalNuevaInasist'||id==='modalConvAS'||id==='modalConvCont'||id==='modalConvPS'||id==='modalConvMD'||id==='modalVerDerivacion'){
     setTimeout(function(){ if(el && el.parentNode) el.parentNode.removeChild(el); },200);
   }
 }
@@ -9494,6 +9518,525 @@ function kpiP(v, l, c) {
 }
 
 
+
+// ══════════════════════════════════════════════════════
+// MÓDULO CONVIVENCIA ESCOLAR
+// ══════════════════════════════════════════════════════
+
+var convData = {
+  asistente: { entrevistas: [], contactos: [] },
+  psicologa:  { entrevistas: [] },
+  mediacion:  { casos: [] }
+};
+var _convTab = 'as';
+const SK_CONV = 'conv_v1';
+
+async function convCargar() {
+  try {
+    var r = await gsGet(SK_CONV);
+    if (r && r.value) convData = JSON.parse(r.value);
+  } catch(e) {}
+  // Asegurar estructura
+  if (!convData.asistente) convData.asistente = { entrevistas: [], contactos: [] };
+  if (!convData.psicologa)  convData.psicologa  = { entrevistas: [] };
+  if (!convData.mediacion)  convData.mediacion  = { casos: [] };
+}
+
+async function convGuardar() {
+  try { await gsSet(SK_CONV, JSON.stringify(convData)); } catch(e) {}
+}
+
+function convCambiarTab(tab) {
+  _convTab = tab;
+  var colores = { as:'#534AB7', ps:'#0F6E56', md:'#993C1D' };
+  ['as','ps','md'].forEach(function(t) {
+    var btn = document.getElementById('ctab-' + t);
+    if (!btn) return;
+    var activo = t === tab;
+    btn.style.color       = activo ? colores[t] : 'var(--tx3)';
+    btn.style.borderBottom = activo ? ('2px solid ' + colores[t]) : '2px solid transparent';
+    btn.style.fontWeight  = activo ? '600' : '400';
+  });
+  convRenderTab();
+}
+
+function convRenderTab() {
+  var cont = document.getElementById('conv-content');
+  if (!cont) return;
+  convActualizarBadge();
+  if (_convTab === 'as') convRenderAS(cont);
+  else if (_convTab === 'ps') convRenderPS(cont);
+  else convRenderMD(cont);
+}
+
+function convActualizarBadge() {
+  var deriv = (convData.psicologa.derivaciones || []).filter(function(d){ return d.estado === 'pendiente'; });
+  var badge = document.getElementById('badge-deriv');
+  if (!badge) return;
+  if (deriv.length > 0) {
+    badge.textContent = deriv.length;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ── Helpers ──
+function convKpi(v, l, c) {
+  return '<div style="background:var(--sur2);border-radius:10px;padding:12px;">'
+    + '<div style="font-size:22px;font-weight:500;color:' + c + '">' + v + '</div>'
+    + '<div style="font-size:11px;color:var(--tx3);margin-top:2px;">' + l + '</div>'
+    + '</div>';
+}
+
+function convCard(titulo, color, btnLabel, btnFn, rows) {
+  return '<div style="background:var(--sur);border:0.5px solid var(--bor2);border-radius:10px;padding:14px 16px;margin-bottom:10px;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    + '<span style="font-size:13px;font-weight:600;color:var(--tx);">' + titulo + '</span>'
+    + (btnLabel ? '<button onclick="' + btnFn + '" style="font-size:12px;padding:5px 12px;background:' + color + ';color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:500;">' + btnLabel + '</button>' : '')
+    + '</div>' + rows + '</div>';
+}
+
+function convRow(iniciales, nombre, meta, badge, bgAv, txAv) {
+  return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--bor2);">'
+    + '<div style="width:30px;height:30px;border-radius:50%;background:' + bgAv + ';color:' + txAv + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;">' + escHtml(iniciales) + '</div>'
+    + '<div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--tx);">' + escHtml(nombre) + '</div>'
+    + '<div style="font-size:11px;color:var(--tx3);">' + escHtml(meta) + '</div></div>'
+    + badge + '</div>';
+}
+
+function badgeConv(txt, tipo) {
+  var estilos = {
+    open:     'background:#E6F1FB;color:#0C447C;',
+    cerrado:  'background:#EAF3DE;color:#27500A;',
+    derivado: 'background:#FAEEDA;color:#633806;',
+    urgente:  'background:#FCEBEB;color:#791F1F;',
+    proceso:  'background:#EEEDFE;color:#3C3489;'
+  };
+  var s = estilos[tipo] || estilos['open'];
+  return '<span style="font-size:10px;padding:2px 9px;border-radius:20px;' + s + '">' + escHtml(txt) + '</span>';
+}
+
+// ──────────────────────────────────────────────────────
+// ASISTENTE SOCIAL
+// ──────────────────────────────────────────────────────
+function convRenderAS(cont) {
+  var ents = convData.asistente.entrevistas || [];
+  var cons = convData.asistente.contactos  || [];
+  var urgentes = ents.filter(function(e){ return e.estado === 'urgente'; }).length;
+
+  var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">';
+  html += convKpi(ents.length, 'Casos activos', '#534AB7');
+  html += convKpi(cons.length, 'Contactos apoderado', '#0C447C');
+  html += convKpi(urgentes, 'Urgentes', '#791F1F');
+  html += '</div>';
+
+  // Entrevistas
+  var rowsE = '';
+  if (!ents.length) {
+    rowsE = '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px;">Sin entrevistas registradas</div>';
+  } else {
+    ents.slice().reverse().forEach(function(e, i) {
+      var bi = badgeConv(e.estado === 'urgente' ? 'Urgente' : e.estado === 'derivado' ? 'Derivado' : 'En seguimiento',
+                         e.estado === 'urgente' ? 'urgente' : e.estado === 'derivado' ? 'derivado' : 'open');
+      rowsE += convRow(iniciales2(e.nombre), e.nombre, e.curso + ' · ' + e.fecha + ' · ' + e.motivo, bi, '#EEEDFE', '#3C3489');
+    });
+  }
+  html += convCard('👤 Entrevistas a alumnos', '#534AB7', '+ Nueva entrevista', 'convModalAS()', rowsE);
+
+  // Contactos apoderados
+  var rowsC = '';
+  if (!cons.length) {
+    rowsC = '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px;">Sin contactos registrados</div>';
+  } else {
+    cons.slice().reverse().forEach(function(c) {
+      var bi = badgeConv(c.estado === 'pendiente' ? 'Pendiente firma' : 'Completado',
+                         c.estado === 'pendiente' ? 'urgente' : 'cerrado');
+      rowsC += convRow(iniciales2(c.apoderado), c.apoderado, c.tipo + ' · ' + c.fecha + ' · ' + c.motivo, bi, '#EEEDFE', '#3C3489');
+    });
+  }
+  html += convCard('📞 Comunicaciones con apoderados', '#534AB7', '+ Registrar contacto', 'convModalContacto()', rowsC);
+
+  cont.innerHTML = html;
+}
+
+// ──────────────────────────────────────────────────────
+// PSICÓLOGA
+// ──────────────────────────────────────────────────────
+function convRenderPS(cont) {
+  var ents  = convData.psicologa.entrevistas || [];
+  var deriv = (convData.psicologa.derivaciones || []).filter(function(d){ return d.estado === 'pendiente'; });
+  var estaSemana = ents.filter(function(e){ return e.fecha >= semanaActual(); }).length;
+  var derivados  = ents.filter(function(e){ return e.estado === 'derivado'; }).length;
+
+  var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">';
+  html += convKpi(ents.length, 'Casos activos', '#0F6E56');
+  html += convKpi(estaSemana, 'Esta semana', '#0C447C');
+  html += convKpi(deriv.length, 'Derivaciones pendientes', '#A32D2D');
+  html += '</div>';
+
+  // Derivaciones pendientes desde Asistente Social
+  if (deriv.length > 0) {
+    var rowsDeriv = '';
+    deriv.forEach(function(d, i) {
+      var idx = (convData.psicologa.derivaciones || []).indexOf(d);
+      rowsDeriv += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--bor2);">'
+        + '<div style="width:30px;height:30px;border-radius:50%;background:#FCEBEB;color:#791F1F;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;">' + iniciales2(d.nombre) + '</div>'
+        + '<div style="flex:1;">'
+        + '<div style="font-size:13px;font-weight:600;color:var(--tx);">' + escHtml(d.nombre) + '</div>'
+        + '<div style="font-size:11px;color:var(--tx3);">' + escHtml(d.curso) + ' · ' + escHtml(d.fecha) + ' · ' + escHtml(d.motivo) + '</div>'
+        + '<div style="font-size:11px;color:var(--tx3);margin-top:2px;">Derivado por: <strong>' + escHtml(d.derivadoPor) + '</strong>' + (d.obs ? ' · ' + escHtml(d.obs) : '') + '</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:6px;">'
+        + '<button data-idx="' + idx + '" onclick="convVerDerivacion(parseInt(this.dataset.idx))" style="font-size:11px;padding:4px 10px;background:none;border:0.5px solid #85B7EB;border-radius:6px;cursor:pointer;color:#185FA5;">👁 Ver</button>'
+        + '<button data-idx="' + idx + '" onclick="convAceptarDerivacion(parseInt(this.dataset.idx))" style="font-size:11px;padding:4px 10px;background:#0F6E56;color:#fff;border:none;border-radius:6px;cursor:pointer;">✓ Aceptar</button>'
+        + '<button data-idx="' + idx + '" onclick="convRechazarDerivacion(parseInt(this.dataset.idx))" style="font-size:11px;padding:4px 10px;background:none;border:0.5px solid var(--bor2);border-radius:6px;cursor:pointer;color:var(--tx3);">✕</button>'
+        + '</div>'
+        + '</div>';
+    });
+
+    html += '<div style="background:#FCEBEB;border:0.5px solid #F09595;border-left:4px solid #E24B4A;border-radius:10px;padding:14px 16px;margin-bottom:10px;">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+      + '<span style="font-size:16px;">📋</span>'
+      + '<span style="font-size:13px;font-weight:600;color:#791F1F;">Derivaciones pendientes — ' + deriv.length + ' caso' + (deriv.length > 1 ? 's' : '') + '</span>'
+      + '</div>'
+      + rowsDeriv
+      + '</div>';
+  }
+
+  var rowsP = '';
+  if (!ents.length) {
+    rowsP = '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px;">Sin entrevistas registradas</div>';
+  } else {
+    ents.slice().reverse().forEach(function(e) {
+      var bi = badgeConv(e.estado === 'derivado' ? 'Derivado externo' : 'En seguimiento',
+                         e.estado === 'derivado' ? 'derivado' : 'open');
+      rowsP += convRow(iniciales2(e.nombre), e.nombre, e.curso + ' · ' + e.fecha + ' · ' + e.motivo, bi, '#E1F5EE', '#085041');
+    });
+  }
+  html += convCard('🧠 Entrevistas psicológicas', '#0F6E56', '+ Nueva entrevista', 'convModalPS()', rowsP);
+
+  html += '<div style="background:var(--sur);border:0.5px solid var(--bor2);border-radius:10px;padding:14px 16px;">';
+  html += '<div style="font-size:12px;color:var(--tx3);display:flex;align-items:center;gap:6px;">';
+  html += '<span style="font-size:14px;">🔒</span>';
+  html += 'Los registros de entrevistas son confidenciales. Solo la psicóloga a cargo puede ver el contenido de cada sesión.';
+  html += '</div></div>';
+
+  cont.innerHTML = html;
+}
+
+// ──────────────────────────────────────────────────────
+// MEDIACIÓN
+// ──────────────────────────────────────────────────────
+function convRenderMD(cont) {
+  var casos = convData.mediacion.casos || [];
+  var abiertos  = casos.filter(function(c){ return c.estado !== 'resuelto'; }).length;
+  var resueltos = casos.filter(function(c){ return c.estado === 'resuelto'; }).length;
+  var enProceso = casos.filter(function(c){ return c.estado === 'proceso'; }).length;
+
+  var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">';
+  html += convKpi(abiertos,  'Casos abiertos',    '#993C1D');
+  html += convKpi(resueltos, 'Resueltos este año', '#27500A');
+  html += convKpi(enProceso, 'En proceso',         '#0C447C');
+  html += '</div>';
+
+  var rowsMD = '';
+  if (!casos.length) {
+    rowsMD = '<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px;">Sin casos registrados</div>';
+  } else {
+    casos.slice().reverse().forEach(function(c, i) {
+      var num = String(casos.length - i).padStart(2,'0');
+      var bi = badgeConv(c.estado === 'resuelto' ? 'Resuelto' : 'En proceso',
+                         c.estado === 'resuelto' ? 'cerrado' : 'open');
+      rowsMD += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--bor2);">'
+        + '<div style="width:30px;height:30px;border-radius:50%;background:#FAECE7;color:#712B13;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;">' + num + '</div>'
+        + '<div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--tx);">' + escHtml(c.titulo) + '</div>'
+        + '<div style="font-size:11px;color:var(--tx3);">' + escHtml(c.tipo) + ' · ' + escHtml(c.fecha) + ' · ' + escHtml(c.encargada || '') + '</div></div>'
+        + bi + '</div>';
+    });
+  }
+  html += convCard('⚖️ Casos de mediación', '#993C1D', '+ Nuevo caso', 'convModalMD()', rowsMD);
+
+  cont.innerHTML = html;
+}
+
+// ──────────────────────────────────────────────────────
+// MODALES
+// ──────────────────────────────────────────────────────
+function convModalAS() {
+  var _ex = document.getElementById('modalConvAS');
+  if (_ex && _ex.parentNode) _ex.parentNode.removeChild(_ex);
+  var cursos = [];
+  NIVELES.forEach(function(n){ n.cursos.forEach(function(c){ cursos.push(c); }); });
+  var opC = cursos.map(function(c){ return '<option>' + escHtml(c) + '</option>'; }).join('');
+
+  var html = '<div class="modal-overlay open" id="modalConvAS" onclick="if(event.target===this)cerrarModal(\'modalConvAS\')">'
+    + '<div class="modal" style="width:460px;max-width:96vw;">'
+    + '<div class="modal-title">👤 Nueva entrevista — Asistente Social</div>'
+    + '<div style="display:flex;flex-direction:column;gap:10px;">'
+    + field('Nombre del alumno/a', '<input id="cvas-nombre" type="text" placeholder="Nombre completo">')
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    + field('Curso', '<select id="cvas-curso"><option value="">— Seleccionar —</option>' + opC + '</select>')
+    + field('Fecha', '<input id="cvas-fecha" type="date">')
+    + '</div>'
+    + field('Motivo', '<select id="cvas-motivo"><option>Situación familiar</option><option>Vulnerabilidad socioeconómica</option><option>Ausentismo reiterado</option><option>Violencia intrafamiliar</option><option>Otro</option></select>')
+    + field('Estado', '<select id="cvas-estado"><option value="seguimiento">En seguimiento</option><option value="urgente">Urgente</option><option value="derivado">Derivado a psicóloga</option></select>')
+    + field('Observación', '<textarea id="cvas-obs" rows="2" placeholder="Notas de la entrevista..."></textarea>')
+    + '</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">'
+    + '<button onclick="cerrarModal(\'modalConvAS\')" class="btn-cancel">Cancelar</button>'
+    + '<button onclick="convGuardarAS()" style="padding:8px 18px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Guardar</button>'
+    + '</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function convModalContacto() {
+  var _ex = document.getElementById('modalConvCont');
+  if (_ex && _ex.parentNode) _ex.parentNode.removeChild(_ex);
+  var html = '<div class="modal-overlay open" id="modalConvCont" onclick="if(event.target===this)cerrarModal(\'modalConvCont\')">'
+    + '<div class="modal" style="width:460px;max-width:96vw;">'
+    + '<div class="modal-title">📞 Registrar contacto con apoderado</div>'
+    + '<div style="display:flex;flex-direction:column;gap:10px;">'
+    + field('Nombre del apoderado', '<input id="cvcont-nombre" type="text" placeholder="Nombre completo del apoderado">')
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    + field('Tipo de contacto', '<select id="cvcont-tipo"><option>Llamada telefónica</option><option>Presencial</option><option>WhatsApp</option><option>Correo electrónico</option></select>')
+    + field('Fecha', '<input id="cvcont-fecha" type="date">')
+    + '</div>'
+    + field('Motivo', '<input id="cvcont-motivo" type="text" placeholder="Ej: Citación por inasistencia">')
+    + field('Estado', '<select id="cvcont-estado"><option value="pendiente">Pendiente firma</option><option value="completado">Completado</option></select>')
+    + field('Observación', '<textarea id="cvcont-obs" rows="2" placeholder="Resultado del contacto..."></textarea>')
+    + '</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">'
+    + '<button onclick="cerrarModal(\'modalConvCont\')" class="btn-cancel">Cancelar</button>'
+    + '<button onclick="convGuardarContacto()" style="padding:8px 18px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Guardar</button>'
+    + '</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function convModalPS() {
+  var _ex = document.getElementById('modalConvPS');
+  if (_ex && _ex.parentNode) _ex.parentNode.removeChild(_ex);
+  var cursos = [];
+  NIVELES.forEach(function(n){ n.cursos.forEach(function(c){ cursos.push(c); }); });
+  var opC = cursos.map(function(c){ return '<option>' + escHtml(c) + '</option>'; }).join('');
+
+  var html = '<div class="modal-overlay open" id="modalConvPS" onclick="if(event.target===this)cerrarModal(\'modalConvPS\')">'
+    + '<div class="modal" style="width:460px;max-width:96vw;">'
+    + '<div class="modal-title">🧠 Nueva entrevista — Psicóloga</div>'
+    + '<div style="display:flex;flex-direction:column;gap:10px;">'
+    + field('Nombre del alumno/a', '<input id="cvps-nombre" type="text" placeholder="Nombre completo">')
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    + field('Curso', '<select id="cvps-curso"><option value="">— Seleccionar —</option>' + opC + '</select>')
+    + field('Fecha', '<input id="cvps-fecha" type="date">')
+    + '</div>'
+    + field('Motivo', '<select id="cvps-motivo"><option>Ansiedad académica</option><option>Conducta disruptiva</option><option>Autoestima</option><option>Relaciones interpersonales</option><option>Otro</option></select>')
+    + field('Estado', '<select id="cvps-estado"><option value="seguimiento">En seguimiento</option><option value="derivado">Derivado externo</option></select>')
+    + field('Observación (confidencial)', '<textarea id="cvps-obs" rows="2" placeholder="Solo visible para la psicóloga..."></textarea>')
+    + '</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">'
+    + '<button onclick="cerrarModal(\'modalConvPS\')" class="btn-cancel">Cancelar</button>'
+    + '<button onclick="convGuardarPS()" style="padding:8px 18px;background:#0F6E56;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Guardar</button>'
+    + '</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function convModalMD() {
+  var _ex = document.getElementById('modalConvMD');
+  if (_ex && _ex.parentNode) _ex.parentNode.removeChild(_ex);
+  var html = '<div class="modal-overlay open" id="modalConvMD" onclick="if(event.target===this)cerrarModal(\'modalConvMD\')">'
+    + '<div class="modal" style="width:480px;max-width:96vw;">'
+    + '<div class="modal-title">⚖️ Nuevo caso de mediación</div>'
+    + '<div style="display:flex;flex-direction:column;gap:10px;">'
+    + field('Título del caso', '<input id="cvmd-titulo" type="text" placeholder="Ej: Conflicto entre alumnos 2°C">')
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    + field('Tipo de conflicto', '<select id="cvmd-tipo"><option>Entre alumnos</option><option>Alumno — docente</option><option>Apoderado — establecimiento</option><option>Entre docentes</option><option>Otro</option></select>')
+    + field('Fecha', '<input id="cvmd-fecha" type="date">')
+    + '</div>'
+    + field('Encargada de convivencia', '<input id="cvmd-encargada" type="text" placeholder="Nombre de la encargada">')
+    + field('Descripción', '<textarea id="cvmd-desc" rows="2" placeholder="Describe la situación e involucrados..."></textarea>')
+    + field('Acuerdos y compromisos', '<textarea id="cvmd-acuerdos" rows="2" placeholder="Compromisos alcanzados en la mediación..."></textarea>')
+    + field('Estado', '<select id="cvmd-estado"><option value="proceso">En proceso</option><option value="resuelto">Resuelto</option></select>')
+    + '</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">'
+    + '<button onclick="cerrarModal(\'modalConvMD\')" class="btn-cancel">Cancelar</button>'
+    + '<button onclick="convGuardarMD()" style="padding:8px 18px;background:#993C1D;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Guardar caso</button>'
+    + '</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+// ── Guardar ──
+async function convGuardarAS() {
+  var nombre = (document.getElementById('cvas-nombre')||{}).value?.trim();
+  var curso  = (document.getElementById('cvas-curso') ||{}).value;
+  var fecha  = (document.getElementById('cvas-fecha') ||{}).value;
+  var motivo = (document.getElementById('cvas-motivo')||{}).value;
+  var estado = (document.getElementById('cvas-estado')||{}).value;
+  var obs    = (document.getElementById('cvas-obs')   ||{}).value?.trim();
+  if (!nombre) { showToast('Ingresa el nombre del alumno', 'warn'); return; }
+  if (!fecha)  { showToast('Selecciona una fecha', 'warn'); return; }
+  var nuevaEnt = { nombre, curso, fecha, motivo, estado, obs, creadoEn: new Date().toISOString() };
+  convData.asistente.entrevistas.push(nuevaEnt);
+
+  // Si es derivación → copiar a psicóloga como caso pendiente
+  if (estado === 'derivado') {
+    if (!convData.psicologa.derivaciones) convData.psicologa.derivaciones = [];
+    convData.psicologa.derivaciones.push({
+      nombre, curso, fecha, motivo,
+      obs: obs || '',
+      derivadoPor: 'Asistente Social',
+      estado: 'pendiente',
+      creadoEn: new Date().toISOString()
+    });
+  }
+
+  await convGuardar();
+  cerrarModal('modalConvAS');
+  convRenderTab();
+  if (estado === 'derivado') {
+    showToast('✅ Caso derivado a Psicóloga — se generó notificación', 'ok');
+  } else {
+    showToast('✅ Entrevista registrada', 'ok');
+  }
+}
+
+async function convGuardarContacto() {
+  var apoderado = (document.getElementById('cvcont-nombre')||{}).value?.trim();
+  var tipo      = (document.getElementById('cvcont-tipo')  ||{}).value;
+  var fecha     = (document.getElementById('cvcont-fecha') ||{}).value;
+  var motivo    = (document.getElementById('cvcont-motivo')||{}).value?.trim();
+  var estado    = (document.getElementById('cvcont-estado')||{}).value;
+  var obs       = (document.getElementById('cvcont-obs')   ||{}).value?.trim();
+  if (!apoderado) { showToast('Ingresa el nombre del apoderado', 'warn'); return; }
+  convData.asistente.contactos.push({ apoderado, tipo, fecha, motivo, estado, obs, creadoEn: new Date().toISOString() });
+  await convGuardar();
+  cerrarModal('modalConvCont');
+  convRenderTab();
+  showToast('✅ Contacto registrado', 'ok');
+}
+
+async function convGuardarPS() {
+  var nombre = (document.getElementById('cvps-nombre')||{}).value?.trim();
+  var curso  = (document.getElementById('cvps-curso') ||{}).value;
+  var fecha  = (document.getElementById('cvps-fecha') ||{}).value;
+  var motivo = (document.getElementById('cvps-motivo')||{}).value;
+  var estado = (document.getElementById('cvps-estado')||{}).value;
+  var obs    = (document.getElementById('cvps-obs')   ||{}).value?.trim();
+  if (!nombre) { showToast('Ingresa el nombre del alumno', 'warn'); return; }
+  if (!fecha)  { showToast('Selecciona una fecha', 'warn'); return; }
+  convData.psicologa.entrevistas.push({ nombre, curso, fecha, motivo, estado, obs, creadoEn: new Date().toISOString() });
+  await convGuardar();
+  cerrarModal('modalConvPS');
+  convRenderTab();
+  showToast('✅ Entrevista registrada', 'ok');
+}
+
+async function convGuardarMD() {
+  var titulo    = (document.getElementById('cvmd-titulo')   ||{}).value?.trim();
+  var tipo      = (document.getElementById('cvmd-tipo')     ||{}).value;
+  var fecha     = (document.getElementById('cvmd-fecha')    ||{}).value;
+  var encargada = (document.getElementById('cvmd-encargada')||{}).value?.trim();
+  var desc      = (document.getElementById('cvmd-desc')     ||{}).value?.trim();
+  var acuerdos  = (document.getElementById('cvmd-acuerdos') ||{}).value?.trim();
+  var estado    = (document.getElementById('cvmd-estado')   ||{}).value;
+  if (!titulo) { showToast('Ingresa el título del caso', 'warn'); return; }
+  if (!fecha)  { showToast('Selecciona una fecha', 'warn'); return; }
+  convData.mediacion.casos.push({ titulo, tipo, fecha, encargada, desc, acuerdos, estado, creadoEn: new Date().toISOString() });
+  await convGuardar();
+  cerrarModal('modalConvMD');
+  convRenderTab();
+  showToast('✅ Caso de mediación registrado', 'ok');
+}
+
+// ── Helpers ──
+function iniciales2(nombre) {
+  var p = (nombre||'').trim().split(' ').filter(function(x){ return x.length > 0; });
+  var i1 = p[0] ? p[0][0] : '';
+  var i2 = p[1] ? p[1][0] : '';
+  return (i1 + i2).toUpperCase() || '??';
+}
+
+function semanaActual() {
+  var d = new Date();
+  d.setDate(d.getDate() - d.getDay());
+  return d.toISOString().slice(0,10);
+}
+
+function field(label, input) {
+  return '<div><label style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">' + label + '</label>'
+    + '<div style="margin-top:0;">' + input.replace(/(<input|<select|<textarea)/, '$1 style="width:100%;padding:8px 10px;border:0.5px solid var(--bor2);border-radius:8px;background:var(--sur2);color:var(--tx);font-size:13px;box-sizing:border-box;"') + '</div></div>';
+}
+
+
+
+function convVerDerivacion(idx) {
+  var d = convData.psicologa.derivaciones && convData.psicologa.derivaciones[idx];
+  if (!d) return;
+  var entOriginal = (convData.asistente.entrevistas || []).find(function(e) {
+    return e.nombre === d.nombre && e.fecha === d.fecha;
+  });
+  function fd(label, valor, color) {
+    var div2 = document.createElement('div');
+    div2.style.cssText = 'background:var(--sur2);border-radius:8px;padding:10px 14px;margin-bottom:8px;';
+    div2.innerHTML = '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">'+escHtml(label)+'</div>'
+      + '<div style="font-size:13px;font-weight:500;color:'+(color||'var(--tx)')+';">'+escHtml(valor||'—')+'</div>';
+    return div2;
+  }
+  var ex = document.getElementById('modalVerDerivacion');
+  if (ex && ex.parentNode) ex.parentNode.removeChild(ex);
+
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay open';
+  overlay.id = 'modalVerDerivacion';
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) cerrarModal('modalVerDerivacion'); });
+
+  var modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.cssText = 'width:500px;max-width:96vw;';
+
+  var title = document.createElement('div');
+  title.className = 'modal-title';
+  title.style.color = '#0C447C';
+  title.textContent = '📋 Detalle de derivación';
+
+  var header = document.createElement('div');
+  header.style.cssText = 'background:#E6F1FB;border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;';
+  header.innerHTML = '<div style="width:42px;height:42px;border-radius:50%;background:#1565C0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex-shrink:0;">'+iniciales2(d.nombre)+'</div>'
+    + '<div><div style="font-size:14px;font-weight:600;color:#0D47A1;">'+escHtml(d.nombre)+'</div>'
+    + '<div style="font-size:12px;color:#185FA5;">Curso: '+escHtml(d.curso)+' · Fecha: '+escHtml(d.fecha)+'</div></div>';
+
+  var btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:16px;';
+
+  var btnCerrar = document.createElement('button');
+  btnCerrar.className = 'btn-cancel';
+  btnCerrar.textContent = 'Cerrar';
+  btnCerrar.addEventListener('click', function(){ cerrarModal('modalVerDerivacion'); });
+
+  btns.appendChild(btnCerrar);
+
+  if (d.estado === 'pendiente') {
+    var btnAceptar = document.createElement('button');
+    btnAceptar.style.cssText = 'padding:8px 18px;background:#0F6E56;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;';
+    btnAceptar.textContent = '✓ Aceptar caso';
+    btnAceptar.addEventListener('click', function(){
+      cerrarModal('modalVerDerivacion');
+      convAceptarDerivacion(idx);
+    });
+    btns.appendChild(btnAceptar);
+  }
+
+  modal.appendChild(title);
+  modal.appendChild(header);
+  modal.appendChild(fd('Derivado por', d.derivadoPor||'Asistente Social', '#534AB7'));
+  modal.appendChild(fd('Motivo', d.motivo, null));
+  if (d.obs) modal.appendChild(fd('Observación de la Asistente Social', d.obs, null));
+  if (entOriginal && entOriginal.obs && entOriginal.obs !== d.obs) modal.appendChild(fd('Notas adicionales', entOriginal.obs, null));
+  modal.appendChild(fd('Estado', d.estado==='pendiente'?'Pendiente de aceptar':d.estado, d.estado==='pendiente'?'#A32D2D':'#27500A'));
+  modal.appendChild(btns);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
@@ -9552,4 +10095,31 @@ init();
 </script>
 
 </body>
-</html>
+</html><script>
+// Aceptar/rechazar derivaciones (se agregan al script principal)
+async function convAceptarDerivacion(idx) {
+  if (!convData.psicologa.derivaciones || !convData.psicologa.derivaciones[idx]) return;
+  var d = convData.psicologa.derivaciones[idx];
+  // Copiar como entrevista de psicóloga
+  convData.psicologa.entrevistas.push({
+    nombre: d.nombre, curso: d.curso, fecha: d.fecha,
+    motivo: d.motivo, estado: 'seguimiento',
+    obs: 'Derivado por Asistente Social. ' + (d.obs || ''),
+    creadoEn: new Date().toISOString()
+  });
+  convData.psicologa.derivaciones[idx].estado = 'aceptado';
+  await convGuardar();
+  convRenderTab();
+  showToast('✅ Derivación aceptada — caso agregado a tus entrevistas', 'ok');
+}
+
+async function convRechazarDerivacion(idx) {
+  if (!confirm('¿Rechazar esta derivación?')) return;
+  if (convData.psicologa.derivaciones && convData.psicologa.derivaciones[idx]) {
+    convData.psicologa.derivaciones[idx].estado = 'rechazado';
+  }
+  await convGuardar();
+  convRenderTab();
+  showToast('Derivación rechazada', 'warn');
+}
+</script>
